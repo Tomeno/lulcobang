@@ -8,7 +8,7 @@ class DB {
 	
 	public function __construct($username, $password, $server, $database) {
 		$this->link = mysql_connect($server, $username, $password, TRUE) or die("Cannot connect to '$server'\n");
-		mysql_select_db($database, &$this->link);
+		mysql_select_db($database, $this->link);
 		$this->dbName = $database;
 	}
 	
