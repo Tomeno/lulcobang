@@ -11,6 +11,8 @@ function timedRefresh(timeoutPeriod) {
 function insertEmoticon(emoticon) {
 	input = document.getElementById('message');
 	input.value += emoticon;
+	
+	focusToInput();
 }
 
 function refreshChat() {
