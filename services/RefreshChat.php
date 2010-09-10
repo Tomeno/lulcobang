@@ -5,7 +5,7 @@ require_once('../include.php');
 class RefreshChat {
 	
 	public function main() {
-		echo Chat::getMessages();
+		echo Chat::getMessages(intval($_POST['room']));
 	}
 }
 

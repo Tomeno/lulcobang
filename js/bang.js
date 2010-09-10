@@ -1,6 +1,6 @@
-function timedRefresh(timeoutPeriod) {
+function timedRefresh(timeoutPeriod, room) {
 	//setTimeout("location.reload(true);",timeoutPeriod);
-	setInterval("refreshChat()", timeoutPeriod);
+	setInterval("refreshChat(" + room +")", timeoutPeriod);
 	
 	chatarea = document.getElementById('chatarea');
 	scrollArea(chatarea);
@@ -15,11 +15,12 @@ function insertEmoticon(emoticon) {
 	focusToInput();
 }
 
-function refreshChat() {
+function refreshChat(room) {
 	chatarea = document.getElementById('chatarea');
 	
 	new Ajax.Request('services/RefreshChat.php', {
 		method: 'post',
+		parameters: {room: room},
 
 		onSuccess: function(transport)
 		{
