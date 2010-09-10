@@ -24,7 +24,7 @@ $actualUrl =  Utils::getActualUrl();
 	<body>
 	<?php
 	foreach ($rooms as $room) {
-		echo '<p><a href="room.php?id=' . $room['id'] . '">' . $room['title'] . '</a><p>';
+		echo '<p><a href="room.php?id=' . $room['id'] . '" target="_blank">' . $room['title'] . '</a><p>';
 	}
 	?>
 	<?php if ($loggedUser['admin']): ?>
