@@ -8,5 +8,6 @@ require_once('classes/Chat.php');
 require_once('classes/Emoticons.php');
 //require_once('services/RefreshChat.php');
 require_once('classes/User.php');
+require_once('classes/Room.php');
 
 ?>
