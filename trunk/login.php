@@ -11,8 +11,6 @@ if ($_POST['login']) {
 	$retVal = User::userLogin();
 }
 
-
-
 ?>
 <html>
 	<head>
