@@ -5,7 +5,8 @@ require_once('../include.php');
 class RefreshChat {
 	
 	public function main() {
-		echo Chat::getMessages(intval($_POST['room']));
+		$GLOBALS['smarty']->assign('messages', Chat::getMessages(intval($_POST['room'])));
+		echo $GLOBALS['smarty']->fetch('message-box.tpl');
 	}
 }
 

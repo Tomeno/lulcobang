@@ -58,7 +58,7 @@ class Emoticons {
 		),
 		array(
 			'title' => 'Crying',
-			'default' => ':\'-(',
+			'default' => ":\'-(",
 			'alternatives' => array(':\'(', ':\'-('),
 			'image' => 'crying.jpg',
 		),

@@ -1,21 +1,13 @@
 <?php
-/**
- * Smarty plugin
- * @package Smarty
- * @subpackage plugins
- */
-
 
 /**
- * Smarty {actualurl} function plugin
+ * smarty function for getting actual url
  *
+ * @return string
  */
-
-function smarty_function_actualurl($params, &$smarty)
+function smarty_function_actualurl()
 {
-    return Link::getActual();
+	return Utils::getActualUrl();
 }
-
-/* vim: set expandtab: */
 
 ?>

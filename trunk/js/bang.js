@@ -25,7 +25,7 @@ function refreshChat(room) {
 		onSuccess: function(transport)
 		{
 			newtext = transport.responseText;
-			chatarea.innerHTML = newtext;
+			chatarea.replace = newtext;
 			scrollArea(chatarea);
 			focusToInput();
 		},
