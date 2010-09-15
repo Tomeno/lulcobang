@@ -15,6 +15,7 @@ if ($_POST['create_room']) {
 $rooms = Room::getRooms();
 $GLOBALS['smarty']->assign('loggedUser', $loggedUser);
 $GLOBALS['smarty']->assign('rooms', $rooms);
-echo $GLOBALS['smarty']->fetch('rooms.tpl');
+$GLOBALS['smarty']->assign('content', $GLOBALS['smarty']->fetch('rooms.tpl'));
+echo $GLOBALS['smarty']->fetch('content.tpl');
 
 ?>
