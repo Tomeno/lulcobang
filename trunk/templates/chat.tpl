@@ -1,4 +1,4 @@
-<form action="{actualUrl}" method="post">
+<form action="{actualurl}" method="post">
 	
 	{include file='message-box.tpl' messages=$messages}
 	
