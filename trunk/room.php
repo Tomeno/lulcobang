@@ -2,7 +2,8 @@
 
 require_once('include.php');
 
-if (User::whoIsLogged() === null) {
+$loggedUser = User::whoIsLogged();
+if ($loggedUser === null) {
 	Utils::redirect('login.php');
 }
 
@@ -13,16 +14,21 @@ if (!$room) {
 	Utils::redirect('rooms.php');
 }
 
+Room::addUser($loggedUser['id'], $room);
+
 if ($_POST && trim($_POST['message'])) {
 	Chat::addMessage(trim($_POST['message']), $room);
+	Room::updateUserLastActivity($loggedUser['id'], $room);
 	Utils::redirect($actualUrl);
 }
 
 $messages = Chat::getMessages($room);
 $emoticons = Emoticons::getEmoticons();
 
+$GLOBALS['smarty']->assign('loggedUser', $loggedUser);
 $GLOBALS['smarty']->assign('room', $room);
 $GLOBALS['smarty']->assign('messages', $messages);
+$GLOBALS['smarty']->assign('users', Room::getUsers($room));
 $GLOBALS['smarty']->assign('emoticonDir', EMOTICONS_DIR);
 $GLOBALS['smarty']->assign('emoticons', $emoticons);
 

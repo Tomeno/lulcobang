@@ -26,10 +26,11 @@ class Chat {
 	 * getter for messages
 	 *
 	 * @param int $room
+	 * @param int $time
 	 * @return array
 	 */
-	public static function getMessages($room) {
-		$query = 'SELECT message.*, user.* FROM ' . self::$table . ' LEFT JOIN user ON message.user = user.id WHERE room=' . intval($room) . ' ORDER BY message.id DESC LIMIT 100';
+	public static function getMessages($room, $time = 0) {
+		$query = 'SELECT message.*, user.* FROM ' . self::$table . ' LEFT JOIN user ON message.user = user.id WHERE room=' . intval($room) . ' AND tstamp > ' . intval($time) . ' ORDER BY message.id DESC LIMIT 100';
 		$messages = $GLOBALS['db']->fetchAll($query);
 		$messages = array_reverse($messages);
 		
