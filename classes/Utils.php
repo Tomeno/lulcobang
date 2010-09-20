@@ -32,7 +32,7 @@ class Utils {
 		
 		foreach ($emoticons as $emoticon) {
 			foreach ($emoticon['alternatives'] as $alternative) {
-				$text = str_replace($alternative, '<img src="' . EMOTICONS_DIR . $emoticon['image'] . '" />', $text);
+				$text = str_replace($alternative, '<img src="' . EMOTICONS_DIR . $emoticon['image'] . '" alt="" />', $text);
 			}
 		}
 		return $text;

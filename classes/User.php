@@ -25,7 +25,7 @@ class User {
 			$params = array(
 				'username' => $username,
 				'password' => $password,
-				'color' => strtoupper('#' . dechex(rand(0, 255)) . dechex(rand(0, 255)) . dechex(rand(0, 255))),
+				'color' => strtoupper('#' . str_pad(dechex(rand(0, 255)), 2, 0, STR_PAD_LEFT) . str_pad(dechex(rand(0, 255)), 2, 0, STR_PAD_LEFT) . str_pad(dechex(rand(0, 255)), 2, 0, STR_PAD_LEFT)),
 			);
 			$GLOBALS['db']->insert('user', $params);
 		}
@@ -42,6 +42,17 @@ class User {
 		
 		return 'Nesprávne heslo.';
 	}
+	
+	public static function userLogout() {
+		$loggedUser = User::whoIsLogged();
+		Room::removeUser($loggedUser['id']);
+		setcookie(self::$cookieName, "", time() - 3600);
+		$GLOBALS['db']->update('user', array('cookie_value' => ''), 'id = ' . $loggedUser['id']);
+		
+		Utils::redirect('index.php');
+	}
+	
+
 }
 
 ?>
