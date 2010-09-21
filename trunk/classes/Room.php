@@ -63,6 +63,11 @@ class Room {
 		
 		return $user['last_activity'];
 	}
+	
+	public static function getGame($room) {
+		$query = 'SELECT * FROM game WHERE room = ' . intval($room);
+		return $GLOBALS['db']->fetchFirst($query);
+	}
 }
 
 ?>

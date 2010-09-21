@@ -2,13 +2,22 @@
 
 class Card {
 	
-	protected $color;
+	protected static $table = 'card';
 	
-	protected $value;
+	public static function getCards() {
+		$query = 'SELECT * FROM ' . self::$table;
+		return $GLOBALS['db']->fetchAll($query);
+	}
 	
-	protected $image;
-	
-	protected $type;
+	public static function getCardIds() {
+		$cards = self::getCards();
+		
+		$cardList = array();
+		foreach ($cards as $card) {
+			$cardList[] = $card['id'];
+		}
+		return $cardList;
+	}
 }
 
 ?>
