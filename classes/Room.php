@@ -66,7 +66,12 @@ class Room {
 	
 	public static function getGame($room) {
 		$query = 'SELECT * FROM game WHERE room = ' . intval($room);
-		return $GLOBALS['db']->fetchFirst($query);
+		$game = $GLOBALS['db']->fetchFirst($query);
+		
+		if ($game) {
+			return new Game($game);
+		}
+		return null;
 	}
 }
 

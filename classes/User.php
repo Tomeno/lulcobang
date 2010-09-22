@@ -1,11 +1,15 @@
 <?php
 
-class User {
+class User extends Item {
 	
 	protected static $loggedUser = null;
 	
 	protected static $cookieName = 'bang_user';
 	
+	public function __construct($user) {
+		parent::__construct($user);
+	}
+
 	public static function whoIsLogged() {
 		if (self::$loggedUser === null) {
 			if ($_COOKIE[self::$cookieName]) {

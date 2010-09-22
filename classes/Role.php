@@ -1,13 +1,14 @@
 <?php
 
-class Role {
+class Role extends Item {
 	
-	protected static $table = 'role';
+	protected $imageFolder = 'images/cards/bang/roles/';
 	
-	public static function getRoles($playerCount) {
-		$query = 'SELECT * FROM ' . self::$table . ' LIMIT ' . $playerCount;
-		return $GLOBALS['db']->fetchAll($query);
+	public function __construct($role) {
+		parent::__construct($role);
 	}
+	
+
 }
 
 ?>

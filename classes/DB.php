@@ -21,17 +21,18 @@ class DB {
 		return $res;
 	}
 	
-	public function fetchAll($query) {
+	public function fetchAll($query, $repository = null) {
 		$res = $this->query($query);
 		$result = array();
 		while ($row = mysql_fetch_assoc($res)) {
-			$result[] = $row;
+			$class = $repository ? str_replace('Repository', '', $repository) : '';
+			$result[] = $class ? new $class($row) : $row;
 		}
 		return $result;
 	}
 	
-	public function fetchFirst($query) {
-		$rows = $this->fetchAll($query);
+	public function fetchFirst($query, $repository = null) {
+		$rows = $this->fetchAll($query, $repository);
 		if (count($rows)) {
 			return $rows[0];
 		}
