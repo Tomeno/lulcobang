@@ -1,15 +1,44 @@
 <?php
 
-class Game {
+class Game extends Item {
 	
 	const GAME_STATUS_STARTED = 1;
 	
 	const GAME_STATUS_ENDED = 2;
 	
-	protected static $table = 'game';
+	public function __construct($game) {
+		parent::__construct($game);
+		
+		$cardRepository = new CardRepository();
+		
+		$drawPile = unserialize($game['draw_pile']);
+		$drawPileCards = array();
+		if ($drawPile) {
+			foreach ($drawPile as $cardId) {
+				$drawPileCards[] = $cardRepository->getOneById($cardId);
+			}
+		}
+		$this->offsetSet('draw_pile', $drawPileCards);
+		
+		$throwPile = unserialize($game['throw_pile']);
+		$throwPileCards = array();
+		if ($throwPile) {
+			foreach ($throwPile as $cardId) {
+				$throwPileCards[] = $cardRepository->getOneById($cardId);
+			}
+		}
+		$this->offsetSet('throw_pile', $throwPileCards);
+		
+		$playerRepository = new PlayerRepository();
+		$players = $playerRepository->getByGame($game['id']);
+		$this->offsetSet('players', $players);
+	}
 	
-	protected static $gamePlayerTable = 'game_player';
-	
+	/**
+	 * @deprecated ?
+	 *
+	 * @return unknown
+	 */
 	protected static function load() {
 		$room = intval($_GET['id']);
 		
@@ -55,11 +84,6 @@ class Game {
 			}
 		}
 		return ' sa nemôže zapojiť do hry, pretože v tejto miestnosti sa nehrá žiadna hra.';
-	}
-	
-	public static function getPlayers($game) {
-		$query = 'SELECT * FROM ' . self::$gamePlayerTable . ' WHERE game = ' . intval($game) . ' ORDER BY position';
-		return $GLOBALS['db']->fetchAll($query);
 	}
 	
 	private static function getPosition($game) {
@@ -108,6 +132,10 @@ class Game {
 		);
 		
 		$GLOBALS['db']->update(self::$table, $params, 'id = ' . intval($game['id']));
+		
+		
+		// todo zratat matrix
+		
 		
 		return 'Štart';
 		

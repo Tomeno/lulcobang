@@ -29,12 +29,11 @@ if ($_POST && trim($_POST['message'])) {
 	Utils::redirect($actualUrl);
 }
 
-$gameTemplate = '';
-$game = Room::getGame($room);
+$gameRepository = new GameRepository();
+$game = $gameRepository->getOneByRoom($room);
+
 if ($game) {
-	$players = Game::getPlayers($game);
-	$GLOBALS['smarty']->assign('players', $players);
-	$gameTemplate = $GLOBALS['smarty']->fetch('game.tpl');
+	$GLOBALS['smarty']->assign('game', $game);
 }
 
 $messages = Chat::getMessages($room);
@@ -47,7 +46,7 @@ $GLOBALS['smarty']->assign('users', Room::getUsers($room));
 $GLOBALS['smarty']->assign('emoticonDir', EMOTICONS_DIR);
 $GLOBALS['smarty']->assign('emoticons', $emoticons);
 
-$GLOBALS['smarty']->assign('content', $gameTemplate . $GLOBALS['smarty']->fetch('chat.tpl'));
+$GLOBALS['smarty']->assign('content', $GLOBALS['smarty']->fetch('room.tpl'));
 $GLOBALS['smarty']->assign('bodyAdded', 'onload="JavaScript:timedRefresh(10000, ' . $room . ');"');
 echo $GLOBALS['smarty']->fetch('content.tpl');
 
