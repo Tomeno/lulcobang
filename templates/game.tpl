@@ -3,7 +3,7 @@
 		{assign var='me' value=$player}
 	{else}
 		<div style="border:1px;">
-			{$player.user.username} - {$player.charakter.name}
+			{$player.user.username} - {$player.charakter.name} <img src="{$player.charakter.imageFolder}{$player.charakter.image}" alt="{$player.charakter.name}" />
 		</div>
 	{/if}
 {/foreach}
@@ -13,7 +13,7 @@
 	{if $me.hand_cards}
 		<div>
 			{foreach from=$me.hand_cards item=handCard}
-				{$handCard.title}
+				<img src="{$handCard.imageFolder}{$handCard.image}" alt="{$handCard.title}" />
 			{/foreach}
 		</div>
 	{/if}

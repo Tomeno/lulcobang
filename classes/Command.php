@@ -8,7 +8,10 @@ class Command {
 		'.start' => array('action' => 'startGame'),
 	);
 	
-	public static function execute($command) {
+	protected static $game = null;
+	
+	public static function execute($command, $game) {
+		self::setGame($game);
 		$commandArray = explode(' ', $command);
 		$command = $commandArray[0];
 		$params = array_slice($commandArray, 1);
@@ -21,17 +24,21 @@ class Command {
 		}
 	}
 	
+	protected function setGame($game) {
+		self::$game = $game;
+	}
+	
 	protected static function createGame() {
-		return Game::create();
+		return GameUtils::create();
 	}
 	
 	protected static function joinGame() {
 		$loggedUser = User::whoIsLogged();
-		return $loggedUser['username'] . Game::addPlayer($loggedUser['id']);
+		return $loggedUser['username'] . GameUtils::addPlayer(self::$game, $loggedUser['id']);
 	}
 	
 	protected static function startGame() {
-		return Game::start();
+		return GameUtils::start(self::$game);
 	}
 }
 
