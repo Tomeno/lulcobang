@@ -16,10 +16,17 @@ if (!$room) {
 
 Room::addUser($loggedUser['id'], $room);
 
+$gameRepository = new GameRepository();
+$game = $gameRepository->getOneByRoom($room);
+
+if ($game) {
+	$GLOBALS['smarty']->assign('game', $game);
+}
+
 if ($_POST && trim($_POST['message'])) {
 	
 	if (strpos($_POST['message'], '.') === 0) {
-		$commandResult = Command::execute($_POST['message'], $room);
+		$commandResult = Command::execute($_POST['message'], $game);
 		Chat::addMessage($commandResult, $room);
 	}
 	else {
@@ -27,13 +34,6 @@ if ($_POST && trim($_POST['message'])) {
 	}
 	Room::updateUserLastActivity($loggedUser['id'], $room);
 	Utils::redirect($actualUrl);
-}
-
-$gameRepository = new GameRepository();
-$game = $gameRepository->getOneByRoom($room);
-
-if ($game) {
-	$GLOBALS['smarty']->assign('game', $game);
 }
 
 $messages = Chat::getMessages($room);

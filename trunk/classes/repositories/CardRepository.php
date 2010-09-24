@@ -3,9 +3,15 @@
 class CardRepository extends Repository {
 	
 	protected $table = 'card';
-
-	public static function instance() {
-		return parent::instance(get_class());
+	
+	public function getCardIds() {
+		$cards = $this->getAll();
+		
+		$cardList = array();
+		foreach ($cards as $card) {
+			$cardList[] = $card['id'];
+		}
+		return $cardList;
 	}
 }
 

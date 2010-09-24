@@ -7,8 +7,6 @@ class Role extends Item {
 	public function __construct($role) {
 		parent::__construct($role);
 	}
-	
-
 }
 
 ?>
