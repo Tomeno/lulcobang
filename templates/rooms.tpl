@@ -1,5 +1,5 @@
 {foreach from=$rooms item=room}
-	<p><a href="room.php?id={$room.id}" target="_blank">{$room.title}</a><p>
+	<p><a href="room.php?id={$room.id}" target="_blank">{$room.title}</a>{if $room.game} (BANG){/if}<p>
 {/foreach}
 
 {if $loggedUser.admin}

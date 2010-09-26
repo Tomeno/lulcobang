@@ -51,34 +51,45 @@ class Command {
 	
 	protected static function createGame() {
 		if (GameUtils::create()) {
-			Chat::addMessage('Hra bola vytvorená.', self::$room, User::SYSTEM);
+			Chat::addMessage('Hra bola vytvorená. Použi príkaz ".join" a pripoj sa k nej.', self::$room, User::SYSTEM);
 		}
 		else {
-			Chat::addMessage('Hra nebola vytvorená, pretože v miestnosti sa už hrá iná hra.', self::$room, User::SYSTEM);
+			Chat::addMessage('Hra nebola vytvorená, pretože v miestnosti sa už hrá iná hra. Použi príkaz ".join" a pripoj sa k nej.', self::$room, User::SYSTEM, self::$loggedUser['id']);
 		}
 	}
 	
 	protected static function joinGame() {
-		$loggedUser = self::$loggedUser;
-		$result = GameUtils::addPlayer(self::$game, $loggedUser['id']);
+		$result = GameUtils::addPlayer(self::$game, self::$loggedUser['id']);
 		if ($result == 1) {
 			Chat::addMessage($loggedUser['username'] . ' sa pridal k hre', self::$room, User::SYSTEM);
-			Chat::addMessage('Pridal si sa k hre', self::$room, User::SYSTEM, $loggedUser['id']);
+			Chat::addMessage('Pridal si sa k hre.', self::$room, User::SYSTEM, self::$loggedUser['id']);
 		}
 		elseif ($result == 2) {
-			Chat::addMessage('Už si zapojený do tejto hry.', self::$room, User::SYSTEM, $loggedUser['id']);
+			Chat::addMessage('Už si zapojený do tejto hry.', self::$room, User::SYSTEM, self::$loggedUser['id']);
 		}
 		elseif ($result == 3) {
-			Chat::addMessage('Nemôžeš sa zapojiť do hry, pretože hra už začala.', self::$room, User::SYSTEM, $loggedUser['id']);
+			Chat::addMessage('Nemôžeš sa zapojiť do hry, pretože hra už začala.', self::$room, User::SYSTEM, self::$loggedUser['id']);
 			
 		}
 		else {
-			Chat::addMessage('Nemôžeš sa zapojiť do hry, pretože v tejto miestnosti sa nehrá žiadna hra.', self::$room, User::SYSTEM, $loggedUser['id']);
+			Chat::addMessage('Nemôžeš sa zapojiť do hry, pretože v tejto miestnosti sa nehrá žiadna hra. Použi príkaz ".create".', self::$room, User::SYSTEM, self::$loggedUser['id']);
 		}
 	}
 	
 	protected static function startGame() {
-		return GameUtils::start(self::$game);
+		$result = GameUtils::start(self::$game);
+		if ($result == 1) {
+			Chat::addMessage('Hra bola spustená. Na ťahu je šerif.', self::$room, User::SYSTEM);
+		}
+		elseif ($result == 2) {
+			Chat::addMessage('Hra už je spustená.', self::$room, User::SYSTEM, self::$loggedUser['id']);
+		}
+		elseif ($result == 3) {
+			Chat::addMessage('Do hry musia byť zapojení aspoň 2 hráči.', self::$room, User::SYSTEM, self::$loggedUser['id']);
+		}
+		else {
+			Chat::addMessage('V miestnosti nie je vytvorená žiadna hra. Použi príkaz ".create".', self::$room, User::SYSTEM, self::$loggedUser['id']);
+		}
 	}
 	
 	protected static function tahaj() {

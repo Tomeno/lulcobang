@@ -1,15 +1,15 @@
 <?php
 
-class Room {
+class Room extends Item {
 	
 	protected static $table = 'room';
 	
 	protected static $roomUserTable = 'room_user';
 	
-	public static function getRooms() {
+	/*public static function getRooms() {
 		$query = 'SELECT * FROM ' . self::$table;
 		return $GLOBALS['db']->fetchAll($query);
-	}
+	}*/
 	
 	public static function addRoom($title, $description) {
 		$params = array(
@@ -64,8 +64,8 @@ class Room {
 		return $user['last_activity'];
 	}
 	
-	public static function getGame($room) {
-		$query = 'SELECT * FROM game WHERE room = ' . intval($room);
+	public function getGame() {
+		$query = 'SELECT * FROM game WHERE room = ' . intval($this['id']) . ' AND status IN (' . Game::GAME_STATUS_CREATED . ', ' . Game::GAME_STATUS_STARTED . ')';
 		$game = $GLOBALS['db']->fetchFirst($query);
 		
 		if ($game) {
