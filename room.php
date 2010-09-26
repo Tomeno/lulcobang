@@ -27,7 +27,6 @@ if ($_POST && trim($_POST['message'])) {
 	
 	if (strpos($_POST['message'], '.') === 0) {
 		$commandResult = Command::execute($_POST['message'], $game);
-		Chat::addMessage($commandResult, $room);
 	}
 	else {
 		Chat::addMessage(trim($_POST['message']), $room);
@@ -36,7 +35,7 @@ if ($_POST && trim($_POST['message'])) {
 	Utils::redirect($actualUrl);
 }
 
-$messages = Chat::getMessages($room);
+$messages = Chat::getMessages($room, $loggedUser['id']);
 $emoticons = Emoticons::getEmoticons();
 
 $GLOBALS['smarty']->assign('loggedUser', $loggedUser);

@@ -10,7 +10,7 @@ class RefreshChat {
 		$loggedUser = User::whoIsLogged();
 		$lastActivity = Room::getUserLastActivityInRoom($loggedUser['id'], $room);
 		
-		$GLOBALS['smarty']->assign('messages', Chat::getMessages($room, $lastActivity));
+		$GLOBALS['smarty']->assign('messages', Chat::getMessages($room, $loggedUser['id'], $lastActivity));
 		echo $GLOBALS['smarty']->fetch('message-box.tpl');
 	}
 }

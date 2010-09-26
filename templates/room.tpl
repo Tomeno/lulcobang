@@ -1,7 +1,7 @@
 <form action="{actualurl}" method="post">
 	<fieldset>
 		{if $game}
-			<div id="game" style="border:1px dashed; height:200px;">
+			<div id="game" style="border:1px dashed; height:300px;">
 				{include file='game.tpl' game=$game}
 			</div>
 		{/if}

@@ -6,6 +6,8 @@ class User extends Item {
 	
 	protected static $cookieName = 'bang_user';
 	
+	const SYSTEM = 1;
+	
 	public function __construct($user) {
 		parent::__construct($user);
 	}

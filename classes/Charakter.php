@@ -7,7 +7,6 @@ class Charakter extends Item {
 	public function __construct($charakter) {
 		parent::__construct($charakter);
 	}
-	
 }
 
 ?>
