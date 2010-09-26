@@ -2,6 +2,7 @@ function timedRefresh(timeoutPeriod, room) {
 	//setTimeout("location.reload(true);",timeoutPeriod);
 	setInterval("refreshChat(" + room + ")", timeoutPeriod);
 	setInterval("refreshUsersBox(" + room + ")", timeoutPeriod);
+	setInterval("refreshGameBox(" + room + ")", timeoutPeriod);
 	
 	chatarea = document.getElementById('chatarea');
 	scrollArea(chatarea);
@@ -50,7 +51,26 @@ function refreshUsersBox(room) {
 		},
 		
 		onFailure: function() {
-			chatarea.innerHTML = '<p>Na serveri nastala chyba, skúste neskôr, prosím.</p>';
+			usersbox.innerHTML = '<p>Na serveri nastala chyba, skúste neskôr, prosím.</p>';
+		}
+	});
+	return false;
+}
+
+function refreshGameBox(room) {
+	gamebox = document.getElementById('game');
+	
+	new Ajax.Request('services/RefreshGame.php', {
+		method: 'post',
+		parameters: {room: room},
+		
+		onSuccess: function(transport) {
+			newtext = transport.responseText;
+			gamebox.innerHTML = newtext;
+		},
+		
+		onFailure: function() {
+			gamebox.innerHTML = '<p>Na serveri nastala chyba, skúste neskôr, prosím.</p>';
 		}
 	});
 	return false;

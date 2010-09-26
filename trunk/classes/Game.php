@@ -35,6 +35,10 @@ class Game extends Item {
 		$players = $playerRepository->getByGame($game['id']);
 		$this->offsetSet('players', $players);
 	}
+	
+	public function getTopThrowPile() {
+		return array_pop($this['throw_pile']);
+	}
 }
 
 ?>

@@ -38,6 +38,67 @@ class Player extends Item {
 		$this->offsetSet('table_cards', $tableCards);
 	}
 	
+	public function __call($methodName, $arguments) {
+		if (substr($methodName, 0, 5) === 'getIs') {
+			$character = strtolower(str_replace('getIs', '', $methodName));
+			$realCharacter = strtolower(str_replace(' ', '', $this['charakter']['name']));
+			if ($character == $realCharacter) {
+				return true;
+			}
+			return false;
+		}
+		if (substr($methodName, 0, 6) === 'getHas') {
+			$place = '';
+			if (strpos($methodName, 'OnTheTable')) {
+				$place = 'table';
+			}
+			elseif (strpos($methodName, 'OnHand')) {
+				$place = 'hand';
+			}
+			if ($place) {
+				$cardType = str_replace(array('getHas', 'OnTheTable', 'OnHand'), '', $methodName);
+				return $this->hasCardType($cardType, $place);
+			}
+		}
+	}
+	
+	protected function hasCardType($cardType, $place = 'table') {
+		$methodName = 'getIs' . $cardType;
+		foreach ($this[$place . '_cards'] as $card) {
+			if ($card->$methodName()) {
+				return $card;
+			}
+		}
+		return false;
+	}
+	/*
+	public function getHasMustangOnTheTable() {
+		return $this->hasCardType(Card::MUSTANG);
+	}
+	
+	public function getHasAppaloosaOnTheTable() {
+		return $this->hasCardType(Card::APPALOOSA);
+	}
+	
+	public function getHasBarelOnTheTable() {
+		return $this->hasCardType(Card::BAREL);
+	}
+	
+	public function getHasDostavnikOnHand() {
+		return $this->hasCardType(Card::DOSTAVNIK, 'hand');
+	}
+	
+	public function getHasWellsFargoOnHand() {
+		return $this->hasCardType(Card::WELLS_FARGO, 'hand');
+	}
+	
+	public function getHasAppaloosaOnHand() {
+		return $this->hasCardType(Card::APPALOOSA, 'hand');
+	}
+	
+	public function getHasMustangOnHand() {
+		return $this->hasCardType(Card::MUSTANG, 'hand');
+	}*/
 }
 
 ?>
