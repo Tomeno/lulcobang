@@ -12,6 +12,7 @@ require_once('classes/repositories/PlayerRepository.php');
 require_once('classes/repositories/RoleRepository.php');
 require_once('classes/repositories/CharakterRepository.php');
 require_once('classes/repositories/UserRepository.php');
+require_once('classes/repositories/RoomRepository.php');
 require_once('classes/Utils.php');
 require_once('classes/GameUtils.php');
 require_once('classes/Chat.php');

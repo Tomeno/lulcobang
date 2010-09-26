@@ -96,66 +96,75 @@ class GameUtils {
 	}
 	
 	public function start($game) {
-		$players = $game['players'];
-		
-		if (count($players) >= 2) {
+		if ($game) {
+			$players = $game['players'];
 			
-			// TODO nemozno spustit hru ked uz je spustena
-			
-			$roleRepository = new RoleRepository();
-			$characterRepository = new CharakterRepository();
-			$cardRepository = new CardRepository();
-			
-			$roles = $roleRepository->getRoles(count($players));
-			shuffle($roles);
-			
-			$characters = $characterRepository->getAll();
-			shuffle($characters);
-			
-			$cards = $cardRepository->getCardIds();
-			shuffle($cards);
-			
-			$j = 0;
-			foreach ($players as $player) {
-				$playerCards = array();
-				$params = array();
+			if (count($players) >= 2) {
 				
-				$params['role'] = $roles[$j]['id'];
-				
-				if ($roles[$j]['type'] == Role::SHERIFF) {
-					self::setTurn($game, $player['position']);
-					$params['phase'] = 1;
+				if ($game['status'] == 1) {
+					return 2;
 				}
-				
-				$params['charakter'] = $characters[$j]['id'];
-				$params['actual_lifes'] = $characters[$j]['lifes'];
-				
-				for ($i = 0; $i < $params['actual_lifes']; $i++) {
-					$playerCards[] = array_pop($cards);
+				else {
+					
+					$roleRepository = new RoleRepository();
+					$characterRepository = new CharakterRepository();
+					$cardRepository = new CardRepository();
+					
+					$roles = $roleRepository->getRoles(count($players));
+					shuffle($roles);
+					
+					$characters = $characterRepository->getAll();
+					shuffle($characters);
+					
+					$cards = $cardRepository->getCardIds();
+					shuffle($cards);
+					
+					$j = 0;
+					foreach ($players as $player) {
+						$playerCards = array();
+						$params = array();
+						
+						$params['role'] = $roles[$j]['id'];
+						
+						if ($roles[$j]['type'] == Role::SHERIFF) {
+							self::setTurn($game, $player['position']);
+							$params['phase'] = 1;
+						}
+						
+						$params['charakter'] = $characters[$j]['id'];
+						$params['actual_lifes'] = $characters[$j]['lifes'];
+						
+						for ($i = 0; $i < $params['actual_lifes']; $i++) {
+							$playerCards[] = array_pop($cards);
+						}
+						
+						$params['hand_cards'] = serialize($playerCards);
+						$params['table_cards'] = serialize(array());
+						$GLOBALS['db']->update(self::$playerTable, $params, 'game = ' . intval($game['id']) . ' AND user = ' . intval($player['user']['id']));
+						
+						$j++;
+					}
+					
+					$params = array(
+						'draw_pile' => serialize($cards),
+						'throw_pile' => serialize(array()),
+						'game_start' => time(),
+						'status' => Game::GAME_STATUS_STARTED,
+					);
+					
+					$GLOBALS['db']->update(self::$table, $params, 'id = ' . intval($game['id']));
+					
+					self::countMatrix($game);
+					
+					return 1;
 				}
-				
-				$params['hand_cards'] = serialize($playerCards);
-				$params['table_cards'] = serialize(array());
-				$GLOBALS['db']->update(self::$playerTable, $params, 'game = ' . intval($game['id']) . ' AND user = ' . intval($player['user']['id']));
-				
-				$j++;
 			}
-			
-			$params = array(
-				'draw_pile' => serialize($cards),
-				'throw_pile' => serialize(array()),
-				'game_start' => time(),
-				'status' => Game::GAME_STATUS_STARTED,
-			);
-			
-			$GLOBALS['db']->update(self::$table, $params, 'id = ' . intval($game['id']));
-			
-			self::countMatrix($game);
-			
-			return 'Štart';
+			else {
+				return 3;
+			}
 		}
 		else {
-			return 'Do hry musia byť zapojení aspoň 2 hráči.';
+			return 4;
 		}
 	}
 	
