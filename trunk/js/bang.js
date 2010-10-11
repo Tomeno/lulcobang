@@ -1,10 +1,10 @@
 function timedRefresh(timeoutPeriod, room) {
 	//setTimeout("location.reload(true);",timeoutPeriod);
 	setInterval("refreshChat(" + room + ")", timeoutPeriod);
-	setInterval("refreshUsersBox(" + room + ")", timeoutPeriod);
+	//setInterval("refreshUsersBox(" + room + ")", timeoutPeriod);
 	setInterval("refreshGameBox(" + room + ")", timeoutPeriod);
 	
-	chatarea = document.getElementById('chatarea');
+	chatarea = document.getElementById('chatbox');
 	scrollArea(chatarea);
 	
 	focusToInput();
@@ -18,7 +18,7 @@ function insertEmoticon(emoticon) {
 }
 
 function refreshChat(room) {
-	chatarea = document.getElementById('chatarea');
+	chatarea = document.getElementById('chatbox');
 	
 	new Ajax.Request('services/RefreshChat.php', {
 		method: 'post',
@@ -58,7 +58,7 @@ function refreshUsersBox(room) {
 }
 
 function refreshGameBox(room) {
-	gamebox = document.getElementById('game');
+	gamebox = document.getElementById('table');
 	
 	new Ajax.Request('services/RefreshGame.php', {
 		method: 'post',

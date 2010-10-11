@@ -3,6 +3,7 @@
 class Card extends Item {
 	
 	protected $imageFolder = 'images/cards/bang/playing_cards/';
+	protected $back = 'back.jpg';
 	
 	const BANG = 1;
 	const VEDLA = 2;
@@ -70,7 +71,7 @@ class Card extends Item {
 		return $this->getIsType(Card::PANIKA);
 	}
 	
-	public function getIsCatBalou() {
+	public function getIsCatbalou() {
 		return $this->getIsType(Card::CAT_BALOU);
 	}
 	
@@ -127,7 +128,21 @@ class Card extends Item {
 	}
 	
 	public function getIsGun() {
-		if (in_array($this['card_type'], array(Card::VOLCANIC, Card::SCHOFIELD, Card::REMINGTON, Card::CARABINA, Card::WINCHESTER))) {
+		if ($this->getIsVolcanic() || $this->getIsSchofield() || $this->getIsRemington() || $this->getIsCarabina() || $this->getIsWinchester()) {
+			return true;
+		}
+		return false;
+	}
+	
+	public function getIsDistanceChanger() {
+		if ($this->getIsMustang() || $this->getIsAppaloosa()) {
+			return true;
+		}
+		return false;
+	}
+	
+	public function getIsPuttable() {
+		if ($this->getIsGun() || $this->getIsDistanceChanger() || $this->getIsVezenie() || $this->getIsBarel() || $this->getIsDynamit()) {
 			return true;
 		}
 		return false;

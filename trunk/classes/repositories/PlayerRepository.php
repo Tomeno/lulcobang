@@ -8,6 +8,15 @@ class PlayerRepository extends Repository {
 		$query = 'SELECT * FROM ' . $this->table . ' WHERE actual_lifes > 0 AND game = ' . intval($game);
 		return $GLOBALS['db']->fetchAll($query, get_class($this));
 	}
+	
+	public function getPlayerByGameAndPosition($game, $position) {
+		$query = 'SELECT * FROM ' . $this->table . ' WHERE game = ' . intval($game) . ' AND position = ' . intval($position);
+		$players = $GLOBALS['db']->fetchAll($query, get_class($this));
+		if ($players) {
+			return $players[0];
+		}
+		return null;
+	}
 }
 
 ?>

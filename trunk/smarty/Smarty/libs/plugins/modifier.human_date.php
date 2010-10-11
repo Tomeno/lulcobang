@@ -21,18 +21,8 @@
  */
 function smarty_modifier_human_date($string, $type = 1)
 {
-	if ($type == 1)
-	{
-		return MedialneTimeFormat::formatType1($string);
-	}
-	else if ($type == 2)
-	{
-		return MedialneTimeFormat::formatType2($string);
-	}
-
-    //return HumanDate::format($string, $format);
+	return date('H:i', $string);
 }
 
-/* vim: set expandtab: */
 
-?> 
+?>

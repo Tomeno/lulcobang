@@ -4,6 +4,7 @@ class GameUtils {
 
 	protected static $table = 'game';
 	protected static $playerTable = 'player';
+	protected static $seats = array(1, 5, 3, 7, 2, 6, 4, 8);
 	
 	public static function create() {
 		$room = intval($_GET['id']);
@@ -74,8 +75,7 @@ class GameUtils {
 					$params = array(
 						'game' => $gameId,
 						'user' => intval($user),
-						'position' => $pos,
-						'seat' => $pos,
+						'seat' => self::$seats[$pos],
 					);
 					$GLOBALS['db']->insert(self::$playerTable, $params);
 					return 1;
@@ -89,14 +89,15 @@ class GameUtils {
 	}
 	
 	private static function getPosition($game) {
-		$query = 'SELECT MAX(position) AS max_position FROM ' . self::$playerTable . ' WHERE game = ' . intval($game);
+		$query = 'SELECT count(*) AS max_position FROM ' . self::$playerTable . ' WHERE game = ' . intval($game);
 		$position = $GLOBALS['db']->fetchFirst($query);
 		
-		return $position['max_position'] + 1;
+		return $position['max_position'];
 	}
 	
-	public function start($game) {
+	public static function start($game) {
 		if ($game) {
+			
 			$players = $game['players'];
 			
 			if (count($players) >= 2) {
@@ -126,16 +127,16 @@ class GameUtils {
 						
 						$params['role'] = $roles[$j]['id'];
 						
-						if ($roles[$j]['type'] == Role::SHERIFF) {
-							self::setTurn($game, $player['position']);
-							$params['phase'] = 1;
-						}
-						
 						$params['charakter'] = $characters[$j]['id'];
 						$params['actual_lifes'] = $characters[$j]['lifes'];
 						
 						for ($i = 0; $i < $params['actual_lifes']; $i++) {
 							$playerCards[] = array_pop($cards);
+						}
+						
+						if ($roles[$j]['type'] == Role::SHERIFF) {
+							$params['phase'] = 1;
+							$params['actual_lifes']++;
 						}
 						
 						$params['hand_cards'] = serialize($playerCards);
@@ -154,6 +155,15 @@ class GameUtils {
 					
 					$GLOBALS['db']->update(self::$table, $params, 'id = ' . intval($game['id']));
 					
+					$gameRepository = new GameRepository();
+					$game = $gameRepository->getOneById($game['id']);
+					
+					$game = self::changePositions($game);
+					foreach ($game['players'] as $player) {
+						if ($player['role'] == Role::SHERIFF) {
+							self::setTurn($game, $player['position']);
+						}
+					}
 					self::countMatrix($game);
 					
 					return 1;
@@ -178,7 +188,7 @@ class GameUtils {
 		foreach ($players as $player1) {
 			foreach ($players as $player2) {
 				if ($player1['id'] == $player2['id']) {
-					$matrix[$player1['id']][$player2['id']] = 0;
+					$matrix[$player1['user']['username']][$player2['user']['username']] = 0;
 				}
 				else {
 					$arg1 = $player1['position'] - $player2['position'];
@@ -202,7 +212,7 @@ class GameUtils {
 						$distance--;
 					}
 					
-					$matrix[$player1['id']][$player2['id']] = $distance > 0 ? $distance : 0;
+					$matrix[$player1['user']['username']][$player2['user']['username']] = $distance > 0 ? $distance : 0;
 				}
 			}
 		}
@@ -219,7 +229,36 @@ class GameUtils {
 	 * @param Game $game
 	 */
 	public static function changePositions($game) {
+		$i = 1;
+		foreach (self::$seats as $seat) {
+			$player = self::getPlayerOnSeat($game, $seat);
+			if ($player) {
+				if ($player['actual_lifes'] > 0) {
+					$pos = $i;
+					$i++;
+				}
+				else {
+					$pos = 0;
+				}
+				$GLOBALS['db']->update(self::$playerTable, array('position' => $pos), 'id = ' . intval($player['id']));
+			}
+			else {
+				break;
+			}
+		}
 		
+		$gameRepository = new GameRepository();
+		return $gameRepository->getOneById(intval($game['id']));
+		
+	}
+	
+	protected function getPlayerOnSeat($game, $seat) {
+		foreach ($game['players'] as $player) {
+			if ($player['seat'] == $seat) {
+				return $player;
+			}
+		}
+		return null;
 	}
 	
 	public static function setTurn($game, $position) {
@@ -227,6 +266,15 @@ class GameUtils {
 			'turn' => intval($position),
 		);
 		$GLOBALS['db']->update(self::$table, $params, 'id = ' . intval($game['id']));
+	}
+	
+	public static function getNextPosition($game, $actualPosition) {
+		$playerRepository = new PlayerRepository();
+		$players = $playerRepository->getLivePlayersByGame($game['id']);
+		$playersCount = count($players);
+		
+		$next = $actualPosition + 1;
+		return $next <= $playersCount ? $next : $next - $playersCount;
 	}
 	
 	public static function setInterTurn($game, $position) {
@@ -239,7 +287,7 @@ class GameUtils {
 	public static function getCards($game, $player, $count) {
 		foreach ($game['players'] as &$gamePlayer) {
 			if ($gamePlayer['id'] == $player['id']) {
-				if (self::checkTurn($game, $player)) {
+				//if (self::checkTurn($game, $player)) {
 					$playerCards = $gamePlayer['hand_cards'];
 					$drawPile = $game['draw_pile'];
 					$throwPile = $game['throw_pile'];
@@ -258,18 +306,18 @@ class GameUtils {
 					self::save($game);
 					
 					return ' potiahol karty';
-				}
-				return ' nemôže ťahať, lebo nie je na rade.';
+				//}
+				//return ' nemôže ťahať, lebo nie je na rade.';
 			}
 		}
 		return ' nehrá túto hru.';
 	}
 	
-	public static function throwCards($game, $player, $card) {
+	public static function throwCard($game, $player, $card, $place = 'hand') {
 		foreach ($game['players'] as &$gamePlayer) {
 			if ($gamePlayer['id'] == $player['id']) {
-				if (self::checkTurn($game, $player)) {
-					$playerCards = $gamePlayer['hand_cards'];
+			//	if (self::checkTurn($game, $player)) {
+					$playerCards = $gamePlayer[$place . '_cards'];
 					$throwPile = $game['throw_pile'];
 					$newPlayerCards = array();
 					foreach ($playerCards as $playerCard) {
@@ -281,15 +329,15 @@ class GameUtils {
 						}
 					}
 					
-					$gamePlayer['hand_cards'] = $newPlayerCards;
+					$gamePlayer[$place . '_cards'] = $newPlayerCards;
 					$game['throw_pile'] = $throwPile;
 					
 					self::save($game);
 					
 					return ' vyhodil kartu ' . $card['title'];
 					
-				}
-				return ' nemôže vyhodiť karty, lebo nie je na rade.';
+			//	}
+			//	return ' nemôže vyhodiť karty, lebo nie je na rade.';
 			}
 		}
 		return ' nehrá túto hru.';
@@ -345,6 +393,11 @@ class GameUtils {
 			}
 		}
 		return $ok;
+	}
+	
+	public static function getClassForPosition($actualPlayer, $player) {
+		$class = (($player['seat'] - $actualPlayer['seat']) % 8) + 1;
+		return $class < 1 ? $class + 8 : $class;
 	}
 }
 

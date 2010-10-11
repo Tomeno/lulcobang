@@ -5,9 +5,10 @@
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 		<script type="text/JavaScript" src="js/prototype.js"></script>
 		<script type="text/JavaScript" src="js/bang.js"></script>
+		<link type="text/css" rel="stylesheet" media="all" href="static/css/style.css" />
 	</head>
 	<body{if $bodyAdded} {$bodyAdded}{/if}>
-		{if $loggedUser}<div><p>Prihlásený: <strong>{$loggedUser.username}</strong> <a href="logout.php">Odhlásiť</a></p></div>{/if}
 		{$content}
+		<p>Copyright 2010 © Michal Lulčo | Design by <a href="http://clira.sk/" onclick="window.open('http://clira.sk/', '_blank'); return false;">Clira</a></p>
 	</body>
 </html>

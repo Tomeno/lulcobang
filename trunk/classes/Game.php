@@ -39,6 +39,19 @@ class Game extends Item {
 	public function getTopThrowPile() {
 		return array_pop($this['throw_pile']);
 	}
+	
+	public function getTopDrawPile() {
+		return array_pop($this['draw_pile']);
+	}
+	
+	public function getPlayerOnTurn() {
+		foreach ($this['players'] as $player) {
+			if ($player['position'] == $this['turn']) {
+				return $player;
+			}
+		}
+		return null;
+	}
 }
 
 ?>

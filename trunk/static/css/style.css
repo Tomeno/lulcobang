@@ -1,0 +1,176 @@
+*
+{
+	margin:0;
+	padding:0;
+	border: none;
+	font-family:"Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	font-size: 11px;
+	color:white;
+	
+}
+
+body
+{
+	background:url('../images/background.jpg') 1057px 611px;
+}
+
+#table_wrapper
+{
+	background:url("../images/table.jpg") no-repeat scroll -145px -126px transparent;
+	height: 1000px;
+}
+
+#table
+{
+	float:left;
+	height:824px;
+	max-height:824px;
+	position:relative;
+}
+
+.player
+{
+	width:303px;
+	margin:0 3px 3px 0;
+}
+
+.player_info
+{
+	float:left;
+	width:50px;
+	padding: 10px 0 0 0;
+	margin:0 4px 0 0;
+}
+
+.photo
+{
+	background:url('../images/photo.png') no-repeat left top;
+	width:43px;
+	float:left;
+	padding:4px;
+	height:200px;
+}
+
+.photo img
+{
+	width:40px;
+}
+
+.player, .row
+{
+	float:left;
+	min-width:249px;
+}
+
+.card, .char, .role
+{
+	background:url('../images/card_micro.png') no-repeat left top;
+	width:36px;
+	height:51px;
+	float:left;
+}
+
+.lifes
+{
+	background:url('../images/lifes.png') no-repeat left top;
+	float:left;
+	font-size:33px;
+	height:43px;
+	margin:4px 4px 0;
+	padding:4px 0 0;
+	text-align:center;
+	width:28px;
+}
+
+.card img, .char img, .role img{
+	margin:7px;
+}
+
+#player_01, #player_02, #player_03, #player_04, #player_05, #player_06, #player_07, #player_08, #hokynarstvi, #kopa, #odpad
+{
+	position:absolute;
+}
+
+#player_01 { left:430px; top:530px; }
+#player_02 { left:110px; top:470px; }
+#player_03 { top:300px; }
+#player_04 { left:35px; top:110px; }
+#player_05 { left:280px; }
+#player_06 { left:570px; top:51px; }
+#player_07 { left:700px; top:220px; }
+#player_08 { left:682px; top:393px; }
+
+#hokynarstvi
+{
+	background:url('../images/hokynarstvi.png') no-repeat 15px 2px;
+	left:340px;
+	max-width:144px;
+	padding:32px 0 0;
+	top:199px;
+	width:144px;
+}
+
+#kopa
+{
+	left:610px;
+	top:318px;
+}
+
+#odpad
+{
+	left:497px;
+	top:422px;}
+	.gray{
+	background:url('../images/gray.png') no-repeat left top;
+	height:41px;
+	left:5px;
+	position:relative;
+	top:-50px;
+	width:26px;
+}
+
+
+
+/* -----------------------CHAT------------------------ */
+#chat
+{
+	float:left;
+	position:relative;
+	left:977px;
+}
+
+#chatbox
+{
+	height:600px;
+	width:270px;
+	padding:10px;
+	overflow-y:scroll;
+	scroll:true;
+}
+
+#chatbox p
+{
+	color:white
+}
+
+#message
+{
+	height:40px;
+	width:240px;
+	color:black;
+	float:left;
+}
+
+#submitmsg 
+{
+	color:black;
+	height:40px;
+	float:left;
+	width:47px;
+}
+
+
+.clear
+{
+	clear:both;
+}
