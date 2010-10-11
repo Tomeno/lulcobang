@@ -6,11 +6,6 @@ class Room extends Item {
 	
 	protected static $roomUserTable = 'room_user';
 	
-	/*public static function getRooms() {
-		$query = 'SELECT * FROM ' . self::$table;
-		return $GLOBALS['db']->fetchAll($query);
-	}*/
-	
 	public static function addRoom($title, $description) {
 		$params = array(
 			'title' => $title,

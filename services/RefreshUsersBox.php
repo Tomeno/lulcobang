@@ -8,8 +8,6 @@ class RefreshUsersBox {
 		$room = intval($_POST['room']);
 		$loggedUser = User::whoIsLogged();
 		
-		Room::updateUserLastActivity($loggedUser['id'], $room);
-		
 		$GLOBALS['smarty']->assign('users', Room::getUsers($room));
 		echo $GLOBALS['smarty']->fetch('users-box.tpl');
 	}

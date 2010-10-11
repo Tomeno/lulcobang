@@ -3,6 +3,7 @@
 class Role extends Item {
 	
 	protected $imageFolder = 'images/cards/bang/roles/';
+	protected $back = 'back.jpg';
 	
 	const SHERIFF = 1;
 	const RENEGARD = 2;
@@ -40,6 +41,10 @@ class Role extends Item {
 		}
 		return false;
 	}
+	
+//	public function getBack() {
+//		return $this->back;
+//	}
 }
 
 ?>

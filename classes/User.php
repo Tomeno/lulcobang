@@ -57,8 +57,6 @@ class User extends Item {
 		
 		Utils::redirect('index.php');
 	}
-	
-
 }
 
 ?>

@@ -62,15 +62,46 @@ class Player extends Item {
 		}
 	}
 	
+	/**
+	 * checks if player has card type
+	 *
+	 * @param string $cardType
+	 * @param string $place
+	 * @return Card if has card | false if has not | 0 if method doesn't exist
+	 */
 	protected function hasCardType($cardType, $place = 'table') {
 		$methodName = 'getIs' . $cardType;
-		foreach ($this[$place . '_cards'] as $card) {
-			if ($card->$methodName()) {
-				return $card;
+		if (method_exists('Card', $methodName)) {
+			foreach ($this[$place . '_cards'] as $card) {
+				if ($card->$methodName()) {
+					return $card;
+				}
 			}
+			return false;
 		}
-		return false;
+		return 0;
 	}
+	
+	public function setPhase($phase) {
+		$GLOBALS['db']->update('player', array('phase' => $phase), 'id = ' . intval($this['id']));
+	}
+	
+	/**
+	 * checks if player can pass
+	 *
+	 * @todo special ability for character ...
+	 * 
+	 * @return boolean
+	 */
+	public function getCanPass() {
+		if ($this['actual_lifes'] >= count($this['hand_cards'])) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
 	/*
 	public function getHasMustangOnTheTable() {
 		return $this->hasCardType(Card::MUSTANG);

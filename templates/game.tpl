@@ -1,50 +1,57 @@
-{if $game.status == 1}
-	{foreach from=$game.players item=player}
-		{if $loggedUser.id == $player.user.id}
-			{assign var='me' value=$player}
-		{else}
-			<div style="border:1px;float:left;">
-				{$player.user.username} {if $player.role.isSheriff} <img src="{$player.role.imageFolder}{$player.role.image}" /> {/if}{$player.charakter.name} <img src="{$player.charakter.imageFolder}{$player.charakter.image}" alt="{$player.charakter.name}" />
-				{if $player.table_cards}
-					{foreach from=$player.table_cards item=tableCard}
-						<img src="{$tableCard.imageFolder}{$tableCard.image}" alt="{$tableCard.title}" />
-					{/foreach}
-				{/if}
-			</div>
-		{/if}
-	{/foreach}
-	{if $me}
-		<div style="clear:both;"></div>
-		{$me.user.username} <img src="{$me.role.imageFolder}{$me.role.image}" alt="{$me.role.title}" />  <img src="{$me.charakter.imageFolder}{$me.charakter.image}" alt="{$me.charakter.name}" />
-	
-		{if $me.hand_cards}
-			<div>
-				<h3>Karty na ruke</h3>
-				{foreach from=$me.hand_cards item=handCard}
-					<img src="{$handCard.imageFolder}{$handCard.image}" alt="{$handCard.title}" />
-				{/foreach}
-			</div>
-		{/if}
-		
-		{if $me.table_cards}
-			<div>
-				<h3>Karty na stole</h3>
-				{foreach from=$me.table_cards item=tableCard}
-					<img src="{$tableCard.imageFolder}{$tableCard.image}" alt="{$tableCard.title}" />
-				{/foreach}
-			</div>
-		{/if}
-		
+{foreach from=$game.players item=player}
+	{if $loggedUser.id == $player.user.id}
+		{assign var='me' value=$player}
 	{/if}
-	
-	{if $game.topThrowPile}
-		<div style="float:right;">
-			<img src="{$game.topThrowPile.imageFolder}{$game.topThrowPile.image}" />
+{/foreach}
+
+{foreach from=$game.players item=player name=players}
+	<div id="player_0{$me|position_class:$player}" class="player">
+		<div class="player_info">
+			<div class="player_name">{if $game.playerOnTurn.id == $player.id} * {/if}{$player.user.username}</div>
+			<div class="photo">
+				<img src="static/images/photo.jpg" alt="foto" />
+			</div>
 		</div>
-	{/if}
-	
-{else}
-	{foreach from=$game.players item=player}
-		{$player.user.username}
-	{/foreach}
+		{if $game.status == 1}
+			<div class="row">
+				<div class="lifes">{$player.actual_lifes}</div>
+				<div class="char"><img src="{$player.charakter.imageFolder}{$player.charakter.image}" alt="{$player.charakter.name}" width="22" height="38" /></div>
+				<div class="role"><img src="{$player.role.imageFolder}{if $player.role.isSheriff or $player.user.id == $me.user.id or $player.actual_lifes == 0}{$player.role.image}{else}{$player.role.back}{/if}" alt="rola" width="22" height="38" /></div>
+			</div>
+			{if $player.hand_cards}
+				{foreach from=$player.hand_cards item=handCard name=handCards}
+					{if $smarty.foreach.handCards.index mod 6 == 0}<div class="row">{/if}
+						<div class="card"><img src="{$handCard.imageFolder}{if $player.user.id == $me.user.id}{$handCard.image}{else}{$handCard.back}{/if}" alt="{if $player.user.id == $me.user.id}{$handCard.title}{else}card{/if}" width="22" height="38" /></div>
+					{if $smarty.foreach.handCards.index mod 6 == 5 or $smarty.foreach.handCards.last}</div>{/if}
+				{/foreach}
+			{/if}
+			{if $player.table_cards}
+				<div class="row">
+					{foreach from=$player.table_cards item=tableCard}
+						<div class="card"><img src="{$tableCard.imageFolder}{$tableCard.image}" alt="card" width="22" height="38" /></div>
+					{/foreach}
+				</div>
+			{/if}
+		{/if}
+	</div>
+{/foreach}
+
+{if $hokynarstvi}
+	<div id="hokynarstvi">
+		<div class="card"><img src="static/images/card.jpg" /></div>
+		<div class="card"><img src="static/images/card.jpg" /></div>
+		<div class="card"><img src="static/images/card.jpg" /></div>
+		<div class="card"><img src="static/images/card.jpg" /></div>
+		<div class="card"><img src="static/images/card.jpg" /></div>
+		<div class="card"><img src="static/images/card.jpg" /></div>
+		<div class="card"><img src="static/images/card.jpg" /></div>
+		<div class="card"><img src="static/images/card.jpg" /></div>
+	</div>
+{/if}
+
+{if $game.draw_pile}
+	<div id="kopa" class="card"><img src="{$game.topDrawPile.imageFolder}{$game.topDrawPile.back}" alt="draw pile" width="22" height="38" /></div>
+{/if}
+{if $game.throw_pile}
+	<div id="odpad" class="card"><img src="{$game.topThrowPile.imageFolder}{$game.topThrowPile.image}" alt="{$game.topThrowPile.title}" width="22" height="38" /></div>
 {/if}
