@@ -52,6 +52,15 @@ class Game extends Item {
 		}
 		return null;
 	}
+	
+	public function getPlayerByUsername($username) {
+		foreach ($this['players'] as $player) {
+			if ($player['user']['username'] == $username) {
+				return $player;
+			}
+		}
+		return null;
+	}
 }
 
 ?>

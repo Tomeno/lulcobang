@@ -277,9 +277,17 @@ class GameUtils {
 		return $next <= $playersCount ? $next : $next - $playersCount;
 	}
 	
-	public static function setInterTurn($game, $position) {
+	/**
+	 * inter turn of the game
+	 *
+	 * @param Game $game
+	 * @param int $position
+	 * @param string $reason
+	 */
+	public static function setInterTurn($game, $position, $reason = '') {
 		$params = array(
 			'inter_turn' => intval($position),
+			'inter_turn_reason' => addslashes($reason),
 		);
 		$GLOBALS['db']->update(self::$table, $params, 'id = ' . intval($game['id']));
 	}
@@ -344,14 +352,16 @@ class GameUtils {
 	}
 	
 	public static function checkTurn($game, $player) {
-		if ($game['inter_turn']) {
-			if ($game['inter_turn'] == $player['position']) {
-				return true;
+		if ($game['status'] == Game::GAME_STATUS_STARTED) {
+			if ($game['inter_turn']) {
+				if ($game['inter_turn'] == $player['position']) {
+					return true;
+				}
 			}
-		}
-		else {
-			if ($game['turn'] == $player['position']) {
-				return true;
+			else {
+				if ($game['turn'] == $player['position']) {
+					return true;
+				}
 			}
 		}
 		return false;
