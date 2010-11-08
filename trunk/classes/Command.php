@@ -18,6 +18,9 @@ class Command {
 		'.vyhod' => array('action' => 'throwCard', 'arguments' => true),
 		'.pass' => array('action' => 'pass'),
 		'.vzdialenost' => array('action' => 'distance', 'arguments' => true),
+		'.bang' => array('action' => 'bang', 'arguments' => true),
+		'.zivot' => array('action' => 'life'),
+		'.pivo' => array('action' => 'beer'),
 	);
 	
 	/**
@@ -63,7 +66,7 @@ class Command {
 			}
 		}
 		else {
-			Chat::addMessage('Príkaz ' . $command . ' neexistuje', self::$room, User::SYSTEM, self::$loggedUser['id']);
+			Chat::addMessage('Príkaz "' . $command . '" neexistuje.', self::$room, User::SYSTEM, self::$loggedUser['id']);
 		}
 	}
 	
@@ -145,26 +148,33 @@ class Command {
 	
 	protected static function pass() {
 		if (GameUtils::checkTurn(self::$game, self::$player)) {
-			if (self::$player['phase'] == 2) {
-				if (self::$player->getCanPass()) {
-					$next = GameUtils::getNextPosition(self::$game, self::$player['position']);
-					GameUtils::setTurn(self::$game, $next);
-					
-					$playerRepository = new PlayerRepository();
-					$nextPlayer = $playerRepository->getPlayerByGameAndPosition(self::$game['id'], $next);
-					
-					$nextPlayer->setPhase(1);
-					self::$player->setPhase(0);
-					
-					Chat::addMessage('Posunul si ťah.', self::$room, User::SYSTEM, self::$loggedUser['id']);
-					Chat::addMessage('Si na ťahu, použi príkaz ".tahaj"', self::$room, User::SYSTEM, $nextPlayer['user']['id']);
+			if (self::$game['inter_turn_reason'] == '') {
+				if (self::$player['phase'] == 2) {
+					if (self::$player->getCanPass()) {
+						$next = GameUtils::getNextPosition(self::$game, self::$player['position']);
+						GameUtils::setTurn(self::$game, $next);
+						GameUtils::setInterTurn(self::$game, 0);
+						
+						$playerRepository = new PlayerRepository();
+						$nextPlayer = $playerRepository->getPlayerByGameAndPosition(self::$game['id'], $next);
+						
+						$nextPlayer->setPhase(1);
+						self::$player->setPhase(0);
+						self::$player->setUseBang(0);
+						
+						Chat::addMessage('Posunul si ťah.', self::$room, User::SYSTEM, self::$loggedUser['id']);
+						Chat::addMessage('Si na ťahu, použi príkaz ".tahaj"', self::$room, User::SYSTEM, $nextPlayer['user']['id']);
+					}
+					else {
+						Chat::addMessage('Nemôžeš posunúť ťah, pretože máš na ruke priveľa kariet', self::$room, User::SYSTEM, self::$loggedUser['id']);
+					}
 				}
 				else {
-					Chat::addMessage('Nemôžeš posunúť ťah, pretože máš na ruke priveľa kariet', self::$room, User::SYSTEM, self::$loggedUser['id']);
+					Chat::addMessage('Nemôžeš posunúť ťah, pretože si ešte neťahal karty.', self::$room, User::SYSTEM, self::$loggedUser['id']);
 				}
 			}
 			else {
-				Chat::addMessage('Nemôžeš posunúť ťah, pretože si ešte neťahal karty.', self::$room, User::SYSTEM, self::$loggedUser['id']);
+				Chat::addMessage('musis reagovat na ' . self::$game['inter_turn_reason'], self::$room, User::SYSTEM, self::$loggedUser['id']);
 			}
 		}
 		else {
@@ -220,12 +230,36 @@ class Command {
 				if ($params) {
 					$cardName = ucfirst(strtolower($params[0]));
 					
-					// TODO check if card type exists
 					$methodName = 'getHas' . $cardName . 'OnHand';
 					$card = self::$player->$methodName();
 					if ($card) {
 						if ($card->getIsPuttable()) {
-							GameUtils::putOnTable(self::$game, self::$player, $card);
+							$playerTo = null;
+							if ($card->getIsVazenie()) {
+								if (isset($params[1])) {
+									$rival = $params[1];
+									if (self::$loggedUser['username'] == $rival) {
+										Chat::addMessage('Nemôžeš dať do väzenie samého seba.', self::$room, User::SYSTEM, self::$loggedUser['id']);
+									}
+									else {
+										$rivalPlayer = self::$game->getPlayerByUsername($rival);
+										if ($rivalPlayer['role']['type'] == Role::SHERIFF) {
+											Chat::addMessage('Nemôžeš dať do väzenie šerifa.', self::$room, User::SYSTEM, self::$loggedUser['id']);
+										}
+										else {
+											$playerTo = $rivalPlayer;
+										}
+									}
+								}
+								else {
+									Chat::addMessage('Musíš určiť, ktorého hráča chceš dať do väzenia.', self::$room, User::SYSTEM, self::$loggedUser['id']);
+								}
+							}
+							elseif ($card->getIsGun() && self::$player->getHasGun()) {
+								// TODO musi najprv odhodit staru zbran ak si chce vylozit novu
+							}
+							
+							GameUtils::putOnTable(self::$game, self::$player, $card, $playerTo);
 						}
 						else {
 							Chat::addMessage('Nemôžeš vyložiť kartu ' . strtolower($cardName), self::$room, User::SYSTEM, self::$loggedUser['id']);
@@ -289,12 +323,17 @@ class Command {
 		}
 	}
 	
-	protected static function distance($params = null) {
+	protected static function distance($params = array()) {
 		$matrix = unserialize(self::$game['distance_matrix']);
 		if ($params) {
 			$from = self::$loggedUser['username'];
 			$to = $params[0];
-			$message = 'Vzdialenosť ' . $from . ' => ' . $to . ' je ' . $matrix[$from][$to];
+			if (isset($matrix[$from][$to])) {
+				$message = 'Vzdialenosť ' . $from . ' => ' . $to . ' je ' . $matrix[$from][$to];
+			}
+			else {
+				$message = 'Hráč "' . $to . '" nehrá túto hru';
+			}
 		}
 		else {
 			$message = '<table>';
@@ -313,6 +352,123 @@ class Command {
 			$message .= '</table>';
 		}
 		Chat::addMessage($message, self::$room, User::SYSTEM, self::$loggedUser['id']);
+	}
+	
+	protected static function bang($params = array()) {
+		if (GameUtils::checkTurn(self::$game, self::$player)) {
+			if ($game['inter_turn_reason'] == 'indiani') {
+				
+			}
+			elseif ($game['inter_turn_reason'] == 'duel') {
+				
+			}
+			else {
+				if (self::$player['phase'] == 2) {
+					$bang = self::$player->getHasBangOnHand();
+					if ($bang) {
+						if ($params[0]) {
+							$matrix = unserialize(self::$game['distance_matrix']);
+							$rival = $params[0];
+							if (self::$loggedUser['username'] == $rival) {
+								Chat::addMessage('Nemôžeš strieľať sám do seba.', self::$room, User::SYSTEM, self::$loggedUser['id']);
+							}
+							else {
+								if (isset($matrix[self::$loggedUser['username']][$rival])) {
+									$distance = $matrix[self::$loggedUser['username']][$rival];
+									if (self::$player->getDostrel() >= $distance) {
+										$rivalPlayer = self::$game->getPlayerByUsername($rival);
+										GameUtils::setInterTurn(self::$game, $rivalPlayer['position'], 'bang');
+										GameUtils::throwCard(self::$game, self::$player, $bang);
+										self::$player->setUseBang(1);
+										Chat::addMessage('Vystrelil si na ' . $rival, self::$room, User::SYSTEM, self::$loggedUser['id']);
+										Chat::addMessage(self::$loggedUser['username'] . ' na teba vystrelil. Použi príkaz ".vedla" alebo ".zivot".', self::$room, User::SYSTEM, $rivalPlayer['user']['id']);
+									}
+									else {
+										Chat::addMessage('Hráč "' . $rival . '" je od teba ďaleko, nedostrelíš na neho. Použi príkaz ".vyloz" na vyloženie zbrane.', self::$room, User::SYSTEM, self::$loggedUser['id']);
+									}
+								}
+								else {
+									Chat::addMessage('Hráč "' . $rival . '" nehrá túto hru.', self::$room, User::SYSTEM, self::$loggedUser['id']);
+								}
+							}
+						}
+						else {
+							Chat::addMessage('Musíš určiť na koho strieľaš.', self::$room, User::SYSTEM, self::$loggedUser['id']);
+						}
+					}
+					else {
+						Chat::addMessage('Nemáš BANG!', self::$room, User::SYSTEM, self::$loggedUser['id']);
+					}
+				}
+				else {
+					Chat::addMessage('Najprv musíš potiahnuť karty. Použi príkaz ".tahaj".', self::$room, User::SYSTEM, self::$loggedUser['id']);
+				}
+			}
+		}
+		else {
+			Chat::addMessage('Nie si na rade.', self::$room, User::SYSTEM, self::$loggedUser['id']);
+		}
+	}
+	
+	protected static function life() {
+		if (GameUtils::checkTurn(self::$game, self::$player)) {
+			if (self::$game['inter_turn_reason']) {
+				$actualLifes = self::$player->takeLife();
+				if ($actualLifes == 0) {
+					if (self::$player->getHasPivoOnHand()) {
+						self::beer();
+					}
+					else {
+						// TODO hrac je mrtvy, ak ho zabil iny hrac, pridat mu karty
+						// preratat maticu
+					}
+				}
+				
+				// posunut tah na dalsieho hraca ale asi nejak podla inter_turn_reason
+				if (self::$game['inter_turn_reason'] == 'bang') {
+					GameUtils::setInterTurn(self::$game, 0);
+				}
+				elseif (self::$game['inter_turn_reason'] == 'indiani') {
+					
+				}
+				
+				// TODO next inter_turn_reasons
+				
+			}
+			else {
+				// nebude si brat zivot len tak pre nic za nic
+			}
+			
+			
+		}
+		else {
+			Chat::addMessage('Nie si na rade.', self::$room, User::SYSTEM, self::$loggedUser['id']);
+		}
+	}
+	
+	protected static function beer() {
+		if (GameUtils::checkTurn(self::$game, self::$player)) {
+			if (self::$player['phase'] == 2 || self::$player['actual_lifes'] == 0) {
+				$beer = self::$player->getHasPivoOnHand();
+				if ($beer) {
+					if (self::$player->addLife()) {
+						GameUtils::throwCard(self::$game, self::$player, $beer);
+					}
+					else {
+						// ma max zivotov
+					}
+				}
+				else {
+					// nema pivo
+				}
+			}
+			else {
+				// najprv musi tahat karty
+			}
+		}
+		else {
+			Chat::addMessage('Nie si na rade.', self::$room, User::SYSTEM, self::$loggedUser['id']);
+		}
 	}
 }
 

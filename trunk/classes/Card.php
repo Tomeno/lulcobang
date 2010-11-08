@@ -21,12 +21,14 @@ class Card extends Item {
 	const APPALOOSA = 14;
 	const BAREL = 15;
 	const DYNAMIT = 16;
-	const VEZENIE = 17;
+	const VAZENIE = 17;
 	const VOLCANIC = 18;
 	const SCHOFIELD = 19;
 	const REMINGTON = 20;
 	const CARABINA = 21;
 	const WINCHESTER = 22;
+	
+	protected static $guns = array('volcanic', 'schofield', 'remington', 'carabina', 'winchester');
 	
 	public function __construct($card) {
 		parent::__construct($card);
@@ -103,8 +105,8 @@ class Card extends Item {
 		return $this->getIsType(Card::DYNAMIT);
 	}
 	
-	public function getIsVezenie() {
-		return $this->getIsType(Card::VEZENIE);
+	public function getIsVazenie() {
+		return $this->getIsType(Card::VAZENIE);
 	}
 	
 	public function getIsVolcanic() {
@@ -142,10 +144,14 @@ class Card extends Item {
 	}
 	
 	public function getIsPuttable() {
-		if ($this->getIsGun() || $this->getIsDistanceChanger() || $this->getIsVezenie() || $this->getIsBarel() || $this->getIsDynamit()) {
+		if ($this->getIsGun() || $this->getIsDistanceChanger() || $this->getIsVazenie() || $this->getIsBarel() || $this->getIsDynamit()) {
 			return true;
 		}
 		return false;
+	}
+	
+	public static function getGuns() {
+		return self::$guns;
 	}
 }
 

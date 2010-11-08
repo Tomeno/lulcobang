@@ -60,6 +60,7 @@ class Player extends Item {
 				return $this->hasCardType($cardType, $place);
 			}
 		}
+		throw new Exception('Method ' . $methodName . ' doesn\'t exist');
 	}
 	
 	/**
@@ -100,6 +101,57 @@ class Player extends Item {
 		else {
 			return false;
 		}
+	}
+	
+	public function getDostrel() {
+		$card = $this->getHasGun();
+		if ($card) {
+			if ($card->getIsSchofield()) {
+				return 2;
+			}
+			elseif ($card->getIsRemington()) {
+				return 3;
+			}
+			elseif ($card->getIsCarabina()) {
+				return 4;
+			}
+			elseif ($card->getIsWinchester()) {
+				return 5;
+			}
+		}
+		return 1;
+	}
+	
+	public function getHasGun() {
+		$guns = Card::getGuns();
+		foreach ($guns as $gun) {
+			$methodName = 'getHas' . ucfirst($gun) . 'OnTheTable';
+			$card = $this->$methodName();
+			if ($card) {
+				return $card;
+			}
+		}
+	}
+	
+	public function takeLife() {
+		$newLifes = $this['actual_lifes'] - 1;
+		$GLOBALS['db']->update('player', array('actual_lifes' => $newLifes), 'id = ' . intval($this['id']));
+		return $newLifes;
+	}
+	
+	public function addLife() {
+		$maxLifes = $this['charakter']['lifes'];
+		$maxLifes = $this['role']['type'] == Role::SHERIFF ? $maxLifes + 1 : $maxLifes;
+		if ($this['actual_lifes'] < $maxLifes) {
+			$newLifes = $this['actual_lifes'] + 1;
+			$GLOBALS['db']->update('player', array('actual_lifes' => $newLifes), 'id = ' . intval($this['id']));
+			return $newLifes;
+		}
+		return false;
+	}
+	
+	public function setUseBang($useBang) {
+		$GLOBALS['db']->update('player', array('use_bang' => intval($useBang)), 'id = ' . intval($this['id']));
 	}
 	
 	/*
