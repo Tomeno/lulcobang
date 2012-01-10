@@ -3,7 +3,7 @@
 class Card extends Item {
 	
 	protected $imageFolder = 'images/cards/bang/playing_cards/';
-	protected $back = 'back.jpg';
+	protected $back = '../special/playing_card_back.jpg';
 	
 	const BANG = 1;
 	const VEDLA = 2;

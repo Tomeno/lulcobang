@@ -1,28 +1,64 @@
 <?php
 
+/**
+ * db class
+ */
 class DB {
 	
-	protected $link = NULL;
+	protected static $link = NULL;
 	
-	protected $dbName = NULL;
-	
-	public function __construct($username, $password, $server, $database) {
-		$this->link = mysql_connect($server, $username, $password, TRUE) or die("Cannot connect to '$server'\n");
-		mysql_select_db($database, $this->link);
-		$this->dbName = $database;
+	protected static $dbName = NULL;
+
+	/**
+	 * private constructor
+	 *
+	 * @param	string	$username
+	 * @param	string	$password
+	 * @param	string	$server
+	 * @param	string	$database
+	 */
+	private function __construct($username, $password, $server, $database) {
+		self::$link = mysql_connect($server, $username, $password, TRUE) or die("Cannot connect to '$server'\n");
+		mysql_select_db($database, self::$link);
+		self::$dbName = $database;
 	}
-	
-	public function query($query) {
-		$res = mysql_query($query, $this->link);
-		if (mysql_error($this->link)) {
+
+	/**
+	 * initialize
+	 *
+	 * @return	void
+	 */
+	private static function init() {
+		if (self::$link === NULL) {
+			new DB(DB_USERNAME, DB_PASSWORD, DB_HOST, DB_NAME);
+		}
+	}
+
+	/**
+	 * query
+	 *
+	 * @param	string	$query
+	 * @return	resource
+	 */
+	public static function query($query) {
+		self::init();
+		$res = mysql_query($query, self::$link);
+		if (mysql_error(self::$link)) {
 			echo $query;
-			throw new Exception('MYSQL ERROR: ' . mysql_errno($this->link) .': ' . mysql_error($this->link));
+			throw new Exception('MYSQL ERROR: ' . mysql_errno(self::$link) .': ' . mysql_error(self::$link));
 		}
 		return $res;
 	}
-	
-	public function fetchAll($query, $repository = null) {
-		$res = $this->query($query);
+
+	/**
+	 * fetch all items by query
+	 *
+	 * @param	string	$query
+	 * @param	string	$repository
+	 * @return	array<Item>
+	 */
+	public static function fetchAll($query, $repository = NULL) {
+		$res = self::query($query);
 		$result = array();
 		while ($row = mysql_fetch_assoc($res)) {
 			$class = $repository ? str_replace('Repository', '', $repository) : '';
@@ -30,52 +66,69 @@ class DB {
 		}
 		return $result;
 	}
-	
-	public function fetchFirst($query, $repository = null) {
-		$rows = $this->fetchAll($query, $repository);
+
+	/**
+	 * fetch first Item by query
+	 *
+	 * @param	string	$query
+	 * @param	string	$repository
+	 * @return	Item|NULL
+	 */
+	public static function fetchFirst($query, $repository = NULL) {
+		$rows = self::fetchAll($query, $repository);
 		if (count($rows)) {
 			return $rows[0];
 		}
-		return null;
+		return NULL;
 	}
-	
-	public function insert($table, $data) {
+
+	/**
+	 * insert $data to $table
+	 *
+	 * @param	string	$table
+	 * @param	array	$data
+	 * @return	int	inserted id
+	 */
+	public static function insert($table, $data) {
 		$params = array();
 		foreach ($data as $key => $value) {
 			$value = "'".addslashes($value)."'";
 			$params[$key] = $value;
 		}
 		$query = "INSERT INTO $table (".implode(',', array_keys($params)).") VALUES (".implode(',', array_values($params)).")";
-		$this->query($query);
-		$id = mysql_insert_id($this->link);
+		self::query($query);
+		$id = mysql_insert_id(self::$link);
 		return $id;
 	}
-	
-	public function update($table, $params, $where) {
+
+	/**
+	 * updates $table by $params where $where
+	 *
+	 * @param	string	$table
+	 * @param	array	$params
+	 * @param	string	$where
+	 * @return	resource
+	 */
+	public static function update($table, $data, $where = '') {
 		$parts = array();
-		foreach ($params as $key => $value) {
+		foreach ($data as $key => $value) {
 			$parts[] = "$key='" . addslashes($value) . "'";
 		}
-		$set = implode(',', $parts);
-		$query = "UPDATE $table SET $set WHERE $where";
-		return $this->query($query);
+		$set = implode(', ', $parts);
+		$query = 'UPDATE ' . $table . ' SET ' . $set . ($where ? ' WHERE ' . $where : '');
+		return self::query($query);
 	}
-	
-	public function delete($table, $where) {
-		$query = "DELETE FROM $table WHERE $where";
-		return $this->query($query);
-	}
-	
-	public function begin() {
-		$this->query('BEGIN');
-	}
-	
-	public function rollback() {
-		$this->query('ROLLBACK');
-	}
-	
-	public function commit() {
-		$this->query('COMMIT');
+
+	/**
+	 * delete from $table where $where
+	 *
+	 * @param	string	$table
+	 * @param	string	$where
+	 * @return	resource
+	 */
+	public static function delete($table, $where = '') {
+		$query = 'DELETE FROM ' . $table . ($where ? ' WHERE ' . $where : '');
+		return self::query($query);
 	}
 }
 

@@ -1,6 +1,12 @@
-{foreach from=$rooms item=room}
-	<p><a href="room.php?id={$room.id}" target="_blank">{$room.title}</a>{if $room.game} (BANG){/if}<p>
-{/foreach}
+{if $rooms}
+	<div class="list">
+		{foreach from=$rooms item=room}
+			<div class="item">
+				<p><a href="{$room.url}" onclick="window.open(this.href, '_blank'); return false;">{$room.title}</a>{if $room.game} (BANG){/if}<p>
+			</div>
+		{/foreach}
+	</div>
+{/if}
 
 {if $loggedUser.admin}
 	<h3>Vytvoriť novú miestnosť</h3>
