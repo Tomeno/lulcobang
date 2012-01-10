@@ -1,5 +1,7 @@
 <?php
 
+define('BASE_URL', 'http://bang.localhost.sk/');
+
 define('DB_USERNAME', 'root');
 define('DB_PASSWORD', '');
 define('DB_HOST', 'localhost');

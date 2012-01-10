@@ -14,7 +14,7 @@ class Chat {
 	 */
 	public static function addMessage($message, $room, $user = 0, $toUser = 0) {
 		if (!$user) {
-			$loggedUser = User::whoIsLogged();
+			$loggedUser = LoggedUser::whoIsLogged();
 			$user = $loggedUser['id'];
 		}
 		$params = array(
@@ -25,7 +25,7 @@ class Chat {
 			'to_user' => intval($toUser),
 		);
 		
-		$GLOBALS['db']->insert(self::$table, $params);
+		DB::insert(self::$table, $params);
 	}
 	
 	/**
@@ -38,7 +38,7 @@ class Chat {
 	 */
 	public static function getMessages($room, $toUser = 0, $time = 0) {
 		$query = 'SELECT message.*, user.* FROM ' . self::$table . ' LEFT JOIN user ON message.user = user.id WHERE room=' . intval($room) . ' AND tstamp > ' . intval($time) . ' AND to_user IN (' . $toUser . ', 0) ORDER BY message.id DESC LIMIT 100';
-		$messages = $GLOBALS['db']->fetchAll($query);
+		$messages = DB::fetchAll($query);
 		$messages = array_reverse($messages);
 		
 		return $messages;

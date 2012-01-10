@@ -1,0 +1,6 @@
+RewriteEngine On
+
+RewriteRule services/(.*)\.(.*) service.php?service=$1&mode=$2 [L,QSA]
+
+RewriteRule (.*)/(.*).html index.php?action=$1&identifier=$2 [L,QSA]
+RewriteRule (.*).html index.php?action=$1 [L,QSA]

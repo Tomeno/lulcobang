@@ -1,13 +1,12 @@
 <?php
-//echo 'pozriet ArrayObject a vyrobit nejaku classu Item ktora je od toho zdedena a robi to co table row a hash table v globalsoch, od toho itemu vsetko zdedit';exit();
+echo 'ahoj som tu';exit();
 require_once('include.php');
 
 if (User::whoIsLogged()) {
-	Utils::redirect('rooms.php');
+	Utils::redirect('miestnosti.html');
 }
 
 if ($_POST['login']) {
-	
 	$error = User::userLogin();
 	$GLOBALS['smarty']->assign('error', $error);
 }
