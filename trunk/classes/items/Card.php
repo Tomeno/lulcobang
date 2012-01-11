@@ -29,11 +29,31 @@ class Card extends Item {
 	const WINCHESTER = 22;
 	
 	protected static $guns = array('volcanic', 'schofield', 'remington', 'carabina', 'winchester');
-	
+
 	public function __construct($card) {
 		parent::__construct($card);
 	}
 	
+	public function getImagePath() {
+		return $this->imageFolder . $this['image'];
+	}
+
+	public function getUrl() {
+		return 'karta/karta-' . $this['id'] . '.html';
+	}
+
+	/**
+	 * getter for related cards
+	 *
+	 * @todo doplnit do db typy kariet inym sposobom ako su teraz
+	 * @return	array
+	 */
+	public function getRelatedCards() {
+		$cardRepository = new CardRepository();
+		$cardRepository->addAdditionalWhere(array('column' => 'id', 'value' => $this['id'], 'xxx' => '!='));
+		return $cardRepository->getByCardType($this['card_type']);
+	}
+
 	public function getIsType($type) {
 		if ($this['card_type'] == $type) {
 			return true;

@@ -21,6 +21,7 @@ class DB {
 		self::$link = mysql_connect($server, $username, $password, TRUE) or die("Cannot connect to '$server'\n");
 		mysql_select_db($database, self::$link);
 		self::$dbName = $database;
+		mysql_query('SET names UTF8', self::$link);
 	}
 
 	/**
