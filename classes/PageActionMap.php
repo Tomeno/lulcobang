@@ -5,6 +5,8 @@ class PageActionMap {
 	protected static $pageActionMap = array(
 		'miestnosti' => 'rooms',
 		'miestnost' => 'rooms',
+		'karty' => 'cards',
+		'karta' => 'cards',
 		'prihlasenie' => 'login',
 	);
 
