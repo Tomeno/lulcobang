@@ -2,5 +2,6 @@ RewriteEngine On
 
 RewriteRule services/(.*)\.(.*) service.php?service=$1&mode=$2 [L,QSA]
 
-RewriteRule (.*)/(.*).html index.php?action=$1&identifier=$2 [L,QSA]
-RewriteRule (.*).html index.php?action=$1 [L,QSA]
+RewriteRule (.*)/(.*)/(.*).html index.php?language=$1&action=$2&identifier=$3 [L,QSA]
+RewriteRule (.*)/(.*).html index.php?language=$1&action=$2 [L,QSA]
+RewriteRule (.*).html index.php?language=$1 [L,QSA]

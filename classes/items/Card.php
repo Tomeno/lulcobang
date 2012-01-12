@@ -1,7 +1,10 @@
 <?php
 
-class Card extends Item {
-	
+class Card extends LinkableItem {
+
+	// TODO db model - farba (modra, zelena, hneda), typ - bang, vedla, pivo ..., vacsi typ - zabija, obranuje, zbran, vzdialenost..., ucinok - vsetci hraci,
+	// prave jeden hrac, hrac v dosahu, ktorykolvek hrac a dalej zatial neviem
+
 	protected $imageFolder = 'images/cards/bang/playing_cards/';
 	protected $back = '../special/playing_card_back.jpg';
 	
@@ -38,8 +41,12 @@ class Card extends Item {
 		return $this->imageFolder . $this['image'];
 	}
 
-	public function getUrl() {
-		return 'karta/karta-' . $this['id'] . '.html';
+	public function getPageType() {
+		return 'card';
+	}
+	
+	public function getItemAlias() {
+		return 'karta-' . $this['id'];
 	}
 
 	/**

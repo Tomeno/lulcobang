@@ -2,19 +2,76 @@
 
 class PageActionMap {
 
-	protected static $pageActionMap = array(
-		'miestnosti' => 'rooms',
-		'miestnost' => 'rooms',
-		'karty' => 'cards',
-		'karta' => 'cards',
-		'prihlasenie' => 'login',
-	);
-
-	public static function getActionByPage($page) {
-		if (array_key_exists($page, self::$pageActionMap)) {
-			return self::$pageActionMap[$page];
+	public static function getActionByPageAndLanguage($alias, $lang = NULL) {
+		if ($lang === NULL) {
+			$lang = Utils::get('language');
 		}
-		return 'index';
+
+		$languageRepository = new LanguageRepository();
+		$language = $languageRepository->getOneByShortcut($lang);
+
+		if ($language) {
+			$pageRepository = new PageRepository();
+			$page = $pageRepository->getOneByLanguageAndAlias($language['id'], $alias);
+
+			if ($page) {
+				$pageType = $action = $page->getPageType();
+				if ($pageType) {
+					$action = $pageType['action'];
+					if ($action) {
+						return $action;
+					} else {
+						throw new Exception('Action not found', 1326407427);
+					}
+				} else {
+					throw new Exception('Page type not found', 1326407401);
+				}
+			}
+		} else {
+			throw new Exception('Language ' . $lang . ' not found', 1326403880);
+		}
+	}
+
+	public static function getPageByTypeAndLanguage($type, $lang = NULL) {
+		if ($lang === NULL) {
+			$lang = Utils::get('language');
+		}
+
+		$languageRepository = new LanguageRepository();
+		$language = $languageRepository->getOneByShortcut($lang);
+
+		if ($language) {
+			$pageTypeRepository = new PageTypeRepository();
+			$pageType = $pageTypeRepository->getOneByAlias($type);
+
+			$pageRepository = new PageRepository();
+			$page = $pageRepository->getOneByLanguageAndPageType($language['id'], $pageType['id']);
+
+			if ($page) {
+				return $page;
+			} else {
+				throw new Exception('Page with type ' . $pageType['title'] . ' and language ' . $language['title'] . ' doesn\'t exist', 1326403622);
+			}
+		} else {
+			throw new Exception('Language ' . $lang . ' not found', 1326403989);
+		}
+	}
+
+	public static function createUrl($aliases = array(), $lang = NULL) {
+		if (!is_array($aliases)) {
+			$aliases = array($aliases);
+		}
+
+		if ($lang === NULL) {
+			$lang = Utils::get('language');
+		}
+
+		$url = $lang;
+		foreach ($aliases as $alias) {
+			$url .= '/' . $alias;
+		}
+		$url .= '.html';
+		return $url;
 	}
 }
 
