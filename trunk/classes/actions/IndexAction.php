@@ -3,7 +3,10 @@
 class IndexAction extends AbstractAction {
 
 	public function  getContent() {
-		Utils::redirect('miestnosti.html');
+		$page = PageActionMap::getPageByTypeAndLanguage('rooms');
+		$url = PageActionMap::createUrl($page['alias']);
+
+		Utils::redirect($url);
 	}
 }
 

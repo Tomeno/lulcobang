@@ -4,7 +4,10 @@ class LoginAction extends AbstractAction {
 
 	public function getContent() {
 		if (LoggedUser::whoIsLogged()) {
-			Utils::redirect('miestnosti.html');
+			$page = PageActionMap::getPageByTypeAndLanguage('rooms');
+			$url = PageActionMap::createUrl($page['alias']);
+
+			Utils::redirect($url);
 		}
 
 		if (Utils::post('login')) {

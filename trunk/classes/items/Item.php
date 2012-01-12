@@ -1,6 +1,6 @@
 <?php
 
-class Item extends ArrayObject {
+abstract class Item extends ArrayObject {
 	
 	public function offsetGet($key) {
 		if (property_exists($this, $key)) {

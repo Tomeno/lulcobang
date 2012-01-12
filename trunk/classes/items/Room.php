@@ -1,13 +1,17 @@
 <?php
 
-class Room extends Item {
+class Room extends LinkableItem {
 	
 	protected static $table = 'room';
 	
 	protected static $roomUserTable = 'room_user';
-	
-	public function getUrl() {
-		return 'miestnost/' . $this['alias'] . '.html';
+
+	protected function getPageType() {
+		return 'room';
+	}
+
+	protected function  getItemAlias() {
+		return $this['alias'];
 	}
 
 	public static function addRoom($title, $description) {
