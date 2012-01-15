@@ -6,6 +6,7 @@ class CardListingBox extends AbstractBox {
 	
 	protected function setup() {
 		$cardRepository = new CardRepository();
+		$cardRepository->setGroupBy('card_base_type');
 		$cards = $cardRepository->getAll();
 
 		MySmarty::assign('cards', $cards);
