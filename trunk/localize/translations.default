@@ -1,0 +1,86 @@
+bang_title###Bang!
+bang_description###BANG! cards are the main method to reduce other players' life points. If you want to play a BANG! card to hit one of the players, determine: a) what the distance to that player is, and b) if your weapon is capable of reaching that distance.
+missed_title###Missed!
+missed_description###A player hit by a BANG! card may immediately play a Missed! card - even though it is not his turn! - to cancel the shot. If he does not, he loses a life point.
+beer_title###Beer
+beer_description###This card lets a player regain one life point. Beer cards can be played in two ways: a) as usual, during your turn b) out of turn, but only if you have just received a hit that is lethal (i.e. a hit that takes away your last life point), and not if you are simply hit.
+saloon_title###Saloon
+saloon_description###The symbols say: "Regain one life point", and this applies to "all the other players", and on the next line: "[the player playing this card] regains one life point" The overall effect is that all players in play regain a life point.
+wells_fargo_title###Wells Fargo
+wells_fargo_description###The symbols say: draw 3 cards from the deck.
+diligenza_title###Diligenza
+diligenza_description###The symbols say: draw 2 cards from the deck.
+general_store_title###General Store
+general_store_description###When you play this card, turn as many cards from the deck face up as the players still playing. Starting with the player who played the card, and proceeding clockwise, each player chooses one of those cards and puts it in his hands.
+panic_title###Panic!
+panic_description###The symbols state: "draw a card" from "a player at distance 1".
+cat_balou_title###Cat Balou
+cat_balou_description###The symbol say: "discard 1 card" to "1 player", from hand or table.
+indians_title###Indians!
+indians_description###Each player, excluding the one who played this card, may discard a BANG! card, or lose a life point. Neither Missed! nor Barrel has effect in this case.
+duel_title###Duel
+duel_description###The player playing this card challenges any other player (at any distance), staring him in the eyes. The challenged player may discard a BANG! card (even though it is not his turn!). If he does, the player who played the Duel card may discard a BANG! card, and so on: the first player failing to play a BANG! card loses one life point, and the duel is over. Note: you cannot use the Barrel or play Missed! cards during a duel, and the Duel is not considered a BANG! card.
+gatling_title###Gatling
+gatling_description###The symbols show: "a BANG!" to "all the other players".
+mustang_title###Mustang
+mustang_description###The distance between other players and one who has a Mustang card in play is increased by 1. However, he still sees the other players at the normal distance. In the figure, if A has a Mustang horse in play, players B and F would see him at a distance of 2, C and E at a distance of 3, and D at a distance of 4, while A would continue seeing all the other players at the normal distance.
+appaloosa_title###Appaloosa/Scope
+appaloosa_description###A player who has a prized Appaloosa in play sees all the other players at a distance decreased by 1. However, other players still see him at the normal distance. Distances less than 1 are considered to be 1. In the figure, if A has an Appaloosa in play, he would see B and F at a distance of 1, C and E at a distance of 1, D at a distance of 2, while A would be seen by other players at a normal distance.
+barrel_title###Barrel
+barrel_description###C is the target of A's BANG!. C has a Barrel card in play: this card lets him "draw!" to cancel a BANG! card. So, C flips the top card of the deck and puts it on the discard pile: it's a 4 of Hearts. The use of the Barrel is successful and cancels the BANG! If the flipped card were of a different suit, then the Barrel would have had no effect, but C could have still tried to cancel the BANG! with a Missed! card.
+dynamite_title###Dynamite
+dynamite_description###The player who plays this card puts the Dynamite in front of him, face up: the Dynamite will stay there for a whole turn. When the player starts his next turn (he has Dynamite already in play), before the first phase ("draw two cards" he must "draw!": if he draws a card showing Spades and a number between 2 and 9, the Dynamite explodes (discard it)! The player immediately loses 3 life points. Otherwise, the Dynamite is passed to the player on his left, who will "draw!" on his turn. Players keep passing the Dynamite around until it explodes (with the effect explained above) or it is removed from play by a Panic! or a Cat Balou card. If a player has both the Dynamite and a Jail card, check the Dynamite first. If a character is eliminated by a Dynamite card, his elimination is not considered to be caused by any player.
+jail_title###Jail
+jail_description###This card is played in front of any player, who is now in Jail. A player in Jail must "draw!" before the beginning of his turn: if he draws a Heart card, then he escapes from Jail, discards the Jail card, and continues his turn as normal. Otherwise he discards the Jail and skips phase 1 and 2 of his turn, simply discarding exceeding cards. However, he remains a possible target for BANG! cards and can still play Missed! and Beer out of his turn. Jail cannot be played on the Sheriff.
+volcanic_title###Volcanic
+volcanic_description###A player having this card in play may play any number of BANG! cards during his turn. This BANG! cards can be aimed at the same or different targets, but are limited to a distance of 1 (as shown by the number in the sight).
+schofield_title###Schofield
+schofield_description###You can shoot to distance 2 with this weapon.
+remington_title###Remington
+remington_description###You can shoot to distance 3 with this weapon.
+rev_carabine_title###Rev.Carabine
+rev_carabine_description###You can shoot to distance 4 with this weapon.
+winchester_title###Winchester
+winchester_description###You can shoot to distance 5 with this weapon.
+dodge_title###
+dodge_description###
+punch_title###
+punch_description###
+springfield_title###
+springfield_description###
+brawl_title###
+brawl_description###
+rag_time_title###
+rag_time_description###
+tequila_title###
+tequila_description###
+hideout_title###
+hideout_description###
+silver_title###
+silver_description###
+sombrero_title###
+sombrero_description###
+iron_plate_title###
+iron_plate_description###
+ten_gallon_hat###
+ten_gallon_description###
+bible_title###
+bible_description###
+canteen_title###
+canteen_description###
+knife_title###
+knife_description###
+derringer_title###
+derringer_description###
+howitzer_title###
+howitzer_description###
+pepperbox_title###
+pepperbox_description###
+buffalo_rifle_title###
+buffalo_rifle_description###
+can_can_title###
+can_can_description###
+conestoga_title###
+conestoga_desciption###
+pony_express_title###
+pony_express_desciption###

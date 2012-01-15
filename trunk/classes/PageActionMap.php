@@ -3,28 +3,30 @@
 class PageActionMap {
 
 	public static function getActionByPageAndLanguage($alias, $lang = NULL) {
-		if ($lang === NULL) {
-			$lang = Utils::get('language');
-		}
-
-		$languageRepository = new LanguageRepository();
-		$language = $languageRepository->getOneByShortcut($lang);
+		$language = Utils::getLanguage($lang);
 
 		if ($language) {
-			$pageRepository = new PageRepository();
-			$page = $pageRepository->getOneByLanguageAndAlias($language['id'], $alias);
+			if ($alias == '') {
+				return 'index';
+			} else {
+				$pageRepository = new PageRepository();
+				$page = $pageRepository->getOneByLanguageAndAlias($language['id'], $alias);
 
-			if ($page) {
-				$pageType = $action = $page->getPageType();
-				if ($pageType) {
-					$action = $pageType['action'];
-					if ($action) {
-						return $action;
+				if ($page) {
+					$pageType = $action = $page->getPageType();
+					if ($pageType) {
+						$action = $pageType['action'];
+						if ($action) {
+							return $action;
+						} else {
+							throw new Exception('Action not found', 1326407427);
+						}
 					} else {
-						throw new Exception('Action not found', 1326407427);
+						throw new Exception('Page type not found', 1326407401);
 					}
 				} else {
-					throw new Exception('Page type not found', 1326407401);
+					header('HTTP/1.1 404 Not Found');
+					return 'pageNotFound';
 				}
 			}
 		} else {
@@ -33,13 +35,7 @@ class PageActionMap {
 	}
 
 	public static function getPageByTypeAndLanguage($type, $lang = NULL) {
-		if ($lang === NULL) {
-			$lang = Utils::get('language');
-		}
-
-		$languageRepository = new LanguageRepository();
-		$language = $languageRepository->getOneByShortcut($lang);
-
+		$language = Utils::getLanguage($lang);
 		if ($language) {
 			$pageTypeRepository = new PageTypeRepository();
 			$pageType = $pageTypeRepository->getOneByAlias($type);
@@ -62,11 +58,9 @@ class PageActionMap {
 			$aliases = array($aliases);
 		}
 
-		if ($lang === NULL) {
-			$lang = Utils::get('language');
-		}
+		$language = Utils::getLanguage($lang);
 
-		$url = $lang;
+		$url = $language['shortcut'];
 		foreach ($aliases as $alias) {
 			$url .= '/' . $alias;
 		}

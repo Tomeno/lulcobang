@@ -47,11 +47,41 @@ class Utils {
 	/**
 	 * getter for site language
 	 *
-	 * @note	zatial nemam tucha co to bude robit :)
-	 * @return	string
+	 * @param	string	$lang	language shortcut
+	 * @return	Language
 	 */
-	public static function getSiteLanguage() {
-		return '';
+	public static function getLanguage($lang = NULL) {
+		$languageRepository = new LanguageRepository();
+
+		// ak nemame zadany lang
+		if ($lang === NULL) {
+			// zistime ci je prihlaseny user a ci ma nastaveny nejaky jazyk
+			$loggedUser = LoggedUser::whoIsLogged();
+			if ($loggedUser) {
+				$lang = $loggedUser['language'];
+				if ($lang) {
+					$language = $languageRepository->getOneById($lang);
+				}
+			}
+
+			// TODO nejaka lokalizacia podla goeip
+
+			// ak stale nemame jazyk, pozrieme sa do url
+			if (!$language) {
+				$lang = Utils::get('language');
+				if ($lang) {
+					$language = $languageRepository->getOneByShortcut($lang);
+				}
+			}
+
+			// na konci vratime anglictinu
+			if (!$language) {
+				$language = $languageRepository->getOneByShortcut('en');
+			}
+		} else {
+			$language = $languageRepository->getOneByShortcut($lang);
+		}
+		return $language;
 	}
 
 	/**
