@@ -60,7 +60,7 @@ class LoggedUser {
 		if ($user) {
 			$cookieValue = md5(time() . $user['id'] . $user['username']);
 			DB::update('user', array('cookie_value' => $cookieValue), 'id = ' . $user['id']);
-			setcookie(self::$cookieName, $cookieValue);
+			setcookie(self::$cookieName, $cookieValue, NULL, '/');
 
 			Utils::redirect(Utils::getActualUrlWithoutGetParameters(), FALSE);
 		}
