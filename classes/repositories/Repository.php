@@ -11,6 +11,8 @@ abstract class Repository {
 
 	protected $orderBy = array();
 
+	protected $groupBy = array();
+
 	protected $limit = 0;
 
 	protected $additionalWhere = array();
@@ -68,7 +70,7 @@ abstract class Repository {
 	 * @return	array<Item>
 	 */
 	public function getAll() {
-		$query = 'SELECT * FROM ' . $this->table . $this->getOrderBy() . $this->getLimit();
+		$query = 'SELECT * FROM ' . $this->table . $this->getGroupBy() . $this->getOrderBy() . $this->getLimit();
 		return DB::fetchAll($query, get_class($this));
 	}
 	
@@ -104,7 +106,7 @@ abstract class Repository {
 	 * @return	string
 	 */
 	protected function getQuery($keyString, $values) {
-		$query = 'SELECT * FROM ' . $this->table . $this->getWhere($keyString, $values) . $this->getOrderBy() . $this->getLimit();
+		$query = 'SELECT * FROM ' . $this->table . $this->getWhere($keyString, $values) . $this->getGroupBy() . $this->getOrderBy() . $this->getLimit();
 		return $query;
 	}
 
@@ -395,6 +397,44 @@ abstract class Repository {
 			$where = implode(' AND ', $whereParts);
 			return $where;
 		}
+	}
+
+	/**
+	 * getter for group by
+	 *
+	 * @return	string
+	 */
+	protected function getGroupBy() {
+		if ($this->groupBy && is_array($this->groupBy)) {
+			return ' GROUP BY ' . implode(', ', $this->groupBy);
+		}
+		return '';
+	}
+
+	/**
+	 * setter for group by
+	 *
+	 * @param	array	$groupBy
+	 * @return	void
+	 */
+	public function setGroupBy($groupBy) {
+		if (!is_array($groupBy)) {
+			$groupBy = array($groupBy);
+		}
+		$this->groupBy = $groupBy;
+	}
+
+	/**
+	 * adds group by to array
+	 *
+	 * @param	array	$groupBy
+	 * @return	void
+	 */
+	public function addGroupBy($groupBy) {
+		if (!is_array($groupBy)) {
+			$groupBy = array($groupBy);
+		}
+		$this->groupBy = array_merge($groupBy, $this->groupBy);
 	}
 }
 

@@ -35,6 +35,11 @@ class Card extends LinkableItem {
 
 	public function __construct($card) {
 		parent::__construct($card);
+
+		$cardBaseTypeRepository = new CardBaseTypeRepository();
+		$cardBaseType = $cardBaseTypeRepository->getOneById($this['card_base_type']);
+
+		$this['cardBaseType'] = $cardBaseType;
 	}
 	
 	public function getImagePath() {
@@ -49,6 +54,14 @@ class Card extends LinkableItem {
 		return 'karta-' . $this['id'];
 	}
 
+	public function getTitle() {
+		return $this['cardBaseType']->getLocalizedTitle();
+	}
+
+	public function getDescription() {
+		return $this['cardBaseType']->getLocalizedDescription();
+	}
+
 	/**
 	 * getter for related cards
 	 *
@@ -56,9 +69,19 @@ class Card extends LinkableItem {
 	 * @return	array
 	 */
 	public function getRelatedCards() {
+		$cardBaseTypeRepository = new CardBaseTypeRepository();
+		$cardBaseTypeRepository->addAdditionalWhere(array('column' => 'id', 'value' => $this['cardBaseType']['id'], 'xxx' => '!='));
+		$cardBaseTypeList = $cardBaseTypeRepository->getByCardGroupType($this['cardBaseType']['card_group_type']);
+
+		$cardBaseTypes = array();
+		foreach ($cardBaseTypeList as $cardBaseType) {
+			$cardBaseTypes[] = $cardBaseType['id'];
+		}
+
 		$cardRepository = new CardRepository();
 		$cardRepository->addAdditionalWhere(array('column' => 'id', 'value' => $this['id'], 'xxx' => '!='));
-		return $cardRepository->getByCardType($this['card_type']);
+		$cardRepository->setGroupBy('card_base_type');
+		return $cardRepository->getByCardBaseType($cardBaseTypes);
 	}
 
 	public function getIsType($type) {
