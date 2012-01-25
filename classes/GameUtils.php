@@ -7,19 +7,23 @@ class GameUtils {
 	protected static $seats = array(1, 5, 3, 7, 2, 6, 4, 8);
 	
 	public static function create() {
-		$room = intval($_GET['id']);
+		$roomAlias = Utils::get('identifier');
+		$roomRepository = new RoomRepository();
+		$room = $roomRepository->getOneByAlias($roomAlias);
 		
-		$query = 'SELECT count(*) AS pocet FROM ' . self::$table . ' WHERE room = ' . $room . ' AND status IN (' . Game::GAME_STATUS_CREATED . ', ' . Game::GAME_STATUS_STARTED . ')';
-		$game = $GLOBALS['db']->fetchFirst($query);
-		if ($game['pocet'] > 0) {
-			return false;
-		}
-		else {
+		$gameRepository = new GameRepository();
+		$gameRepository->addAdditionalWhere(array('column' => 'room', 'value' => $room['id']));
+		$gameRepository->addAdditionalWhere(array('column' => 'status', 'value' => array(Game::GAME_STATUS_CREATED, Game::GAME_STATUS_STARTED), 'xxx' => 'IN'));
+		$count = $gameRepository->getCountAll();
+
+		if ($count > 0) {
+			return FALSE;
+		} else {
 			$params = array(
-				'room' => $room,
+				'room' => $room['id'],
 			);
-			$GLOBALS['db']->insert(self::$table, $params);
-			return true;
+			DB::insert(self::$table, $params);
+			return TRUE;
 		}
 	}
 	
@@ -38,7 +42,7 @@ class GameUtils {
 			'draw_pile' => serialize($drawPile),
 			'throw_pile' => serialize($throwPile),
 		);
-		$GLOBALS['db']->update(self::$table, $params, 'id = ' . intval($game['id']));
+		DB::update(self::$table, $params, 'id = ' . intval($game['id']));
 		
 		foreach ($game['players'] as $player) {
 			
@@ -56,7 +60,7 @@ class GameUtils {
 				'hand_cards' => serialize($handCards),
 				'table_cards' => serialize($tableCards),
 			);
-			$GLOBALS['db']->update(self::$playerTable, $params, 'id = ' . intval($player['id']));
+			DB::update(self::$playerTable, $params, 'id = ' . intval($player['id']));
 		}
 		
 	}
@@ -66,7 +70,7 @@ class GameUtils {
 			if ($game['status'] == 0) {
 				$gameId =  intval($game['id']);
 				$query = 'SELECT count(*) AS pocet FROM ' . self::$playerTable . ' WHERE game = ' . $gameId . ' AND user = ' . intval($user);
-				$userCount = $GLOBALS['db']->fetchFirst($query);
+				$userCount = DB::fetchFirst($query);
 				if ($userCount['pocet'] > 0) {
 					return 2;
 				}
@@ -77,7 +81,7 @@ class GameUtils {
 						'user' => intval($user),
 						'seat' => self::$seats[$pos],
 					);
-					$GLOBALS['db']->insert(self::$playerTable, $params);
+					DB::insert(self::$playerTable, $params);
 					return 1;
 				}
 			}
@@ -90,7 +94,7 @@ class GameUtils {
 	
 	private static function getPosition($game) {
 		$query = 'SELECT count(*) AS max_position FROM ' . self::$playerTable . ' WHERE game = ' . intval($game);
-		$position = $GLOBALS['db']->fetchFirst($query);
+		$position = DB::fetchFirst($query);
 		
 		return $position['max_position'];
 	}
@@ -110,8 +114,9 @@ class GameUtils {
 					$roleRepository = new RoleRepository();
 					$characterRepository = new CharakterRepository();
 					$cardRepository = new CardRepository();
-					
-					$roles = $roleRepository->getRoles(count($players));
+
+					$roleRepository->setLimit(count($players));
+					$roles = $roleRepository->getAll();
 					shuffle($roles);
 					
 					$characters = $characterRepository->getAll();
@@ -141,7 +146,7 @@ class GameUtils {
 						
 						$params['hand_cards'] = serialize($playerCards);
 						$params['table_cards'] = serialize(array());
-						$GLOBALS['db']->update(self::$playerTable, $params, 'game = ' . intval($game['id']) . ' AND user = ' . intval($player['user']['id']));
+						DB::update(self::$playerTable, $params, 'game = ' . intval($game['id']) . ' AND user = ' . intval($player['user']['id']));
 						
 						$j++;
 					}
@@ -153,7 +158,7 @@ class GameUtils {
 						'status' => Game::GAME_STATUS_STARTED,
 					);
 					
-					$GLOBALS['db']->update(self::$table, $params, 'id = ' . intval($game['id']));
+					DB::update(self::$table, $params, 'id = ' . intval($game['id']));
 					
 					$gameRepository = new GameRepository();
 					$game = $gameRepository->getOneById($game['id']);
@@ -220,7 +225,7 @@ class GameUtils {
 		$params = array(
 			'distance_matrix' => serialize($matrix)
 		);
-		$GLOBALS['db']->update(self::$table, $params, 'id = ' . intval($game['id']));
+		DB::update(self::$table, $params, 'id = ' . intval($game['id']));
 	}
 	
 	/**
@@ -240,7 +245,7 @@ class GameUtils {
 				else {
 					$pos = 0;
 				}
-				$GLOBALS['db']->update(self::$playerTable, array('position' => $pos), 'id = ' . intval($player['id']));
+				DB::update(self::$playerTable, array('position' => $pos), 'id = ' . intval($player['id']));
 			}
 			else {
 				break;
@@ -265,7 +270,7 @@ class GameUtils {
 		$params = array(
 			'turn' => intval($position),
 		);
-		$GLOBALS['db']->update(self::$table, $params, 'id = ' . intval($game['id']));
+		DB::update(self::$table, $params, 'id = ' . intval($game['id']));
 	}
 	
 	public static function getNextPosition($game, $actualPosition) {
@@ -289,7 +294,7 @@ class GameUtils {
 			'inter_turn' => intval($position),
 			'inter_turn_reason' => addslashes($reason),
 		);
-		$GLOBALS['db']->update(self::$table, $params, 'id = ' . intval($game['id']));
+		DB::update(self::$table, $params, 'id = ' . intval($game['id']));
 	}
 	
 	public static function getCards($game, $player, $count) {
@@ -371,7 +376,7 @@ class GameUtils {
 		$params = array(
 			'phase' => intval($phase),
 		);
-		$GLOBALS['db']->update(self::$playerTable, $params, 'game = ' . intval($game['id']) . ' AND id = ' . intval($player['id']));
+		DB::update(self::$playerTable, $params, 'game = ' . intval($game['id']) . ' AND id = ' . intval($player['id']));
 	}
 	
 	public static function putOnTable($game, $playerFrom, $card, $playerTo = null) {

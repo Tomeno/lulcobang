@@ -70,7 +70,7 @@ abstract class Repository {
 	 * @return	array<Item>
 	 */
 	public function getAll() {
-		$query = 'SELECT * FROM ' . $this->table . $this->getGroupBy() . $this->getOrderBy() . $this->getLimit();
+		$query = 'SELECT * FROM ' . $this->table . $this->getAdditionalWhere(TRUE) . $this->getGroupBy() . $this->getOrderBy() . $this->getLimit();
 		return DB::fetchAll($query, get_class($this));
 	}
 	
@@ -93,7 +93,7 @@ abstract class Repository {
 	 * @return	int
 	 */
 	public function getCountAll() {
-		$query = 'SELECT count(*) AS countAll FROM ' . $this->table;
+		$query = 'SELECT count(*) AS countAll FROM ' . $this->table . $this->getAdditionalWhere(TRUE);
 		$result = DB::fetchFirst($query);
 		return intval($result['countAll']);
 	}
@@ -373,7 +373,7 @@ abstract class Repository {
 		$this->additionalWhere[] = $where;
 	}
 
-	protected function getAdditionalWhere() {
+	protected function getAdditionalWhere($addWhereWord = FALSE) {
 		if ($this->additionalWhere && is_array($this->additionalWhere)) {
 			$whereParts = array();
 			foreach ($this->additionalWhere as $oneWhere) {
@@ -395,6 +395,9 @@ abstract class Repository {
 				}
 			}
 			$where = implode(' AND ', $whereParts);
+			if ($where && $addWhereWord) {
+				$where = ' WHERE ' . $where;
+			}
 			return $where;
 		}
 	}

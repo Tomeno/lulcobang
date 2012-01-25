@@ -14,15 +14,15 @@ class RoomDetailBox extends AbstractBox {
 			$gameRepository = new GameRepository();
 			$game = $gameRepository->getOneByRoom($room['id']);
 
+			$gameBox = new GameBox();
+			if ($game !== NULL) {
+				$gameBox->setGame($game);
+			}
+			MySmarty::assign('gameBox', $gameBox->render());
+
 			$chatBox = new ChatBox();
 			$chatBox->setRoom($room);
 			MySmarty::assign('chatBox', $chatBox->render());
-
-			if ($game) {
-				$gameBox = new GameBox();
-				$gameBox->setGame($game);
-				MySmarty::assign('gameBox', $gameBox->render());
-			}
 		} else {
 			// TODO 404 room not found
 		}
