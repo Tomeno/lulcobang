@@ -12,9 +12,9 @@ class Card extends LinkableItem {
 	const VEDLA = 2;
 	const PIVO = 3;
 	const SALOON = 4;
-	const HOKYNARSTVI = 5;
-	const WELLS_FARGO = 6;
-	const DOSTAVNIK = 7;
+	const HOKYNARSTVI = 7;
+	const WELLS_FARGO = 5;
+	const DOSTAVNIK = 6;
 	const PANIKA = 8;
 	const CAT_BALOU = 9;
 	const INDIANI = 10;
@@ -85,7 +85,7 @@ class Card extends LinkableItem {
 	}
 
 	public function getIsType($type) {
-		if ($this['card_type'] == $type) {
+		if ($this['card_base_type'] == $type) {
 			return true;
 		}
 		return false;

@@ -1,4 +1,4 @@
-{if $game}
+{if $game && $game.status == 1}
 	<div id="table">
 		{foreach from=$game.players item=player}
 			{if $loggedUser.id == $player.user.id}
@@ -58,4 +58,15 @@
 			<div id="odpad" class="card"><img src="{$game.topThrowPile.imageFolder}{$game.topThrowPile.image}" alt="{$game.topThrowPile.title}" width="22" height="38" /></div>
 		{/if}
 	</div>
+{else}
+	<form action="{actualurl}" method="post">
+		<fieldset>
+			{if not $game}
+				<input type="submit" value="{$createGame}" name="create" />
+			{elseif $game.status == 0}
+				<input type="submit" value="{$joinGame}" name="join" />
+				<input type="submit" value="{$startGame}" name="start" />
+			{/if}
+		</fieldset>
+	</form>
 {/if}

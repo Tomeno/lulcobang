@@ -71,13 +71,18 @@ class Command {
 	}
 	
 	protected function initGame($game) {
-		self::$room = intval($_GET['id']);
-		self::$game = $game;
-		self::$loggedUser = User::whoIsLogged();
-		if (self::$loggedUser) {
+		$roomAlias = Utils::get('identifier');
+		$roomRepository = new RoomRepository();
+		$room = $roomRepository->getOneByAlias($roomAlias);
+		self::$room = $room['id'];
+
+		self::$loggedUser = LoggedUser::whoIsLogged();
+		if ($game && self::$loggedUser) {
+			self::$game = $game;
 			foreach ($game['players'] as $player) {
 				if (self::$loggedUser['id'] == $player['user']['id']) {
 					self::$player = $player;
+					break;
 				}
 			}
 		}
