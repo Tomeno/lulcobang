@@ -55,6 +55,7 @@ class MySmarty {
 		if (self::$smarty->template_exists($template)) {
 			return self::$smarty->fetch($template);
 		}
+		throw new Exception('tempate ' . $template . ' not found');
 		return '<!-- template ' . $template . ' not found -->';
 	}
 }
