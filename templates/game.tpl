@@ -62,10 +62,15 @@
 	<form action="{actualurl}" method="post">
 		<fieldset>
 			{if not $game}
-				<input type="submit" value="{$createGame}" name="create" />
+				<input type="submit" value="{localize key='create_game'}" name="create" />
 			{elseif $game.status == 0}
-				<input type="submit" value="{$joinGame}" name="join" />
-				<input type="submit" value="{$startGame}" name="start" />
+				{if $joinGameAvailable}
+					<input type="submit" value="{localize key='join_game'}" name="join" />
+				{/if}
+
+				{if $startGameAvailable}
+					<input type="submit" value="{localize key='start_game'}" name="start" />
+				{/if}
 			{/if}
 		</fieldset>
 	</form>

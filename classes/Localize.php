@@ -71,15 +71,16 @@ class Localize {
 	 */
 	public static function getMessage($key, $params = array()) {
 		if ($key) {
-			//echo $key;
 			$language = Utils::getLanguage();
 			$lang = $language['shortcut'];
 			
 			self::init();
 			if (isset(self::$localizationMap[$ext][$lang][$key])) {
 				$message = self::$localizationMap[$ext][$lang][$key];
-			} else {
+			} elseif (isset(self::$localizationMap[$ext]['default'][$key])) {
 				$message = self::$localizationMap[$ext]['default'][$key];
+			} else {
+				throw new Exception('Key ' . $key . ' not found in localization files', 1327603452);
 			}
 
 			if ($params) {

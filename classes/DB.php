@@ -41,7 +41,7 @@ class DB {
 	 * @param	string	$query
 	 * @return	resource
 	 */
-	public static function query($query) {
+	protected static function query($query) {
 		self::init();
 		$res = mysql_query($query, self::$link);
 		if (mysql_error(self::$link)) {
@@ -76,6 +76,13 @@ class DB {
 	 * @return	Item|NULL
 	 */
 	public static function fetchFirst($query, $repository = NULL) {
+		$foundString = 'limit 1';
+		$queryClon = mb_strtolower($query);
+
+		if ((strpos('limit', $queryClon) !== FALSE) && (strlen($queryClon) != (strlen($foundString) + strpos($queryClon, $foundString)))) {
+			$query .= ' LIMIT 1';
+		}
+
 		$rows = self::fetchAll($query, $repository);
 		if (count($rows)) {
 			return $rows[0];

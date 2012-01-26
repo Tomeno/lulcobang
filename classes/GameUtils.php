@@ -5,28 +5,29 @@ class GameUtils {
 	protected static $table = 'game';
 	protected static $playerTable = 'player';
 	protected static $seats = array(1, 5, 3, 7, 2, 6, 4, 8);
-	
-	public static function create() {
-		$roomAlias = Utils::get('identifier');
-		$roomRepository = new RoomRepository();
-		$room = $roomRepository->getOneByAlias($roomAlias);
-		
-		$gameRepository = new GameRepository();
-		$gameRepository->addAdditionalWhere(array('column' => 'room', 'value' => $room['id']));
-		$gameRepository->addAdditionalWhere(array('column' => 'status', 'value' => array(Game::GAME_STATUS_CREATED, Game::GAME_STATUS_STARTED), 'xxx' => 'IN'));
-		$count = $gameRepository->getCountAll();
 
-		if ($count > 0) {
-			return FALSE;
+	public static function getPosition(Game $game) {
+		$playerRepository = new PlayerRepository();
+		$playersCount = $playerRepository->getCountByGame(intval($game['id']));
+		return $playersCount;
+	}
+
+	public static function getSeatOnPosition($position) {
+		if (isset(self::$seats[$position])) {
+			return self::$seats[$position];
 		} else {
-			$params = array(
-				'room' => $room['id'],
-			);
-			DB::insert(self::$table, $params);
-			return TRUE;
+			throw new Exception('Seat on position ' . $position . ' doesn\'t exist', 1327605760);
 		}
 	}
-	
+
+	public static function checkUserInGame($user, $game) {
+		$playerRepository = new PlayerRepository();
+		$playerRepository->addAdditionalWhere(array('column' => 'game', 'value' => $game['id']));
+		$playerRepository->addAdditionalWhere(array('column' => 'user', 'value' => $user['id']));
+		return $playerRepository->getCountAll();
+	}
+
+
 	public static function save($game) {
 		$drawPile = array();
 		foreach ($game['draw_pile'] as $card) {
@@ -63,40 +64,6 @@ class GameUtils {
 			DB::update(self::$playerTable, $params, 'id = ' . intval($player['id']));
 		}
 		
-	}
-	
-	public static function addPlayer($game, $user) {
-		if ($game) {
-			if ($game['status'] == 0) {
-				$gameId =  intval($game['id']);
-				$query = 'SELECT count(*) AS pocet FROM ' . self::$playerTable . ' WHERE game = ' . $gameId . ' AND user = ' . intval($user);
-				$userCount = DB::fetchFirst($query);
-				if ($userCount['pocet'] > 0) {
-					return 2;
-				}
-				else {
-					$pos = intval(self::getPosition($gameId));
-					$params = array(
-						'game' => $gameId,
-						'user' => intval($user),
-						'seat' => self::$seats[$pos],
-					);
-					DB::insert(self::$playerTable, $params);
-					return 1;
-				}
-			}
-			elseif ($game['status'] == 1) {
-				return 3;
-			}
-		}
-		return 4;
-	}
-	
-	private static function getPosition($game) {
-		$query = 'SELECT count(*) AS max_position FROM ' . self::$playerTable . ' WHERE game = ' . intval($game);
-		$position = DB::fetchFirst($query);
-		
-		return $position['max_position'];
 	}
 	
 	public static function start($game) {
@@ -210,7 +177,7 @@ class GameUtils {
 					if ($player2->getIsPaulRegret()) {
 						$distance++;
 					}
-					if ($player1->getHasAppaloosaOnTheTable) {
+					if ($player1->getHasAppaloosaOnTheTable()) {
 						$distance--;
 					}
 					if ($player1->getIsRoseDoolan()) {

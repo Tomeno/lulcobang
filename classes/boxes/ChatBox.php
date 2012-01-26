@@ -11,21 +11,7 @@ class ChatBox extends AbstractBox {
 		if ($this->room !== NULL) {
 			Room::addUser($loggedUser['id'], $this->room['id']);
 
-			$gameRepository = new GameRepository();
-			$game = $gameRepository->getOneByRoom($this->room['id']);
-
-			if ($_POST && trim($_POST['message'])) {
-				if (strpos($_POST['message'], '.') === 0) {
-					$commandResult = Command::execute($_POST['message'], $game);
-				}
-				else {
-					Chat::addMessage(trim($_POST['message']), $this->room['id']);
-				}
-				Room::updateUserLastActivity($loggedUser['id'], $this->room['id']);
-				Utils::redirect(Utils::getActualUrl(), FALSE);
-			}
-
-			$messages = Chat::getMessages($this->room, $loggedUser['id']);
+			$messages = Chat::getMessages($this->room['id'], $loggedUser['id']);
 
 			MySmarty::assign('loggedUser', $loggedUser);
 			MySmarty::assign('messages', $messages);

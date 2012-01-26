@@ -11,3 +11,7 @@
 	</div>
 	*}
 </div>
+
+<div id="overlay-response"{if not $response} style="display: none;"{/if}>
+	{$response}
+</div>

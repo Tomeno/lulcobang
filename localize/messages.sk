@@ -1,0 +1,11 @@
+create_game###Vytvor hru
+join_game###Pripoj sa
+start_game###Začni hru
+game_created###Hra bola vytvorená
+game_already_created###Hra už bola vytvorená
+you_joined_game###Pripojil/a si sa ku hre
+player_joined_game###%s sa pripojil ku hre
+already_joined###Už si pripojený k hre
+game_already_created###Hra už bola vytvorená
+cannot_join_no_game_in_room###V miestnosti nie je vytvorená žiadna hra, nemožes sa pripojiť
+cannot_join_game_already_started###Hra už začala, nemožeš sa pripojiť
