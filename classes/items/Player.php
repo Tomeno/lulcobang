@@ -13,9 +13,9 @@ class Player extends Item {
 		$role = $roleRepository->getOneById($player['role']);
 		$this->addAdditionalField('role', $role);
 		
-		$charakterRepository = new CharakterRepository();
-		$charakter = $charakterRepository->getOneById($player['charakter']);
-		$this->addAdditionalField('charakter', $charakter);
+		$characterRepository = new CharacterRepository();
+		$character = $characterRepository->getOneById($player['charakter']);
+		$this->addAdditionalField('character', $character);
 		
 		$cardRepository = new CardRepository();
 		
@@ -140,7 +140,7 @@ class Player extends Item {
 	}
 	
 	public function addLife() {
-		$character = $this->getAdditionalField('charakter');
+		$character = $this->getAdditionalField('character');
 		$maxLifes = $character['lifes'];
 		$role = $this->getAdditionalField('role');
 		$maxLifes = $role['type'] == Role::SHERIFF ? $maxLifes + 1 : $maxLifes;

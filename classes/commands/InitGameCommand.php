@@ -22,7 +22,7 @@ class InitGameCommand extends Command {
 					$this->check = self::ALREADY_STARTED;
 				} else {
 					if (is_numeric($this->params[0])) {
-						$characterRepository = new CharakterRepository();
+						$characterRepository = new CharacterRepository();
 						$charactersCount = $characterRepository->getCountAll();
 						if ($charactersCount < (count($players) * $this->params[0])) {
 							$this->check = self::NOT_ENOUGH_CHARACTERS;
@@ -44,7 +44,7 @@ class InitGameCommand extends Command {
 	protected function run() {
 		if ($this->check == self::OK) {
 			$roleRepository = new RoleRepository();
-			$characterRepository = new CharakterRepository();
+			$characterRepository = new CharacterRepository();
 
 			$characterCardsCount = is_numeric($this->params[0]) ? intval($this->params[0]) : 2;
 
@@ -106,7 +106,7 @@ class InitGameCommand extends Command {
 			$actualPlayerResponse = '';
 			foreach ($this->game->getAdditionalField('players') as $player) {
 				$possibleChoices = unserialize($player['possible_choices']);
-				$characterRepository = new CharakterRepository();
+				$characterRepository = new CharacterRepository();
 				$possibleCharacters = $characterRepository->getById($possibleChoices['possible_characters']);
 				MySmarty::assign('possibleCharacters', $possibleCharacters);
 				$response = MySmarty::fetch($this->template);

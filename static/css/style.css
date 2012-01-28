@@ -175,6 +175,33 @@ body
 	clear:both;
 }
 
+.detail
+{
+	padding: 10px;
+}
+
+.detail .image
+{
+	 float: left;
+	 padding-right: 10px;
+}
+
+.detail .title h2
+{
+	font-size: 40px;
+}
+
+.item
+{
+	float: left;
+	padding: 5px;
+}
+
+.item .text p
+{
+	text-align: center;
+}
+
 #overlay-response
 {
 	position: absolute;

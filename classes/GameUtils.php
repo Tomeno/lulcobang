@@ -79,7 +79,7 @@ class GameUtils {
 				else {
 					
 					$roleRepository = new RoleRepository();
-					$characterRepository = new CharakterRepository();
+					$characterRepository = new CharacterRepository();
 					$cardRepository = new CardRepository();
 
 					$roleRepository->setLimit(count($players));

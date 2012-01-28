@@ -1,6 +1,6 @@
 <?php
 
-class CharakterRepository extends Repository {
+class CharacterRepository extends Repository {
 	
 	protected $table = 'charakter';
 }

@@ -1,6 +1,6 @@
 <?php
 
-class Role extends Item {
+class Role extends LinkableItem {
 	
 	protected $imageFolder = 'images/cards/bang/roles/';
 	protected $back = '../special/role_back.jpg';
@@ -13,7 +13,34 @@ class Role extends Item {
 	public function __construct($role) {
 		parent::__construct($role);
 	}
-	
+
+	public function getImagePath() {
+		return $this->imageFolder . $this['image'];
+	}
+
+	public function getPageType() {
+		return 'role';
+	}
+
+	public function getItemAlias() {
+		return $this['alias'];
+	}
+
+	public function getRelatedRoles() {
+		$roleRepository = new RoleRepository();
+		$roleRepository->addAdditionalWhere(array('column' => 'type', 'value' => $this['type'], 'xxx' => '!='));
+		$roleRepository->addGroupBy('type');
+		return $roleRepository->getAll();
+	}
+
+	public function getLocalizedTitle() {
+		return Localize::getMessage($this['localize_title_key']);
+	}
+
+	public function getLocalizedDescription() {
+		return Localize::getMessage($this['localize_description_key']);
+	}
+
 	public function getIsSheriff() {
 		if ($this['type'] == Role::SHERIFF) {
 			return true;

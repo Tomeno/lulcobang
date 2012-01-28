@@ -34,7 +34,7 @@ class StartGameCommand extends Command {
 	protected function run() {
 		if ($this->check == self::OK) {
 			$roleRepository = new RoleRepository();
-			$characterRepository = new CharakterRepository();
+			$characterRepository = new CharacterRepository();
 			$cardRepository = new CardRepository();
 
 			$players = $this->game['players'];
