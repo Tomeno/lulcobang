@@ -7,15 +7,15 @@ class Player extends Item {
 		
 		$userRepository = new UserRepository();
 		$user = $userRepository->getOneById($player['user']);
-		$this->offsetSet('user', $user);
+		$this->addAdditionalField('user', $user);
 		
 		$roleRepository = new RoleRepository();
 		$role = $roleRepository->getOneById($player['role']);
-		$this->offsetSet('role', $role);
+		$this->addAdditionalField('role', $role);
 		
 		$charakterRepository = new CharakterRepository();
 		$charakter = $charakterRepository->getOneById($player['charakter']);
-		$this->offsetSet('charakter', $charakter);
+		$this->addAdditionalField('charakter', $charakter);
 		
 		$cardRepository = new CardRepository();
 		
@@ -26,7 +26,7 @@ class Player extends Item {
 				$handCards[] = $cardRepository->getOneById($cardId);
 			}
 		}
-		$this->offsetSet('hand_cards', $handCards);
+		$this->addAdditionalField('hand_cards', $handCards);
 		
 		$tableCardsId = unserialize($player['table_cards']);
 		$tableCards= array();
@@ -35,7 +35,7 @@ class Player extends Item {
 				$tableCards[] = $cardRepository->getOneById($cardId);
 			}
 		}
-		$this->offsetSet('table_cards', $tableCards);
+		$this->addAdditionalField('table_cards', $tableCards);
 	}
 	
 	public function __call($methodName, $arguments) {
@@ -73,7 +73,7 @@ class Player extends Item {
 	protected function hasCardType($cardType, $place = 'table') {
 		$methodName = 'getIs' . $cardType;
 		if (method_exists('Card', $methodName)) {
-			foreach ($this[$place . '_cards'] as $card) {
+			foreach ($this->getAdditionalField($place . '_cards') as $card) {
 				if ($card->$methodName()) {
 					return $card;
 				}
@@ -95,7 +95,7 @@ class Player extends Item {
 	 * @return boolean
 	 */
 	public function getCanPass() {
-		if ($this['actual_lifes'] >= count($this['hand_cards'])) {
+		if ($this['actual_lifes'] >= count($this->getAdditionalField('hand_cards'))) {
 			return true;
 		}
 		else {
@@ -140,8 +140,10 @@ class Player extends Item {
 	}
 	
 	public function addLife() {
-		$maxLifes = $this['charakter']['lifes'];
-		$maxLifes = $this['role']['type'] == Role::SHERIFF ? $maxLifes + 1 : $maxLifes;
+		$character = $this->getAdditionalField('charakter');
+		$maxLifes = $character['lifes'];
+		$role = $this->getAdditionalField('role');
+		$maxLifes = $role['type'] == Role::SHERIFF ? $maxLifes + 1 : $maxLifes;
 		if ($this['actual_lifes'] < $maxLifes) {
 			$newLifes = $this['actual_lifes'] + 1;
 			$GLOBALS['db']->update('player', array('actual_lifes' => $newLifes), 'id = ' . intval($this['id']));

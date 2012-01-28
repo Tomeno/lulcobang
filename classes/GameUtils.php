@@ -151,7 +151,6 @@ class GameUtils {
 	}
 	
 	public static function countMatrix($game) {
-		
 		$playerRepository = new PlayerRepository();
 		$players = $playerRepository->getLivePlayersByGame($game['id']);
 		$playersCount = count($players);
@@ -188,11 +187,7 @@ class GameUtils {
 				}
 			}
 		}
-		
-		$params = array(
-			'distance_matrix' => serialize($matrix)
-		);
-		DB::update(self::$table, $params, 'id = ' . intval($game['id']));
+		return $matrix;
 	}
 	
 	/**
@@ -204,6 +199,7 @@ class GameUtils {
 		$i = 1;
 		foreach (self::$seats as $seat) {
 			$player = self::getPlayerOnSeat($game, $seat);
+			
 			if ($player) {
 				if ($player['actual_lifes'] > 0) {
 					$pos = $i;
@@ -218,14 +214,11 @@ class GameUtils {
 				break;
 			}
 		}
-		
-		$gameRepository = new GameRepository();
-		return $gameRepository->getOneById(intval($game['id']));
-		
+		return $game->save(TRUE);
 	}
 	
 	protected function getPlayerOnSeat($game, $seat) {
-		foreach ($game['players'] as $player) {
+		foreach ($game->getAdditionalField('players') as $player) {
 			if ($player['seat'] == $seat) {
 				return $player;
 			}
@@ -265,7 +258,8 @@ class GameUtils {
 	}
 	
 	public static function getCards($game, $player, $count) {
-		foreach ($game['players'] as &$gamePlayer) {
+		echo 'dostal som sa sem';exit();
+		foreach ($game->getAdditionalField('players') as $gamePlayer) {
 			if ($gamePlayer['id'] == $player['id']) {
 				//if (self::checkTurn($game, $player)) {
 					$playerCards = $gamePlayer['hand_cards'];

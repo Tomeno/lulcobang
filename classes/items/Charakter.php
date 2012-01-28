@@ -8,6 +8,10 @@ class Charakter extends Item {
 	public function __construct($charakter) {
 		parent::__construct($charakter);
 	}
+
+	public function getImagePath() {
+		return $this->imageFolder . $this['image'];
+	}
 }
 
 ?>
