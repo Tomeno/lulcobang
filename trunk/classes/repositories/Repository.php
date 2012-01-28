@@ -18,6 +18,15 @@ abstract class Repository {
 	protected $additionalWhere = array();
 
 	/**
+	 * getter for table
+	 *
+	 * @return	string
+	 */
+	public function getTable() {
+		return $this->table;
+	}
+
+	/**
 	 * magic method to decide which method to use
 	 *
 	 * @param	string	$methodName

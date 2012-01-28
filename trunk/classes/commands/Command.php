@@ -4,11 +4,17 @@ abstract class Command {
 
 	protected $room = NULL;
 
+	/**
+	 *
+	 * @var	Game
+	 */
 	protected $game = NULL;
 
 	protected $loggedUser = NULL;
 
 	protected $actualPlayer = NULL;
+
+	protected $players = NULL;
 
 	protected $params = NULL;
 
@@ -23,7 +29,8 @@ abstract class Command {
 	protected static $commands = array(
 		'.create' => array('class' => 'CreateGameCommand'),
 		'.join' => array('class' => 'JoinGameCommand'),
-		'.start' => array('class' => 'StartGameCommand'),
+		'.init' => array('class' => 'InitGameCommand'),
+		'.choose_character' => array('class' => 'ChooseCharacterCommand'),
 	//	'.draw' => array('class' => 'DrawCommand'),
 	//	'.diligenza' => array('class' => 'DiligenzaCommand'),
 	//	'.wells_fargo' => array('class' => 'WellsFargoCommand'),
@@ -43,7 +50,8 @@ abstract class Command {
 
 		$this->loggedUser = LoggedUser::whoIsLogged();
 		if ($this->game && $this->loggedUser) {
-			foreach ($this->game['players'] as $player) {
+			$this->players = $this->game->getAdditionalField('players');
+			foreach ($this->players as $player) {
 				if ($this->loggedUser['id'] == $player['user']['id']) {
 					$this->actualPlayer = $player;
 					break;

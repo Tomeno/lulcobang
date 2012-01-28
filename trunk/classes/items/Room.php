@@ -68,7 +68,7 @@ class Room extends LinkableItem {
 	}
 	
 	public function getGame() {
-		$query = 'SELECT * FROM game WHERE room = ' . intval($this['id']) . ' AND status IN (' . Game::GAME_STATUS_CREATED . ', ' . Game::GAME_STATUS_STARTED . ')';
+		$query = 'SELECT * FROM game WHERE room = ' . intval($this['id']) . ' AND status IN (' . Game::GAME_STATUS_CREATED . ', ' . Game::GAME_STATUS_INITIALIZED . ', ' . Game::GAME_STATUS_STARTED . ')';
 		$game = DB::fetchFirst($query);
 		
 		if ($game) {

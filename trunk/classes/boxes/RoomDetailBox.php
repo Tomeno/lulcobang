@@ -9,6 +9,7 @@ class RoomDetailBox extends AbstractBox {
 		
 		$roomRepository = new RoomRepository();
 		$room = $roomRepository->getOneByAlias($roomAlias);
+		$loggedUser = LoggedUser::whoIsLogged();
 
 		if ($room) {
 			$gameRepository = new GameRepository();
@@ -32,14 +33,20 @@ class RoomDetailBox extends AbstractBox {
 					$response = Command::setup('.join', $game);
 				} elseif (Utils::post('start')) {
 					$response = Command::setup('.start', $game);
+				} elseif (Utils::post('choose_character')) {
+					$response = Command::setup('.choose_character ' . Utils::post('character'), $game);
 				}
-
+				Utils::redirect(Utils::getActualUrl(), FALSE);
 				// TODO tu by sa mohol spravit redirect asi lebo respons bude v db
 				MySmarty::assign('response', $response);
 			}
 
 			$gameBox = new GameBox();
 			if ($game !== NULL) {
+				$playerRepository = new PlayerRepository();
+				$actualPlayer = $playerRepository->getOneByGameAndUser($game['id'], $loggedUser['id']);
+				MySmarty::assign('response', $actualPlayer['command_response']);
+
 				$gameBox->setGame($game);
 			}
 			MySmarty::assign('gameBox', $gameBox->render());

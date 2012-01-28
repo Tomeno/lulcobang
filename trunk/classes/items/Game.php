@@ -3,11 +3,15 @@
 class Game extends Item {
 	
 	const GAME_STATUS_CREATED = 0;
+
+	const GAME_STATUS_INITIALIZED = 1;
 	
-	const GAME_STATUS_STARTED = 1;
+	const GAME_STATUS_STARTED = 2;
 	
-	const GAME_STATUS_ENDED = 2;
+	const GAME_STATUS_ENDED = 3;
 	
+	const MINIMUM_PLAYERS_COUNT = 2;
+
 	public function __construct($game) {
 		parent::__construct($game);
 		
@@ -20,7 +24,7 @@ class Game extends Item {
 				$drawPileCards[] = $cardRepository->getOneById($cardId);
 			}
 		}
-		$this->offsetSet('draw_pile', $drawPileCards);
+		$this->addAdditionalField('draw_pile', $drawPileCards);
 		
 		$throwPile = unserialize($game['throw_pile']);
 		$throwPileCards = array();
@@ -29,11 +33,11 @@ class Game extends Item {
 				$throwPileCards[] = $cardRepository->getOneById($cardId);
 			}
 		}
-		$this->offsetSet('throw_pile', $throwPileCards);
+		$this->addAdditionalField('throw_pile', $throwPileCards);
 		
 		$playerRepository = new PlayerRepository();
 		$players = $playerRepository->getByGame($game['id']);
-		$this->offsetSet('players', $players);
+		$this->addAdditionalField('players', $players);
 	}
 	
 	public function getTopThrowPile() {
