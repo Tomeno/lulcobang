@@ -42,45 +42,47 @@ rev_carabine_title###Rev.Carabine
 rev_carabine_description###You can shoot to distance 4 with this weapon.
 winchester_title###Winchester
 winchester_description###You can shoot to distance 5 with this weapon.
-dodge_title###
-dodge_description###
-punch_title###
-punch_description###
-springfield_title###
-springfield_description###
-brawl_title###
-brawl_description###
-rag_time_title###
-rag_time_description###
-tequila_title###
-tequila_description###
-hideout_title###
-hideout_description###
-silver_title###
-silver_description###
-sombrero_title###
-sombrero_description###
-iron_plate_title###
-iron_plate_description###
-ten_gallon_hat###
-ten_gallon_description###
-bible_title###
-bible_description###
-canteen_title###
-canteen_description###
-knife_title###
-knife_description###
-derringer_title###
-derringer_description###
-howitzer_title###
-howitzer_description###
-pepperbox_title###
-pepperbox_description###
-buffalo_rifle_title###
-buffalo_rifle_description###
-can_can_title###
-can_can_description###
-conestoga_title###
-conestoga_desciption###
-pony_express_title###
-pony_express_desciption###
+dodge_title###Dodge
+dodge_description###This card cancels the BANG! cards and then draws a card from the deck.
+punch_title###Punch
+punch_description###This card has same effect as BANG! card, but on distance 1. This cards isnt count as BANG!
+springfield_title###Springfield
+springfield_description###Player which is on turn, discard card Springfield together with another card on the deck. Than he choose one player, which is target of attack with BANG! effect.
+brawl_title###Brawl
+brawl_description###The current player plays a Brawl card, discarding another card from her hand, of her choice, in addition to the Brawl card. After doing so, the Brawl effect is to force all the other players to discard a card, either from his hand of from play, chosen by the player who played the Brawl card (she can choose differently for each player).
+rag_time_title###Rag Time
+rag_time_description###Player which is on turn, discard card Rag Time together with another card on the deck. Than he chooses one player, and take him one card from hand or table, and keep it.
+tequila_title###Tequila
+tequila_description###The current player plays a Tequila, and discards another card too. He chooses any one player to regain one life point ( he can even choose himself).
+hideout_title###Hideout
+hideout_description###The distance between other players and one who has a Hideout card in play is increased by 1. However, he still sees the other players at the normal distance.
+silver_title###Silver
+silver_description###A player who has a prized Silver in play sees all the other players at a distance decreased by 1. However, other players still see him at the normal distance. Distances less than 1 are considered to be 1.
+sombrero_title###Sombrero
+sombrero_description###The current player play a Sombrero card in front of him. Starting with the next player's turn, he can discard it for the Missed! effect.
+iron_plate_title###Iron plate
+iron_plate_description###The current player play a Iron plate card in front of him. Starting with the next player's turn, he can discard it for the Missed! effect.
+ten_gallon_hat###Ten Gallon Hat
+ten_gallon_description###The current player play a Gallon Hat card in front of him. Starting with the next player's turn, he can discard it for the Missed! effect.
+bible_title###Bible
+bible_description###The current player play a Bible card in front of him. Starting with the next player's turn, he can discard it for the Missed! effect. And then he "draw!" one card from the deck.
+canteen_title###Canteen
+canteen_description###The current player plays a Canteen card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to discard it to gain 1 life point.
+knife_title###Knife
+knife_description###The current player plays a Knife card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to discard it to cause a BANG! on a player at a distance of 1. This card is not count as BANG!.
+derringer_title###Derringer
+derringer_description###The current player plays a Derringer card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to discard it to cause a BANG! on a player at a distance of 1, and also draw a card from the deck. This card is not count as BANG!.
+howitzer_title###Howitzer
+howitzer_description###The current player plays a Howitzer card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to discard it to cause a BANG! to all the players. This card is not count as BANG!.
+pepperbox_title###Pepperbox
+pepperbox_description###The current player plays a Pepperbox card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to discard it to cause a BANG! on a player at reachable distance. This card is not count as BANG!.
+buffalo_rifle_title###Buffalo Rifle
+buffalo_rifle_description###The current player plays a Buffalo Rifle card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to discard it to cause a BANG! on a player at any distance. This card is not count as BANG!.
+can_can_title###Can Can
+can_can_description###The current player plays a Can Can card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to use it to discard 1 card to 1 player at any distance, from hand or from table.
+conestoga_title###Conestoga
+conestoga_desciption###The current player plays a Conestoga card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to use it to take 1 card to 1 player at any distance, from hand or from table.
+pony_express_title###Pony Express
+pony_express_desciption###The current player plays a Pony Express card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to use it to "draw!" 3 cards from the deck.
+whisky_title###Whisky
+whisky_description###The current player plays a Whisky, and discards another card too. This card lets a player regain two life points.
