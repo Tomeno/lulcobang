@@ -26,6 +26,7 @@
 				{/foreach}
 			</div>
 		{/if}
+		<div class="clear"></div>
 		{if $card.relatedCharacters}
 			<div class="related">
 				<h3>{localize key="related_characters"}</h3>

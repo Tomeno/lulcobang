@@ -30,10 +30,10 @@ function smarty_function_image($params, &$smarty)
 			}
 
 			if ($params['width']) {
-				$img .= ' width="' . $params['width'] . 'px"';
+				$img .= ' width="' . $params['width'] . '"';
 			}
 			if ($params['height']) {
-				$img .= ' height="' . $params['height'] . 'px"';
+				$img .= ' height="' . $params['height'] . '"';
 			}
 
 			$img .= ' />';
