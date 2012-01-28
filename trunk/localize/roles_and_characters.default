@@ -1,0 +1,39 @@
+sheriff_title###Sheriff
+sheriff_description###He must eliminate all the Outlaws and the Renegade, to protect law and order
+renegade_title###Renegade
+renegade_description###He wants to be the new Sheriff; his goal is to be the last character in play.
+outlaw_title###Outlaw
+outlaw_description###He would like to kill the Sheriff, but he have no scruples about eliminating each other to gain rewards!
+deputy_title###Deputy
+deputy_description###He helps and protects Sheriff, and shares his same goal, at all costs!
+bart_cassidy_description###Each time he loses a life point, he immediately draws a card from the deck.
+black_jack_description###During the phase 1 of his turn, he must show the second card he draws: if it's Heart or Diamonds (just like a "draw!"), he draws one additional card (without revealing it).
+calamity_janet_description###She can use BANG! cards as Missed! cards and vice versa. If she plays a Missed! card as a BANG!, she cannot play another BANG! card that turn (unless she has a Volcanic in play).
+el_gringo_description###Each time he loses a life point due to a card played by another player, he draws a random card from the hands of that player (one card for each life point). If that player has no more cards, too bad! Note that Dynamite damages are not caused by any player.
+jesse_jones_description###During phase 1 of his turn, he may choose to draw the first card from the deck, or randomly from the hand of any other player. Then he draws the second card from the deck.
+jourdonnais_description###He is considered to have a Barrel card in play at all times; he can "draw!" when he is the target of a BANG!, and on a Heart he is missed. If he has another real Barrel card in play, he can count both of them, giving him two chances to cancel the BANG! before playing a Missed! card.
+kit_carlson_description###During the phase 1 of his turn, he looks at the top three cards of the deck: he chooses 2 to draw, and puts the other one back on the top of the deck, face down.
+lucky_duke_description###Each time he is required to "draw!", he flips the top two cards from the deck, and chooses the result he prefers. Discard both cards afterwards.
+paul_regret_description###He is considered to have a Mustang card in play at all times; all other players must add 1 to the distance to him. If he has another real Mustang card in play, he can count both of them, increasing all distances to him by a total of 2).
+pedro_ramirez_description###During the first phase of his turn, he may choose to draw the first card from the top of the discard pile or from the deck. Then, he draws the second card from the deck.
+rose_doolan_description###She is considered to have an Appaloosa card in play at all times; she sees the other players at a distance decreased by 1. If she has another real Appaloosa card in play, she can count both of them, reducing her distance to all other players by a total of 2.
+sid_ketchum_description###At any time, he may discard 2 cards from his hand to regain one life point. If he is willing and able, he can use this ability more than once at a time. But remember: you cannot have more life points than your starting amount!
+slab_the_killer_description###Players trying to cancel his BANG! cards need to play 2 Missed! cards. The Barrel effect, if successfully used, only counts as one Missed!.
+suzy_lafayette_description###As soon as she has no cards in her hand, she draws a card from the draw pile.
+vulture_sam_description###Whenever a character is eliminated from the game, Sam takes all the cards that player had in his hand and in play, and adds them to his hand.
+willy_the_kid_description###He can play any number of BANG! cards during his turn.
+apache_kid_description###He is unaffected by cards from the suit of Diamonds played by the other players. During a Duel, his ability does not work.
+belle_star_description###During her turn, no card in front on any other player has any effect. This applies both to the blue-as well as to the green-bordered cards.
+bill_noface_description###During phase 1 of his turn, he draws 1 card plus 1 card for each injury (lost life point) he currently suffers. So ,if he is at full life, he draws 1 card; with one life point less, he draws 2 cards; with two life points less, he draws 3 cards, and so forth.
+chuck_wengam_description###During his turn, he can choose to lose 1 life point to draw 2 cards from the deck. He may also use this ability more than once in the same turn however, he cannot choose to lose his last life point this way.
+doc_holyday_description###Once during his turn, he can discard any two cards from his hand for the effect of a BANG! card against a player within range of his weapon. This ability not count towards his limit of one BANG! card per turn. To hit Apache Kid in this way, at least one of the two discarded cards must not be a Diamond.
+elena_fuente_description###She can use any card in her hand as a Missed! card.
+greg_digger_description###Each time another character is eliminated, he regains 2 life points. As usual, he cannot exceed his initial number of life points in this way.
+herb_hunter_description###Each time another character is eliminated, he draws 2 extra cards from the deck.
+jose_delgado_description###During his turn he can discard a blue-bordered card from his hand to draw 2 cards from the deck. He may use this ability twice per turn.
+moly_stark_description###Each time she plays or voluntarily discards a Missed!, Beer , or BANG! card when it is not her turn, she draws one card from the deck. If she discards a BANG! card during a Duel, she does not draw her replacement cards until the end of the Duel, when she would draw one card for each BANG! card she used during the Duel. Cards that she is forced to discard due to cards Cat Balou, Brawl, or Can-Can are not considered voluntarily discarded!
+pat_brennan_description###During phase 1 of his turn, he may choose to draw the usual 2 cards from the deck, or, instead draw 1 card (and this one card only) from in play and add it to his hand. The card can be in front of any player, and can be either a blue-bordered card.
+pixie_pete_description###During phase 1 of his turn, he draws 3 cards instead of 2.
+sean_mallory_description###In phase 3 of his turn, he can hold up to 10 cards in his hand. He does not have to discard any cards if he has more cards than the number of life points he has left, but less than 11.
+tequila_joe_description###Each time he plays a Beer card, he regains 2 life points instead of 1. He only regains 1 life point from similar cards like Saloon, Tequila, or Canteen.
+veru_custer_description###At the beginning of her turn, before drawing any cards (in phase 1), she chooses any other characters still in play. Until her next turn, she has the same ability as that character.

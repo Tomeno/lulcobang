@@ -245,10 +245,15 @@ abstract class Repository {
 			$whereParts = array();
 			for ($i = 0; $i < count($keys); $i++) {
 				if (is_array($values[$i])) {
-					foreach ($values[$i] as &$val) {
-						$val = '"' . addslashes($val) . '"';
+					if (empty ($values[$i])) {
+						$value = 0;
+					} else {
+						foreach ($values[$i] as &$val) {
+							$val = '"' . addslashes($val) . '"';
+						}
+						$value = implode(', ', $values[$i]);
 					}
-					$whereParts[] = $keys[$i] . ' IN (' . implode(', ', $values[$i]) . ')';
+					$whereParts[] = $keys[$i] . ' IN (' . $value . ')';
 				} else {
 					$whereParts[] = $keys[$i] . ' = "' . addslashes($values[$i]) . '"';
 				}

@@ -39,7 +39,7 @@ class Card extends LinkableItem {
 		$cardBaseTypeRepository = new CardBaseTypeRepository();
 		$cardBaseType = $cardBaseTypeRepository->getOneById($this['card_base_type']);
 
-		$this['cardBaseType'] = $cardBaseType;
+		$this->addAdditionalField('cardBaseType', $cardBaseType);
 	}
 	
 	public function getImagePath() {
@@ -51,15 +51,24 @@ class Card extends LinkableItem {
 	}
 	
 	public function getItemAlias() {
-		return 'karta-' . $this['id'];
+		$cardBaseType = $this->getAdditionalField('cardBaseType');
+		if ($cardBaseType) {
+			return $cardBaseType['alias'];
+		}
 	}
 
 	public function getTitle() {
-		return $this['cardBaseType']->getLocalizedTitle();
+		$cardBaseType = $this->getAdditionalField('cardBaseType');
+		if ($cardBaseType) {
+			return $cardBaseType->getLocalizedTitle();
+		}
 	}
 
 	public function getDescription() {
-		return $this['cardBaseType']->getLocalizedDescription();
+		$cardBaseType = $this->getAdditionalField('cardBaseType');
+		if ($cardBaseType) {
+			return $cardBaseType->getLocalizedDescription();
+		}
 	}
 
 	/**
@@ -69,19 +78,34 @@ class Card extends LinkableItem {
 	 * @return	array
 	 */
 	public function getRelatedCards() {
-		$cardBaseTypeRepository = new CardBaseTypeRepository();
-		$cardBaseTypeRepository->addAdditionalWhere(array('column' => 'id', 'value' => $this['cardBaseType']['id'], 'xxx' => '!='));
-		$cardBaseTypeList = $cardBaseTypeRepository->getByCardGroupType($this['cardBaseType']['card_group_type']);
+		$cardBaseType = $this->getAdditionalField('cardBaseType');
+		if ($cardBaseType) {
+			$cardBaseTypeRepository = new CardBaseTypeRepository();
+			$cardBaseTypeRepository->addAdditionalWhere(array('column' => 'id', 'value' => $this['card_base_type'], 'xxx' => '!='));
+			$cardBaseTypeList = $cardBaseTypeRepository->getByCardGroupType($cardBaseType['card_group_type']);
 
-		$cardBaseTypes = array();
-		foreach ($cardBaseTypeList as $cardBaseType) {
-			$cardBaseTypes[] = $cardBaseType['id'];
+			$cardBaseTypes = array();
+			foreach ($cardBaseTypeList as $oneCardBaseType) {
+				$cardBaseTypes[] = $oneCardBaseType['id'];
+			}
+
+			$cardRepository = new CardRepository();
+			$cardRepository->setGroupBy('card_base_type');
+			return $cardRepository->getByCardBaseType($cardBaseTypes);
+		}
+	}
+
+	public function getRelatedCharacters() {
+		$characterRelatedCardRepository = new CharacterRelatedCardRepository();
+		$characterRelatedCards = $characterRelatedCardRepository->getByCardBaseType($this['card_base_type']);
+
+		$characters = array();
+		foreach ($characterRelatedCards as $characterRelatedCard) {
+			$characters[] = $characterRelatedCard['charakter'];
 		}
 
-		$cardRepository = new CardRepository();
-		$cardRepository->addAdditionalWhere(array('column' => 'id', 'value' => $this['id'], 'xxx' => '!='));
-		$cardRepository->setGroupBy('card_base_type');
-		return $cardRepository->getByCardBaseType($cardBaseTypes);
+		$characterRepository = new CharacterRepository();
+		return $characterRepository->getById($characters);
 	}
 
 	public function getIsType($type) {

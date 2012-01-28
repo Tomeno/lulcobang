@@ -58,9 +58,12 @@ class PageActionMap {
 			$aliases = array($aliases);
 		}
 
-		$language = Utils::getLanguage($lang);
+		if ($lang === NULL) {
+			$language = Utils::getLanguage();
+			$lang = $language['shortcut'];
+		}
 
-		$url = $language['shortcut'];
+		$url = $lang;
 		foreach ($aliases as $alias) {
 			$url .= '/' . $alias;
 		}

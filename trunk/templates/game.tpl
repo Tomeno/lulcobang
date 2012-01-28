@@ -17,6 +17,7 @@
 				{if $game.status == 1}
 					<div class="row">
 						<div class="lifes">{$player.actual_lifes}</div>
+						<p>moze to byt sposobene tym ze charakter je uz additional field</p>
 						<div class="char"><img src="{$player.charakter.imageFolder}{$player.charakter.image}" alt="{$player.charakter.name}" width="22" height="38" /></div>
 						<div class="role"><img src="{$player.role.imageFolder}{if $player.role.isSheriff or $player.user.id == $me.user.id or $player.actual_lifes == 0}{$player.role.image}{else}{$player.role.back}{/if}" alt="rola" width="22" height="38" /></div>
 					</div>
