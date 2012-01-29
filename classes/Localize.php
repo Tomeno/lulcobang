@@ -45,7 +45,7 @@ class Localize {
 											$key = $translates[0];
 											$value = $translates[1];
 											if (!isset($localizationMap[$ext][$language][$key])) {
-												$localizationMap[$ext][$language][$key] = $value;
+												$localizationMap[$ext][$language][$key] = trim($value);
 											}
 										}
 									}

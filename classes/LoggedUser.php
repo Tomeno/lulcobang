@@ -45,12 +45,14 @@ class LoggedUser {
 			$userExist = $userRepository->getOneByUsername($username);
 
 			if ($userExist === NULL) {
+				$colorRepository = new ColorRepository();
+				$count = $colorRepository->getCountAll();
+				$rand = rand(1, $count);
+
 				$params = array(
 					'username' => $username,
 					'password' => $password,
-					'color' => strtoupper('#' . str_pad(dechex(rand(0, 255)), 2, 0, STR_PAD_LEFT) .
-							str_pad(dechex(rand(0, 255)), 2, 0, STR_PAD_LEFT) .
-							str_pad(dechex(rand(0, 255)), 2, 0, STR_PAD_LEFT)),
+					'color' => $rand,
 				);
 				DB::insert('user', $params);
 			}
@@ -75,7 +77,7 @@ class LoggedUser {
 		$loggedUser = self::whoIsLogged();
 		// TODO add back
 //		Room::removeUser($loggedUser['id']);
-		setcookie(self::$cookieName, "", time() - 3600);
+		setcookie(self::$cookieName, "", time() - 3600, '/');
 	}
 }
 

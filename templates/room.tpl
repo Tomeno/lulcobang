@@ -1,8 +1,5 @@
 <div id="table_wrapper">
-	{if $loggedUser}<div><p>Prihlásený: <strong>{$loggedUser.username}</strong> <a href="logout.php">Odhlásiť</a></p></div>{/if}
-
 	{$gameBox}
-	
 	{$chatBox}
 
 	{*
