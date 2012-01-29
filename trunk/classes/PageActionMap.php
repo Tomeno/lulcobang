@@ -13,7 +13,7 @@ class PageActionMap {
 				$page = $pageRepository->getOneByLanguageAndAlias($language['id'], $alias);
 
 				if ($page) {
-					$pageType = $action = $page->getPageType();
+					$pageType = $page->getPageTypeObject();
 					if ($pageType) {
 						$action = $pageType['action'];
 						if ($action) {

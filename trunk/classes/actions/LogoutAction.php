@@ -8,7 +8,7 @@ class LogoutAction extends AbstractAction {
 			LoggedUser::userLogout();
 		}
 
-		Utils::redirect('prihlasenie.html');
+		Utils::redirect(Utils::getActualUrl(), FALSE);
 	}
 }
 

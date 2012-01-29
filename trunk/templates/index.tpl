@@ -9,8 +9,11 @@
 		<link type="text/css" rel="stylesheet" media="all" href="static/css/style.css" />
 	</head>
 	<body{if $bodyAdded} {$bodyAdded}{/if}>
-		{$content}
-		<div class="clear"></div>
-		<p>Copyright 2010 &copy; Michal Lulčo | Design by <a href="http://clira.sk/" onclick="window.open('http://clira.sk/', '_blank'); return false;">Clira</a></p>
+		<div id="content">
+			{$upperPart}
+			{$content}
+			<div class="clear"></div>
+			<p>Copyright 2010 &copy; Michal Lulčo | Design by <a href="http://clira.sk/" onclick="window.open('http://clira.sk/', '_blank'); return false;">Clira</a></p>
+		</div>
 	</body>
 </html>

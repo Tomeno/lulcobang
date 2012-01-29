@@ -44,6 +44,14 @@ class Chat {
 	 * @return array
 	 */
 	public static function getMessages($room, $toUser = 0, $time = 0) {
+		$colorRepository = new ColorRepository();
+		$colors = $colorRepository->getAll();
+
+		$colorList = array();
+		foreach ($colors as $color) {
+			$colorList[$color['id']] = $color;
+		}
+
 		$query = 'SELECT message.*, user.*
 			FROM ' . self::$table . '
 			LEFT JOIN user ON message.user = user.id
@@ -60,6 +68,7 @@ class Chat {
 			if ($message['localize_key']) {
 				$message['text'] = Localize::getMessage($message['localize_key'], unserialize($message['localize_params']));
 			}
+			$message['color'] = $colorList[$message['color']]['code'];
 		}
 
 		return $messages;

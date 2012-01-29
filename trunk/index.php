@@ -21,6 +21,9 @@ if (LoggedUser::whoIsLogged() === NULL && $actionClassName != 'LoginAction') {
 	Utils::redirect($url);
 }
 
+$upperPartBox = new UpperPartBox();
+MySmarty::assign('upperPart', $upperPartBox->render());
+
 $actionClass = new $actionClassName();
 MySmarty::assign('content', $actionClass->getContent());
 MySmarty::assign('baseUrl', BASE_URL);
