@@ -2,24 +2,60 @@
 
 abstract class Command {
 
+	/**
+	 * actual room
+	 *
+	 * @var	Room
+	 */
 	protected $room = NULL;
 
 	/**
+	 * actual game
 	 *
 	 * @var	Game
 	 */
 	protected $game = NULL;
 
+	/**
+	 * logged user
+	 *
+	 * @var	User
+	 */
 	protected $loggedUser = NULL;
 
+	/**
+	 * actual player
+	 *
+	 * @var	Player
+	 */
 	protected $actualPlayer = NULL;
 
+	/**
+	 * players in game
+	 *
+	 * @var	array<Player>
+	 */
 	protected $players = NULL;
 
+	/**
+	 * command params
+	 *
+	 * @var	mixed
+	 */
 	protected $params = NULL;
 
+	/**
+	 * check result
+	 *
+	 * @var	mixed
+	 */
 	protected $check = NULL;
 
+	/**
+	 * command messages
+	 * @var	array
+	 */
+	protected $messages = array();
 
 	/**
 	 * map command to method
@@ -31,12 +67,16 @@ abstract class Command {
 		'.join' => array('class' => 'JoinGameCommand'),
 		'.init' => array('class' => 'InitGameCommand'),
 		'.choose_character' => array('class' => 'ChooseCharacterCommand'),
-	//	'.draw' => array('class' => 'DrawCommand'),
+		'.start' => array('class' => 'StartGameCommand'),
+		'.draw' => array('class' => 'DrawCommand'),
+		'.choose_cards' => array('class' => 'ChooseCardsCommand'),
+		'.throw' => array('class' => 'ThrowCommand'),
+		'.pass' => array('class' => 'PassCommand'),
 	//	'.diligenza' => array('class' => 'DiligenzaCommand'),
 	//	'.wells_fargo' => array('class' => 'WellsFargoCommand'),
 	//	'.beer' => array('class' => 'BeerCommand'),
 	//	'.life' => array('class' => 'LifeCommand'),
-	//	'.pass' => array('class' => 'PassCommand'),
+	
 	);
 
 	private function  __construct($params, $game) {
@@ -60,7 +100,7 @@ abstract class Command {
 		}
 	}
 
-	public static function setup($command, $game) {
+	public final static function setup($command, $game) {
 		$commandArray = explode(' ', $command);
 		$command = $commandArray[0];
 		$params = array_slice($commandArray, 1);
@@ -73,9 +113,10 @@ abstract class Command {
 		}
 	}
 
-	protected function execute() {
+	protected final function execute() {
 		$this->check();
 		$this->run();
+		$this->generateMessages();
 		$this->write();
 		return $this->createResponse();
 	}
@@ -84,7 +125,15 @@ abstract class Command {
 
 	abstract protected function run();
 
-	abstract protected function write();
+	abstract protected function generateMessages();
+
+	protected final function write() {
+		if ($this->messages && is_array($this->messages)) {
+			foreach ($this->messages as $message) {
+				Chat::addMessage($message);
+			}
+		}
+	}
 
 	abstract protected function createResponse();
 }

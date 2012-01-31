@@ -38,50 +38,45 @@ class JoinGameCommand extends Command {
 		}
 	}
 
-	protected function write() {
+	protected function generateMessages() {
 		if ($this->check == self::OK) {
-			$messageParams = array(
+			$this->messages[] = array(
 				'user' => User::SYSTEM,
 				'notToUser' => $this->loggedUser['id'],
 				'room' => $this->room['id'],
 				'localizeKey' => 'player_joined_game',
 				'localizeParams' => array($this->loggedUser['username']),
 			);
-			Chat::addMessage($messageParams);
 
-			$messageParams = array(
+			$this->messages[] = array(
 				'user' => User::SYSTEM,
 				'toUser' => $this->loggedUser['id'],
 				'room' => $this->room['id'],
 				'localizeKey' => 'you_joined_game',
 				'localizeParams' => array($this->loggedUser['username']),
 			);
-			Chat::addMessage($messageParams);
 		} elseif ($this->check == self::ALREADY_JOINED) {
-			$messageParams = array(
+			$this->messages[] = array(
 				'user' => User::SYSTEM,
 				'toUser' => $this->loggedUser['id'],
 				'room' => $this->room['id'],
 				'localizeKey' => 'already_joined',
 			);
-			Chat::addMessage($messageParams);
 		} elseif ($this->check == self::GAME_STARTED) {
-			$messageParams = array(
+			$this->messages[] = array(
 				'user' => User::SYSTEM,
 				'toUser' => $this->loggedUser['id'],
 				'room' => $this->room['id'],
 				'localizeKey' => 'cannot_join_game_already_started',
 			);
-			Chat::addMessage($messageParams);
 
 		} elseif ($this->check == self::NO_GAME) {
-			$messageParams = array(
+			$this->messages[] = array(
 				'user' => User::SYSTEM,
 				'toUser' => $this->loggedUser['id'],
 				'room' => $this->room['id'],
 				'localizeKey' => 'cannot_join_no_game_in_room',
 			);
-			Chat::addMessage($messageParams);
 		}
 	}
 

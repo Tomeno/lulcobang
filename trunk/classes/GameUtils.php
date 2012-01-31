@@ -5,6 +5,7 @@ class GameUtils {
 	protected static $table = 'game';
 	protected static $playerTable = 'player';
 	protected static $seats = array(1, 5, 3, 7, 2, 6, 4, 8);
+	protected static $positions = array(1, 2, 3, 4, 5, 6, 7, 8);
 
 	public static function getPosition(Game $game) {
 		$playerRepository = new PlayerRepository();
@@ -66,90 +67,6 @@ class GameUtils {
 		
 	}
 	
-	public static function start($game) {
-		if ($game) {
-			
-			$players = $game['players'];
-			
-			if (count($players) >= 2) {
-				
-				if ($game['status'] == 1) {
-					return 2;
-				}
-				else {
-					
-					$roleRepository = new RoleRepository();
-					$characterRepository = new CharacterRepository();
-					$cardRepository = new CardRepository();
-
-					$roleRepository->setLimit(count($players));
-					$roles = $roleRepository->getAll();
-					shuffle($roles);
-					
-					$characters = $characterRepository->getAll();
-					shuffle($characters);
-					
-					$cards = $cardRepository->getCardIds();
-					shuffle($cards);
-					
-					$j = 0;
-					foreach ($players as $player) {
-						$playerCards = array();
-						$params = array();
-						
-						$params['role'] = $roles[$j]['id'];
-						
-						$params['charakter'] = $characters[$j]['id'];
-						$params['actual_lifes'] = $characters[$j]['lifes'];
-						
-						for ($i = 0; $i < $params['actual_lifes']; $i++) {
-							$playerCards[] = array_pop($cards);
-						}
-						
-						if ($roles[$j]['type'] == Role::SHERIFF) {
-							$params['phase'] = 1;
-							$params['actual_lifes']++;
-						}
-						
-						$params['hand_cards'] = serialize($playerCards);
-						$params['table_cards'] = serialize(array());
-						DB::update(self::$playerTable, $params, 'game = ' . intval($game['id']) . ' AND user = ' . intval($player['user']['id']));
-						
-						$j++;
-					}
-					
-					$params = array(
-						'draw_pile' => serialize($cards),
-						'throw_pile' => serialize(array()),
-						'game_start' => time(),
-						'status' => Game::GAME_STATUS_STARTED,
-					);
-					
-					DB::update(self::$table, $params, 'id = ' . intval($game['id']));
-					
-					$gameRepository = new GameRepository();
-					$game = $gameRepository->getOneById($game['id']);
-					
-					$game = self::changePositions($game);
-					foreach ($game['players'] as $player) {
-						if ($player['role'] == Role::SHERIFF) {
-							self::setTurn($game, $player['position']);
-						}
-					}
-					self::countMatrix($game);
-					
-					return 1;
-				}
-			}
-			else {
-				return 3;
-			}
-		}
-		else {
-			return 4;
-		}
-	}
-	
 	public static function countMatrix($game) {
 		$playerRepository = new PlayerRepository();
 		$players = $playerRepository->getLivePlayersByGame($game['id']);
@@ -197,21 +114,19 @@ class GameUtils {
 	 */
 	public static function changePositions($game) {
 		$i = 1;
-		foreach (self::$seats as $seat) {
+		// foreachneme positions tak aby sme sli do kruhu a postupne zistime ci na tychto miestach sedia nejaki hraci
+		foreach (self::$positions as $seat) {
 			$player = self::getPlayerOnSeat($game, $seat);
 			
 			if ($player) {
 				if ($player['actual_lifes'] > 0) {
 					$pos = $i;
 					$i++;
-				}
-				else {
+				} else {
 					$pos = 0;
 				}
-				DB::update(self::$playerTable, array('position' => $pos), 'id = ' . intval($player['id']));
-			}
-			else {
-				break;
+				$player['position'] = $pos;
+				$player->save();
 			}
 		}
 		return $game->save(TRUE);
@@ -233,12 +148,13 @@ class GameUtils {
 		DB::update(self::$table, $params, 'id = ' . intval($game['id']));
 	}
 	
-	public static function getNextPosition($game, $actualPosition) {
+	public static function getNextPosition($game) {
+		//throw new Exception('GameUtils::getNetxPosition ide to nejako do cikcaku');
 		$playerRepository = new PlayerRepository();
 		$players = $playerRepository->getLivePlayersByGame($game['id']);
 		$playersCount = count($players);
 		
-		$next = $actualPosition + 1;
+		$next = $game['turn'] + 1;
 		return $next <= $playersCount ? $next : $next - $playersCount;
 	}
 	

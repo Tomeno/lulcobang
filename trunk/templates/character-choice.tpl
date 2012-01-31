@@ -1,3 +1,5 @@
+{* TODO localize *}
+
 <p>Your role is xy and you have these possible characters</p>
 <form action="{actualurl}" method="post">
 	<fieldset>
@@ -5,6 +7,6 @@
 			{image src=$possibleCharacter.imagePath alt=$possibleCharacter.name width='150' height='230'}
 			<input type="radio" name="character" value="{$possibleCharacter.id}" />
 		{/foreach}
-		<input type="submit" name="choose_character" value="{localization key='choose'}" />
+		<input type="submit" name="choose_character" value="{localize key='choose'}" />
 	</fieldset>
 </form>

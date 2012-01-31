@@ -2,6 +2,12 @@
 
 class Player extends Item {
 	
+	const PHASE_PREDRAW = 1;
+	const PHASE_BLUE_CARDS = 2;
+	const PHASE_DRAW = 3;
+	const PHASE_PLAY = 4;
+	const PHASE_DISCARDING = 5;
+	
 	public function __construct($player) {
 		parent::__construct($player);
 		
@@ -82,7 +88,27 @@ class Player extends Item {
 		}
 		return 0;
 	}
-	
+
+	public function getCharacter() {
+		return $this->getAdditionalField('character');
+	}
+
+	public function getRoleObject() {
+		return $this->getAdditionalField('role');
+	}
+
+	public function getUser() {
+		return $this->getAdditionalField('user');
+	}
+
+	public function getHandCards() {
+		return $this->getAdditionalField('hand_cards');
+	}
+
+	public function getTableCards() {
+		return $this->getAdditionalField('table_cards');
+	}
+
 	public function setPhase($phase) {
 		$GLOBALS['db']->update('player', array('phase' => $phase), 'id = ' . intval($this['id']));
 	}

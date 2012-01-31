@@ -3,7 +3,7 @@
 class Role extends LinkableItem {
 	
 	protected $imageFolder = 'images/cards/bang/roles/';
-	protected $back = '../special/role_back.jpg';
+	protected $back = 'images/cards/bang/special/role_back.jpg';
 	
 	const SHERIFF = 1;
 	const RENEGARD = 2;
@@ -16,6 +16,10 @@ class Role extends LinkableItem {
 
 	public function getImagePath() {
 		return $this->imageFolder . $this['image'];
+	}
+
+	public function getBackImagePath() {
+		return $this->back;
 	}
 
 	public function getPageType() {

@@ -12,11 +12,12 @@ class GameBox extends AbstractBox {
 		
 		if ($this->game) {
 			MySmarty::assign('game', $this->game);
+			MySmarty::assign('gameStartedStatus', Game::GAME_STATUS_STARTED);
+
 			if ($this->game['status'] == Game::GAME_STATUS_CREATED) {
 				if (!GameUtils::checkUserInGame($loggedUser, $this->game)) {
 					MySmarty::assign('joinGameAvailable', TRUE);
 				}
-
 				// TODO hru moze spustit len creator
 				MySmarty::assign('startGame', Localize::getMessage('start_game'));
 			}

@@ -39,26 +39,38 @@ class Game extends Item {
 		$players = $playerRepository->getByGame($game['id']);
 		$this->addAdditionalField('players', $players);
 	}
+
+	public function getThrowPile() {
+		return $this->getAdditionalField('throw_pile');
+	}
 	
 	public function getTopThrowPile() {
-		return array_pop($this['throw_pile']);
+		return array_pop($this->getThrowPile());
 	}
-	
+
+	public function getDrawPile() {
+		return $this->getAdditionalField('draw_pile');
+	}
+
 	public function getTopDrawPile() {
-		return array_pop($this['draw_pile']);
+		return array_pop($this->getDrawPile());
 	}
 	
+	public function getPlayers() {
+		return $this->getAdditionalField('players');
+	}
+
 	public function getPlayerOnTurn() {
-		foreach ($this['players'] as $player) {
+		foreach ($this->getPlayers() as $player) {
 			if ($player['position'] == $this['turn']) {
 				return $player;
 			}
 		}
-		return null;
+		return NULL;
 	}
 	
 	public function getPlayerByUsername($username) {
-		foreach ($this['players'] as $player) {
+		foreach ($this->getPlayers() as $player) {
 			if ($player['user']['username'] == $username) {
 				return $player;
 			}

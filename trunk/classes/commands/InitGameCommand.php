@@ -68,32 +68,17 @@ class InitGameCommand extends Command {
 
 				$player['possible_choices'] = serialize(array('possible_characters' => $playerPossibleCharacters));
 
-				if ($roles[$j]['type'] == Role::SHERIFF) {
-					$player['phase'] = 1;
-				}
-
 				$player->save();
 				$j++;
 			}
 
 			$this->game['status'] = Game::GAME_STATUS_INITIALIZED;
-			$this->game = GameUtils::changePositions($this->game);
-
-			foreach ($this->game->getAdditionalField('players') as $player) {
-				if ($player['role']['id'] == Role::SHERIFF) {
-					$this->game['turn'] = $player['position'];
-					break;
-				}
-			}
-			$matrix = GameUtils::countMatrix($this->game);
-			$this->game['distance_matrix'] = serialize($matrix);
 			$this->game = $this->game->save(TRUE);
+			
 		}
 	}
 
-	protected function write() {
-		echo 'TODO write method in init game command';
-
+	protected function generateMessages() {
 		if ($this->check == self::OK) {
 
 		} elseif ($this->check == self::NOT_ENOUGH_CHARACTERS) {

@@ -1,4 +1,4 @@
-{if $game && $game.status == 1}
+{if $game && $game.status == $gameStartedStatus}
 	<div id="table">
 		{foreach from=$game.players item=player}
 			{if $loggedUser.id == $player.user.id}
@@ -11,27 +11,40 @@
 				<div class="player_info">
 					<div class="player_name">{if $game.playerOnTurn.id == $player.id} * {/if}{$player.user.username}</div>
 					<div class="photo">
-						<img src="static/images/photo.jpg" alt="foto" />
+						{image src="static/images/photo.jpg" alt="foto"}
 					</div>
 				</div>
-				{if $game.status == 1}
+				{if $game.status == $gameStartedStatus}
 					<div class="row">
 						<div class="lifes">{$player.actual_lifes}</div>
-						<p>moze to byt sposobene tym ze charakter je uz additional field</p>
-						<div class="char"><img src="{$player.charakter.imageFolder}{$player.charakter.image}" alt="{$player.charakter.name}" width="22" height="38" /></div>
-						<div class="role"><img src="{$player.role.imageFolder}{if $player.role.isSheriff or $player.user.id == $me.user.id or $player.actual_lifes == 0}{$player.role.image}{else}{$player.role.back}{/if}" alt="rola" width="22" height="38" /></div>
+						<div class="char">
+							<a href="{$player.character.url}" onclick="window.open(this.href, '_blank'); return false;">{image src=$player.character.imagePath alt=$player.character.name width="22" height="38"}</a>
+						</div>
+						<div class="role">
+							{if $player.roleObject.isSheriff or $player.user.id == $me.user.id or $player.actual_lifes == 0}
+								{image src=$player.roleObject.imagePath alt=$player.roleObject.title width='22' height='38'}
+							{else}
+								{image src=$player.roleObject.backImagePath alt='rola' width='22' height='38'}
+							{/if}
+						</div>
 					</div>
-					{if $player.hand_cards}
-						{foreach from=$player.hand_cards item=handCard name=handCards}
+					{if $player.handCards}
+						{foreach from=$player.handCards item=handCard name=handCards}
 							{if $smarty.foreach.handCards.index mod 6 == 0}<div class="row">{/if}
-								<div class="card"><img src="{$handCard.imageFolder}{if $player.user.id == $me.user.id}{$handCard.image}{else}{$handCard.back}{/if}" alt="{if $player.user.id == $me.user.id}{$handCard.title}{else}card{/if}" width="22" height="38" /></div>
+								<div class="card">
+									{if $player.user.id == $me.user.id}
+										<a href="{$handCard.url}" onclick="window.open(this.href, '_blank'); return false;">{image src=$handCard.imagePath alt=$handCard.title width="22" height="38"}</a>
+									{else}
+										{image src=$handCard.backImagePath alt="card" width="22" height="38"}
+									{/if}
+								</div>
 							{if $smarty.foreach.handCards.index mod 6 == 5 or $smarty.foreach.handCards.last}</div>{/if}
 						{/foreach}
 					{/if}
-					{if $player.table_cards}
+					{if $player.tableCards}
 						<div class="row">
-							{foreach from=$player.table_cards item=tableCard}
-								<div class="card"><img src="{$tableCard.imageFolder}{$tableCard.image}" alt="card" width="22" height="38" /></div>
+							{foreach from=$player.tableCards item=tableCard}
+								<div class="card">{image src=$tableCard.imagePath alt="card" width="22" height="38"}</div>
 							{/foreach}
 						</div>
 					{/if}
@@ -53,10 +66,14 @@
 		{/if}
 
 		{if $game.draw_pile}
-			<div id="kopa" class="card"><img src="{$game.topDrawPile.imageFolder}{$game.topDrawPile.back}" alt="draw pile" width="22" height="38" /></div>
+			<div id="kopa" class="card">
+				{image src=$game.topDrawPile.backImagePath alt="draw pile" width="22" height="38"}
+			</div>
 		{/if}
 		{if $game.throw_pile}
-			<div id="odpad" class="card"><img src="{$game.topThrowPile.imageFolder}{$game.topThrowPile.image}" alt="{$game.topThrowPile.title}" width="22" height="38" /></div>
+			<div id="odpad" class="card">
+				{image src=$game.topThrowPile.imagePath alt=$game.topThrowPile.title width="22" height="38"}
+			</div>
 		{/if}
 	</div>
 {else}
