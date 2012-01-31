@@ -4,28 +4,27 @@ class StartGameCommand extends Command {
 
 	const OK = 1;
 	const ALREADY_STARTED = 2;
-	const NOT_ENOUGH_PLAYERS = 3;
-	const NO_GAME = 4;
+	const NOT_YET_INITIALIZED = 3;
+	const SOME_PLAYERS_WITHOUT_CHARACTER = 4;
+	const NO_GAME = 5;
+	const SOMETHING_ELSE = 6;
 
 	protected function check() {
-
-		echo 'StartGameCommand::check() Vyrobit z tohoto init game, ktora ako parameter bude brat pocet charakterov ktore si moze hrac vybrat,
-			nasledne spravit chosecharactercommand kde bude vracat html s obrazkami charakterov a ked uz budu vsetci hraci mat vybrate charaktery,
-			zavola  sa startgame command';
-		exit();
-
-
-		if ($this->game || $this->game['status'] == Game::GAME_STATUS_ENDED) {
-			$players = $this->game['players'];
-
-			if (count($players) >= 2) {
-				if ($this->game['status'] == Game::GAME_STATUS_STARTED) {
-					$this->check = self::ALREADY_STARTED;
-				} else {
+		if ($this->game && $this->game['status'] != Game::GAME_STATUS_ENDED) {
+			if ($this->game['status'] == Game::GAME_STATUS_INITIALIZED) {
+				$playerRepository = new PlayerRepository();
+				$count = $playerRepository->getCountByGameAndCharakter($this->game['id'], 0);
+				if ($count === 0) {
 					$this->check = self::OK;
+				} else {
+					$this->check = self::SOME_PLAYERS_WITHOUT_CHARACTER;
 				}
+			} elseif ($this->game['status'] == Game::GAME_STATUS_CREATED) {
+				$this->check = self::NOT_YET_INITIALIZED;
+			} elseif ($this->game['status'] == Game::GAME_STATUS_STARTED) {
+				$this->check = self::ALREADY_STARTED;
 			} else {
-				$this->check = self::NOT_ENOUGH_PLAYERS;
+				$this->check = self::SOMETHING_ELSE;
 			}
 		} else {
 			$this->check = self::NO_GAME;
@@ -33,76 +32,64 @@ class StartGameCommand extends Command {
 	}
 	protected function run() {
 		if ($this->check == self::OK) {
-			$roleRepository = new RoleRepository();
-			$characterRepository = new CharacterRepository();
 			$cardRepository = new CardRepository();
 
-			$players = $this->game['players'];
-
-			$roleRepository->setLimit(count($players));
-			$roles = $roleRepository->getAll();
-			shuffle($roles);
-
-			$characters = $characterRepository->getAll();
-			shuffle($characters);
+			$players = $this->players;
 
 			$cards = $cardRepository->getCardIds();
 			shuffle($cards);
 
-			$j = 0;
 			foreach ($players as $player) {
 				$playerCards = array();
-				$params = array();
 
-				$params['role'] = $roles[$j]['id'];
+				$character = $player->getAdditionalField('character');
+				
+				$role = $player->getAdditionalField('role');
+				$player['actual_lifes'] = $character['lifes'];
 
-				$params['charakter'] = $characters[$j]['id'];
-				$params['actual_lifes'] = $characters[$j]['lifes'];
-
-				for ($i = 0; $i < $params['actual_lifes']; $i++) {
+				for ($i = 0; $i < $player['actual_lifes']; $i++) {
 					$playerCards[] = array_pop($cards);
 				}
 
-				if ($roles[$j]['type'] == Role::SHERIFF) {
-					$params['phase'] = 1;
-					$params['actual_lifes']++;
+				if ($role['type'] == Role::SHERIFF) {
+					$player['phase'] = Player::PHASE_DRAW;
+					$player['actual_lifes'] = $player['actual_lifes'] + 1;
 				}
 
-				$params['hand_cards'] = serialize($playerCards);
-				$params['table_cards'] = serialize(array());
-				DB::update('player', $params, 'id = ' . intval($player['id']));
+				$player['hand_cards'] = serialize($playerCards);
+				$player['table_cards'] = serialize(array());
 
-				$j++;
+				$player->save();
 			}
 
-			$params = array(
-				'draw_pile' => serialize($cards),
-				'throw_pile' => serialize(array()),
-				'game_start' => time(),
-				'status' => Game::GAME_STATUS_STARTED,
-			);
+			$this->game['draw_pile'] = serialize($cards);
+			$this->game['throw_pile'] = serialize(array());
+			// musime ulozit hru lebo hracom sa zmenili charaktery
+			$this->game = $this->game->save(TRUE);
 
-			DB::update('game', $params, 'id = ' . intval($this->game['id']));
+			$this->game = GameUtils::changePositions($this->game);
 
-			$gameRepository = new GameRepository();
-			$game = $gameRepository->getOneById($this->game['id']);
-
-			$game = GameUtils::changePositions($game);
-			foreach ($game['players'] as $player) {
-				if ($player['role']['id'] == Role::SHERIFF) {
-					GameUtils::setTurn($game, $player['position']);
+			// TODO daco je tu zle 
+			foreach ($this->game->getPlayers() as $player) {
+				if ($player['role'] == Role::SHERIFF) {
+					$this->game['turn'] = $player['position'];
+					break;
 				}
 			}
-			GameUtils::countMatrix($game);
+
+			$this->game['game_start'] = time();
+			$this->game['status'] = Game::GAME_STATUS_STARTED;
+			$matrix = GameUtils::countMatrix($this->game);
+			$this->game['distance_matrix'] = serialize($matrix);
+			$this->game = $this->game->save(TRUE);
 		}
 	}
 	
-	protected function write() {
-
+	protected function generateMessages() {
+		
 	}
 
 	protected function createResponse() {
-		// TODO create response
 		return '';
 	}
 }

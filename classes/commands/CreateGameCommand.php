@@ -23,22 +23,23 @@ class CreateGameCommand extends Command {
 		}
 	}
 
-	protected function write() {
+	protected function generateMessages() {
 		if ($this->check) {
-			$messageParams = array(
+			$message = array(
 				'user' => User::SYSTEM,
 				'room' => $this->room['id'],
 				'localizeKey' => 'game_created'
 			);
 		} else {
-			$messageParams = array(
+			$message = array(
 				'user' => User::SYSTEM,
 				'toUser' => $this->loggedUser['id'],
 				'room' => $this->room['id'],
 				'localizeKey' => 'game_already_created'
 			);
+			
 		}
-		Chat::addMessage($messageParams);
+		$this->messages[] = $message;
 	}
 
 	protected function createResponse() {

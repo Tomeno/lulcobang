@@ -178,7 +178,11 @@ class Utils {
 	public static function post($key = NULL) {
 		if ($_POST) {
 			if ($key !== NULL && isset($_POST[$key])) {
-				return addslashes($_POST[$key]);
+				if (is_array($_POST[$key])) {
+					return $_POST[$key];
+				} else {
+					return addslashes($_POST[$key]);
+				}
 			} elseif ($key === NULL) {
 				return $_POST;
 			}

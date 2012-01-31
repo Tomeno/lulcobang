@@ -6,7 +6,7 @@ class Card extends LinkableItem {
 	// prave jeden hrac, hrac v dosahu, ktorykolvek hrac a dalej zatial neviem
 
 	protected $imageFolder = 'images/cards/bang/playing_cards/';
-	protected $back = '../special/playing_card_back.jpg';
+	protected $back = 'images/cards/bang/special/playing_card_back.jpg';
 	
 	const BANG = 1;
 	const VEDLA = 2;
@@ -44,6 +44,10 @@ class Card extends LinkableItem {
 	
 	public function getImagePath() {
 		return $this->imageFolder . $this['image'];
+	}
+
+	public function getBackImagePath() {
+		return $this->back;
 	}
 
 	public function getPageType() {

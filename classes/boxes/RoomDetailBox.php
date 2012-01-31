@@ -35,6 +35,11 @@ class RoomDetailBox extends AbstractBox {
 					$response = Command::setup('.start', $game);
 				} elseif (Utils::post('choose_character')) {
 					$response = Command::setup('.choose_character ' . Utils::post('character'), $game);
+				} elseif (Utils::post('choose_cards')) {
+					if (Utils::post('card')) {
+						$params = ' ' . implode(' ', Utils::post('card'));
+					}
+					$response = Command::setup('.choose_cards' . $params , $game);
 				}
 				Utils::redirect(Utils::getActualUrl(), FALSE);
 				// TODO tu by sa mohol spravit redirect asi lebo respons bude v db
