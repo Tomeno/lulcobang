@@ -10,32 +10,69 @@
 			<div id="player_0{$me|position_class:$player}" class="player">
 				<div class="player_info">
 					<div class="player_name">{if $game.playerOnTurn.id == $player.id} * {/if}{$player.user.username}</div>
-					<div class="photo">
-						{image src="static/images/photo.jpg" alt="foto"}
+					<div class="photo popup">
+						<div class="popup-source">
+							{image src="static/images/photo.jpg" alt="foto" width='50' height='50'}
+						</div>
+						<div class="popup-target" style="display:none;">
+							<div class="popup-user">
+								{image src="static/images/photo.jpg" alt="foto" width='50' height='50'}
+								<h4>{$player.user.username}</h4>
+								<p>{$player.user.name} {$player.surname}</p>
+							</div>
+						</div>
 					</div>
 				</div>
 				{if $game.status == $gameStartedStatus}
 					<div class="row">
 						<div class="lifes">{$player.actual_lifes}</div>
-						<div class="char">
-							<a href="{$player.character.url}" onclick="window.open(this.href, '_blank'); return false;">{image src=$player.character.imagePath alt=$player.character.name width="22" height="38"}</a>
+						<div class="char popup">
+							<a href="{$player.character.url}" onclick="window.open(this.href, '_blank'); return false;" class="popup-source">
+								{image src=$player.character.imagePath alt=$player.character.name width='44' height='76'}
+							</a>
+							<div class="popup-target" style="display:none;">
+								<div class="popup-character">
+									{image src=$player.character.imagePath alt=$player.character.name width='66' height='114'}
+									<h4>{$player.character.name}</h4>
+									<p>{$player.character.localizedDescription}</p>
+								</div>
+							</div>
 						</div>
-						<div class="role">
+
+						<div class="role{if $player.roleObject.isSheriff or $player.user.id == $me.user.id or $player.actual_lifes == 0} popup{/if}">
 							{if $player.roleObject.isSheriff or $player.user.id == $me.user.id or $player.actual_lifes == 0}
-								{image src=$player.roleObject.imagePath alt=$player.roleObject.title width='22' height='38'}
+								<a href="{$player.roleObject.url}" onclick="window.open(this.href, '_blank'); return false;" class="popup-source">
+									{image src=$player.roleObject.imagePath alt=$player.roleObject.title width='44' height='76'}
+								</a>
+								<div class="popup-target" style="display:none;">
+									<div class="popup-role">
+										{image src=$player.roleObject.imagePath alt=$player.roleObject.title width='66' height='114'}
+										<h4>{$player.roleObject.localizedTitle}</h4>
+										<p>{$player.roleObject.localizedDescription}</p>
+									</div>
+								</div>
 							{else}
-								{image src=$player.roleObject.backImagePath alt='rola' width='22' height='38'}
+								{image src=$player.roleObject.backImagePath alt='rola' width='44' height='76'}
 							{/if}
 						</div>
 					</div>
 					{if $player.handCards}
 						{foreach from=$player.handCards item=handCard name=handCards}
 							{if $smarty.foreach.handCards.index mod 6 == 0}<div class="row">{/if}
-								<div class="card">
+								<div class="card{if $player.user.id == $me.user.id} popup{/if}">
 									{if $player.user.id == $me.user.id}
-										<a href="{$handCard.url}" onclick="window.open(this.href, '_blank'); return false;">{image src=$handCard.imagePath alt=$handCard.title width="22" height="38"}</a>
+										<a href="{$handCard.url}" onclick="window.open(this.href, '_blank'); return false;" class="popup-source">
+											{image src=$handCard.imagePath alt=$handCard.title width='44' height='76'}
+										</a>
+										<div class="popup-target" style="display:none;">
+											<div class="popup-card">
+												{image src=$handCard.imagePath alt=$handCard.title width='66' height='114'}
+												<h4>{$handCard.title}</h4>
+												<p>{$handCard.description}</p>
+											</div>
+										</div>
 									{else}
-										{image src=$handCard.backImagePath alt="card" width="22" height="38"}
+										{image src=$handCard.backImagePath alt="card" width='44' height='76'}
 									{/if}
 								</div>
 							{if $smarty.foreach.handCards.index mod 6 == 5 or $smarty.foreach.handCards.last}</div>{/if}
@@ -44,7 +81,7 @@
 					{if $player.tableCards}
 						<div class="row">
 							{foreach from=$player.tableCards item=tableCard}
-								<div class="card">{image src=$tableCard.imagePath alt="card" width="22" height="38"}</div>
+								<div class="card">{image src=$tableCard.imagePath alt="card" width='44' height='76'}</div>
 							{/foreach}
 						</div>
 					{/if}
@@ -67,12 +104,12 @@
 
 		{if $game.draw_pile}
 			<div id="kopa" class="card">
-				{image src=$game.topDrawPile.backImagePath alt="draw pile" width="22" height="38"}
+				{image src=$game.topDrawPile.backImagePath alt="draw pile" width='44' height='76'}
 			</div>
 		{/if}
 		{if $game.throw_pile}
 			<div id="odpad" class="card">
-				{image src=$game.topThrowPile.imagePath alt=$game.topThrowPile.title width="22" height="38"}
+				{image src=$game.topThrowPile.imagePath alt=$game.topThrowPile.title width='44' height='76'}
 			</div>
 		{/if}
 	</div>
