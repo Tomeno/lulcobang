@@ -212,3 +212,20 @@ body
 	width: 100%;
 	height: 100%;
 }
+
+.popup-target img {
+	float: left;
+}
+
+.popup-target h4 {
+	color: black;
+}
+
+.popup-target p {
+	color: black;
+}
+
+.popup-target {
+	background: no-repeat #FFFFFF;
+	height: 114px;
+}

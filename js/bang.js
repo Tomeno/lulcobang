@@ -84,3 +84,27 @@ function focusToInput() {
 	input = document.getElementById('message');
 	input.focus();
 }
+
+document.observe('dom:loaded', function() {
+	$$('.popup').each(function(el) {
+		new Tip(el.down('.popup-source'), el.down('.popup-target'), {
+			hook: { tip: 'bottomLeft', target: 'topRight' },
+			offset: { x: -25, y: 25 },
+			hideOn: { element: 'body', event: 'click' },
+			images: '/fileadmin/template/images/prototip/styles/default/',
+			javascript: '',
+			hideAfter: 0.500,
+			hideOthers: true,
+			border: 0,
+			radius: 0,
+			delay: 0,
+			width: 350,
+			closeButton: false
+		});
+
+		el.down('.popup-source').observe('prototip:shown', function() {
+			document.onclick = Tips.hideAll;
+		});
+	});
+});
+

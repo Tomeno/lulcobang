@@ -1,0 +1,182 @@
+/* CSS to go with Prototip.Styles */
+.prototip {
+	/*font: 11px Arial, Helvetica, sans-serif;
+	color: #000;*/
+	/*opacity: .95; filter: alpha(opacity=95);*/
+	/*padding: 10px;
+	background: #fff url(../images/bg_totip.png) no-repeat 0 0;*/
+}
+
+/* the default style */
+.prototip .default {
+	width: 250px;
+	color: #808080;
+	margin: -8px 0 0 -8px;
+}
+.prototip .default .toolbar {
+	background: #f1f1f1;
+	font-weight: bold;
+}
+.prototip .default .title { padding: 5px; }
+.prototip .default .content {
+	padding: 5px;
+	background: transparent;
+}
+
+/* basic */
+.prototip .basic {
+	width: 250px;
+	color: #808080;
+}
+.prototip .basic .toolbar {
+	background: #f1f1f1;
+	font-weight: bold;
+}
+.prototip .basic .title { padding: 5px; }
+.prototip .basic .content {
+	padding: 5px;
+	background: transparent;
+}
+
+/* basic */
+.prototip .hint {
+	width: 250px;
+	color: #313120;
+	background: #fff6aa;
+}
+.prototip .hint .toolbar {
+	background: #fdf1a0;
+	font-weight: bold;
+}
+.prototip .hint .title,
+.prototip .hint .content { padding: 5px; }
+
+/* protoblue */
+.prototip .protoblue {
+	width: 250px;
+	color: #fff;
+}
+.prototip .protoblue .toolbar {
+	background: #0d7cd0;
+	font-weight: bold;
+}
+.prototip .protoblue .title { padding: 5px; }
+.prototip .protoblue .content {
+	background: #1e90ff;
+	padding: 5px;
+}
+
+/* creamy */
+.prototip .creamy {
+	width: 250px;
+	color: #bb9c61;
+}
+.prototip .creamy .toolbar {
+	background: #f3edc2;
+	font-weight: bold;
+	
+}
+.prototip .creamy .title { padding: 5px; }
+.prototip .creamy .content {
+	background: #fff;
+	padding: 5px;
+}
+
+/* darkgrey */
+.prototip .darkgrey {
+	width: 250px;
+	color: #fff;
+}
+.prototip .darkgrey .toolbar {
+	background: #5f5f5f;
+	font-weight: bold;
+}
+.prototip .darkgrey .title { padding: 5px; }
+.prototip .darkgrey .content {
+	background: #808080;
+	padding: 5px;
+}
+
+/* protogrey */
+.prototip .protogrey {
+	width: 250px;
+	color: #fff;
+	background: #fff;
+}
+.prototip .protogrey .toolbar {
+	background: #969c92;
+	font-weight: bold;
+}
+.prototip .protogrey .title { padding: 5px; }
+.prototip .protogrey .content {
+	color: #808080;
+	padding: 5px;
+}
+/* This is how to resize the close button for a style */
+.prototip .protogrey .toolbar .close {
+	width: 14px;
+	height: 14px;
+}
+
+
+/* loader gif */
+.prototipLoader {
+	position: absolute;
+	top: -1000px;
+	left: -1000px;
+	height: 14px;
+	width: 14px;
+	border: 1px solid #dddddd;
+	overflow: hidden;
+}
+
+.popup table {border-collapse: collapse; border: none; }
+.popup td {border-collapse: collapse;}
+.popup td.tl {width: 18px; height: 18px; background: transparent url(../images/bg_totip_tl.png) no-repeat 100% 0; _background: url(../images/bg_totip_tl.gif) no-repeat 100% 0;}
+.popup td.tc {height: 18px; background: transparent url(../images/bg_totip_tc_zl.png) no-repeat 0 100%; _background: url(../images/bg_totip_tc_zl.gif) no-repeat 0 100%;}
+.popup td.tr {width: 18px; height: 18px; background : transparent url(../images/bg_totip_tr.png) no-repeat 0 100%; _background: url(../images/bg_totip_tr.gif) no-repeat 0 100%;}
+.popup td.cl {width: 18px; background: transparent url(../images/bg_totip_cl.png) repeat-y 100% 0; _background: url(../images/bg_totip_cl.gif) repeat-y 100% 0;}
+.popup td.cr {width: 18px; background: transparent url(../images/bg_totip_cr.png) repeat-y 0 0; _background: url(../images/bg_totip_cr.gif) repeat-y 0 0;}
+.popup td.bl {width: 18px; height: 18px; background: transparent url(../images/bg_totip_bl.png) no-repeat 100% 0; _background: url(../images/bg_totip_bl.gif) no-repeat 100% 0;}
+.popup td.bc {height: 18px; background: transparent url(../images/bg_totip_bc.png) repeat-x 0 0; _background: url(../images/bg_totip_bc.gif) repeat-x 0 0;}
+.popup td.br {width: 18px; height: 18px; background: transparent url(../images/bg_totip_br.png) no-repeat 0 0; _background: url(../images/bg_totip_br.gif) no-repeat 0 0;}
+
+.popup td.cc {text-align: left; padding: 5px; background-color: #fff; opacity: .95; filter: alpha(opacity=95);}
+
+/* najpravejsi popup posunieme dolava (s smartoch) a otocime hornu sipocku */
+#rate_arrow2.popup td.tc {height: 18px; background: transparent url(../images/bg_totip_tc_zr.png) no-repeat 100% 100%; _background: url(../images/bg_totip_tc_zr.gif) no-repeat 100% 100%;}
+#own_rate_arrow2.popup td.tc {height: 18px; background: transparent url(../images/bg_totip_tc_zr.png) no-repeat 100% 100%; _background: url(../images/bg_totip_tc_zr.gif) no-repeat 100% 100%;}
+
+.zob_lefttop td.tc {background-image: url(../images/bg_totip_tc.png); _background-image: url(../images/bg_totip_tc.gif);}
+.zob_lefttop td.cl {background-image: url(../images/bg_totip_cl_zt.png); _background-image: url(../images/bg_totip_cl_zt.gif);}
+
+.zob_leftbottom td.tc {background-image: url(../images/bg_totip_tc.png); _background-image: url(../images/bg_totip_tc.gif);}
+.zob_leftbottom td.cl {background: url(../images/bg_totip_cl_zb.png) no-repeat 100% 100%; _background: url(../images/bg_totip_cl_zb.gif) no-repeat 100% 100%;}
+
+.zob_topright td.tc {background: url(../images/bg_totip_tc_zr.png) no-repeat 100% 100%; _background: url(../images/bg_totip_tc_zr.gif) no-repeat 100% 100%;}
+
+.zob_righttop td.tc {background-image: url(../images/bg_totip_tc.png); _background-image: url(../images/bg_totip_tc.gif);}
+.zob_righttop td.cr {background: url(../images/bg_totip_cr_zt.png) no-repeat 0 0; _background: url(../images/bg_totip_cr_zt.gif) no-repeat 0 0;}
+
+.zob_rightbottom td.tc {background-image: url(../images/bg_totip_tc.png); _background-image: url(../images/bg_totip_tc.gif);}
+.zob_rightbottom td.cr {background: url(../images/bg_totip_cr_zb.png) no-repeat 0 100%; _background: url(../images/bg_totip_cr_zb.gif) no-repeat 0 100%;}
+
+.zob_bottomleft td.tc {background-image: url(../images/bg_totip_tc.png); _background-image: url(../images/bg_totip_tc.gif);}
+.zob_bottomleft td.bc {background: url(../images/bg_totip_bc_zl.png) no-repeat 0 0; _background: url(../images/bg_totip_bc_zl.gif) no-repeat 0 0;}
+
+.zob_bottomright td.tc {background-image: url(../images/bg_totip_tc.png); _background-image: url(../images/bg_totip_tc.gif);}
+.zob_bottomright td.bc {background: url(../images/bg_totip_bc_zr.png) no-repeat 100% 0; _background: url(../images/bg_totip_bc_zr.gif) no-repeat 100% 0;}
+
+.prototip_Corner {display: none;}
+
+/* Required for all tooltips, do not modify */
+.prototip{position:absolute;overflow:hidden;}.prototip .tooltip,.prototip .toolbar,.prototip .toolbar .title{position:relative;}.prototip .content{clear:both;}.prototip .toolbar .close{position:relative;text-decoration:none;float:right;width:19px;height:15px;display:block;line-height:0;font-size:0;border:0;cursor:pointer;}.prototip .tooltip{clear:both;float:left;}.prototip .borderLeftWrapper,.prototip .borderRightWrapper{position:absolute;top:0;left:0;width:300px;height:20px;}.prototip .borderFrame{height:100%;width:100%;float:left;margin:0;padding:0;position:relative;}.prototip .borderTop,.prototip .borderBottom{overflow:hidden;}.prototip .borderRow{list-style-type:none;/*float:left;*/width:100%;position:relative;clear:both;margin:0;padding:0;}.prototip_CornerWrapper{position:absolute;top:0;left:0;width:100%;height:100%;margin:0;padding:0;clear:both;}.prototip_Corner{float:left;position:relative;}.prototip canvas{position:relative;float:left;}.prototip_CornerTr,.prototip_CornerBr{float:right;}.prototip_BetweenCorners{position:absolute;top:0;left:0;width:100%;overflow:hidden;clear:both;}.prototip .borderMiddle{position:relative;/*float:left;*/}.prototip .borderCenter{position:relative;float:left;height:100%;}.prototip_StemWrapper{position:relative;width:100%;height:auto;clear:both;}.prototip_StemBox{float:left;position:relative;}.prototip_Stem{width:100%;position:absolute;overflow:hidden;}.iframeShim{position:absolute;border:0;margin:0;padding:0;background:none;overflow:hidden;}.prototip .clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden;}.prototip .clearfix{display:inline-block;}/* IE Mac Hide \*/ .prototip .clearfix{display:block; }/* IE Mac Hide End */
+
+/*.prototip_StemWrapper {background: url(../images/bg_totip2.png) no-repeat 100% 100%;}
+
+.pop_lt {background: url(../images/bg_totip_lt.png) no-repeat 0 0; padding: 22px 0 0 16px;}
+.pop_br {{background: url(../images/bg_totip_br.png) no-repeat 100% 100%; padding: 5px 30px 30px 5px;}*/
+
+
+.prototip .default .toolbar { background:transparent !important; }
+.prototip .default .toolbar .close { position:absolute; top:21px; right:-3px; width:20px; height:20px; z-index:1000; }
