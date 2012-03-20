@@ -1,12 +1,13 @@
 <?php
 
 class Player extends Item {
-	
+
+	const PHASE_NONE = 0;
 	const PHASE_PREDRAW = 1;
-	const PHASE_BLUE_CARDS = 2;
-	const PHASE_DRAW = 3;
-	const PHASE_PLAY = 4;
-	const PHASE_DISCARDING = 5;
+	const PHASE_DYNAMITE = 2;
+	const PHASE_JAIL = 3;
+	const PHASE_DRAW = 4;
+	const PHASE_PLAY = 5;
 	
 	public function __construct($player) {
 		parent::__construct($player);
@@ -28,31 +29,23 @@ class Player extends Item {
 		$handCardsId = unserialize($player['hand_cards']);
 		$handCards = array();
 		if ($handCardsId) {
-			foreach ($handCardsId as $cardId) {
-				$handCards[] = $cardRepository->getOneById($cardId);
-			}
+			$cardRepository->addOrderBy(array('card_base_type' => 'ASC'));
+			$handCards = $cardRepository->getById($handCardsId);
 		}
 		$this->addAdditionalField('hand_cards', $handCards);
 		
+		$cardRepository = new CardRepository();
+
 		$tableCardsId = unserialize($player['table_cards']);
 		$tableCards= array();
 		if ($tableCardsId) {
-			foreach ($tableCardsId as $cardId) {
-				$tableCards[] = $cardRepository->getOneById($cardId);
-			}
+			$cardRepository->addOrderBy(array('card_base_type' => 'ASC'));
+			$tableCards = $cardRepository->getById($tableCardsId);
 		}
 		$this->addAdditionalField('table_cards', $tableCards);
 	}
 	
 	public function __call($methodName, $arguments) {
-		if (substr($methodName, 0, 5) === 'getIs') {
-			$character = strtolower(str_replace('getIs', '', $methodName));
-			$realCharacter = strtolower(str_replace(' ', '', $this['charakter']['name']));
-			if ($character == $realCharacter) {
-				return true;
-			}
-			return false;
-		}
 		if (substr($methodName, 0, 6) === 'getHas') {
 			$place = '';
 			if (strpos($methodName, 'OnTheTable')) {

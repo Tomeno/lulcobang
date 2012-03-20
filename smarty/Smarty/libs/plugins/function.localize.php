@@ -13,8 +13,11 @@
 
 function smarty_function_localize($params, &$smarty) {
 
-	$attr = explode('###', $params);
-	return Localize::getMessage($params['key'], $attr);
+	$attrs = array();
+	if ($params['attrs']) {
+		$attrs = explode('###', $params['attrs']);
+	}
+	return Localize::getMessage($params['key'], $attrs);
 }
 
 ?>

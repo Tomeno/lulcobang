@@ -8,3 +8,16 @@ player_joined_game###%s joined the game
 already_joined###You are already joined
 cannot_join_no_game_in_room###No game in room, you cannot join
 cannot_join_game_already_started###Game is already started, you cannot join
+player_draw_cards###%s draw cards
+you_draw_cards###You draw cards
+draw_extension_card_first###Draw extension card first
+draw_dynamite_first###Draw dynamite first
+draw_jail_first###Draw jail first
+not_your_turn###This is not your turn
+cannot_draw_no_game_in_room###No game in room, you cannot draw
+you_have_already_draw###You have already draw
+you_draw_these_cards###You draw these cards
+pick_x_of_cards###Pick %s of these cards
+player_pass_turn###%s passed the turn
+you_pass_turn###You passed the turn
+cannot_pass_too_many_cards_on_hand###You cannot pass the turn, you have too many cards on hand

@@ -21,11 +21,11 @@ class MySmarty {
 			if (!file_exists($templatesC)) {
 				mkdir($templatesC);
 			}
-			$templatesCache = $templatesC . $GLOBALS['smartyTempCacheDir'];
-			if (!file_exists($templatesCache)) {
-				mkdir($templatesCache);
-			}
-		 	$smarty->compile_dir = $templatesCache;
+//			$templatesCache = $templatesC . $GLOBALS['smartyTempCacheDir'];
+//			if (!file_exists($templatesCache)) {
+//				mkdir($templatesCache);
+//			}
+		 	$smarty->compile_dir = $templatesC;
 		 	$smarty->cache_dir = dirname(__FILE__) . '/../tmp/smarty-dir/cache/';
 		 	$smarty->config_dir = dirname(__FILE__) . '/../tmp/smarty-dir/configs/';
 		 	self::$smarty = $smarty;

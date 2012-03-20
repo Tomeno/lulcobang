@@ -44,8 +44,8 @@ class Localize {
 											$translates = explode('###', $row);
 											$key = $translates[0];
 											$value = $translates[1];
-											if (!isset($localizationMap[$ext][$language][$key])) {
-												$localizationMap[$ext][$language][$key] = trim($value);
+											if (!isset($localizationMap[$language][$key])) {
+												$localizationMap[$language][$key] = trim($value);
 											}
 										}
 									}
@@ -64,8 +64,10 @@ class Localize {
 	}
 
 	/**
-	 * getter for message from extension $ext for key $key and language $language
+	 * getter for message for key $key
 	 *
+	 * @param	$key	localize key
+	 * @param	$params	variable values
 	 * @return	string
 	 * @throws	Exception
 	 */
@@ -75,10 +77,10 @@ class Localize {
 			$lang = $language['shortcut'];
 			
 			self::init();
-			if (isset(self::$localizationMap[$ext][$lang][$key])) {
-				$message = self::$localizationMap[$ext][$lang][$key];
-			} elseif (isset(self::$localizationMap[$ext]['default'][$key])) {
-				$message = self::$localizationMap[$ext]['default'][$key];
+			if (isset(self::$localizationMap[$lang][$key])) {
+				$message = self::$localizationMap[$lang][$key];
+			} elseif (isset(self::$localizationMap['default'][$key])) {
+				$message = self::$localizationMap['default'][$key];
 			} else {
 				throw new Exception('Key ' . $key . ' not found in localization files', 1327603452);
 			}

@@ -112,6 +112,14 @@ class Card extends LinkableItem {
 		return $characterRepository->getById($characters);
 	}
 
+	public function getIsRed() {
+		if ($this['color'] == 2 || $this['color'] == 4) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
+
 	public function getIsType($type) {
 		if ($this['card_base_type'] == $type) {
 			return true;
