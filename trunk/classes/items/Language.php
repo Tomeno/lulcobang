@@ -11,12 +11,16 @@ class Language extends Item {
 			$pageRepository = new PageRepository();
 			$actualPage = $pageRepository->getOneByAlias($action);
 
-			$pageTypeRepository = new PageTypeRepository();
-			$pageType = $pageTypeRepository->getOneById($actualPage['page_type']);
-
 			$aliases = array();
-			$page = PageActionMap::getPageByTypeAndLanguage($pageType['alias'], $this['shortcut']);
-			$aliases[] = $page['alias'];
+			if ($actualPage) {
+				$pageTypeRepository = new PageTypeRepository();
+				$pageType = $pageTypeRepository->getOneById($actualPage['page_type']);
+
+				$page = PageActionMap::getPageByTypeAndLanguage($pageType['alias'], $this['shortcut']);
+				$aliases[] = $page['alias'];
+			} else {
+				$aliases[] = $action;
+			}
 
 			if (Utils::get('identifier')) {
 				$aliases[] = Utils::get('identifier');

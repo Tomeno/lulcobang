@@ -4,10 +4,16 @@ class LoginAction extends AbstractAction {
 
 	public function getContent() {
 		if (LoggedUser::whoIsLogged()) {
-			$page = PageActionMap::getPageByTypeAndLanguage('rooms');
-			$url = PageActionMap::createUrl($page['alias']);
+			if (isset($_COOKIE['ref_url'])) {
+				$url = $_COOKIE['ref_url'];
+				$absolute = FALSE;
+			} else {
+				$page = PageActionMap::getPageByTypeAndLanguage('rooms');
+				$url = PageActionMap::createUrl($page['alias']);
+				$absolute = TRUE;
+			}
 
-			Utils::redirect($url);
+			Utils::redirect($url, $absolute);
 		}
 
 		if (Utils::post('login')) {

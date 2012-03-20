@@ -10,6 +10,11 @@ class CharacterDetailBox extends AbstractBox {
 		$characterRepository = new CharacterRepository();
 		$character = $characterRepository->getOneByAlias($characterAlias);
 
+		BangSeo::addTitlePart($character['name']);
+		if ($character->getLocalizedDescription()) {
+			BangSeo::setDescription($character->getLocalizedDescription());
+		}
+
 		MySmarty::assign('character', $character);
 	}
 }

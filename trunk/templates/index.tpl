@@ -4,6 +4,8 @@
 		<title>{if $title}{$title}{else}Bang!{/if}</title>
 		<base href="{$baseUrl}" />
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+		<meta name="description" content="{$description}" />
+		<meta name="keywords" content="{$keywords}" />
 		<script type="text/JavaScript" src="js/prototype.js"></script>
 		<script type="text/JavaScript" src="js/prototip.js"></script>
 		<script type="text/JavaScript" src="js/bang.js"></script>
@@ -13,7 +15,12 @@
 	<body{if $bodyAdded} {$bodyAdded}{/if}>
 		<div id="content">
 			{$upperPart}
-			{$content}
+			<div id="left">
+				{$menu}
+			</div>
+			<div id="main_content">
+				{$content}
+			</div>
 			<div class="clear"></div>
 			<p>Copyright 2010 &copy; Michal Lulčo | Design by <a href="http://clira.sk/" onclick="window.open('http://clira.sk/', '_blank'); return false;">Clira</a></p>
 		</div>
