@@ -3,7 +3,7 @@
 class IndexAction extends AbstractAction {
 
 	public function  getContent() {
-		$box = new IndexBox();
+		$box = new StaticPageBox();
 		return $box->render();
 	}
 }

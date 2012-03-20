@@ -53,6 +53,7 @@ class Utils {
 	public static function getLanguage($lang = NULL) {
 		$languageRepository = new LanguageRepository();
 
+		$language = NULL;
 		// ak nemame zadany lang
 		if ($lang === NULL) {
 			// zistime ci je prihlaseny user a ci ma nastaveny nejaky jazyk
@@ -71,12 +72,14 @@ class Utils {
 				$lang = Utils::get('language');
 				if ($lang) {
 					$language = $languageRepository->getOneByShortcut($lang);
+				} else {
+					// ak nemame zadane nic, vratime anglictinu
+					$language = $languageRepository->getOneByShortcut('en');
 				}
 			}
-
-			// na konci vratime anglictinu
+			
 			if (!$language) {
-				$language = $languageRepository->getOneByShortcut('en');
+				throw new Exception('Language "' . $lang . '" doesn\'t exist.');
 			}
 		} else {
 			$language = $languageRepository->getOneByShortcut($lang);

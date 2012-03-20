@@ -25,7 +25,6 @@ class PageActionMap {
 						throw new Exception('Page type not found', 1326407401);
 					}
 				} else {
-					header('HTTP/1.1 404 Not Found');
 					return 'pageNotFound';
 				}
 			}
