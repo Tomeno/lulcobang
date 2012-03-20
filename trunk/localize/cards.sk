@@ -1,0 +1,88 @@
+bang_title###Bang!
+bang_description###BANG! cards are the main method to reduce other players' life points. If you want to play a BANG! card to hit one of the players, determine: a) what the distance to that player is, and b) if your weapon is capable of reaching that distance.
+missed_title###Vedľa!
+missed_description###A player hit by a BANG! card may immediately play a Missed! card - even though it is not his turn! - to cancel the shot. If he does not, he loses a life point.
+beer_title###Beer
+beer_description###This card lets a player regain one life point. Beer cards can be played in two ways: a) as usual, during your turn b) out of turn, but only if you have just received a hit that is lethal (i.e. a hit that takes away your last life point), and not if you are simply hit.
+saloon_title###Saloon
+saloon_description###The symbols say: "Regain one life point", and this applies to "all the other players", and on the next line: "[the player playing this card] regains one life point" The overall effect is that all players in play regain a life point.
+wells_fargo_title###Wells Fargo
+wells_fargo_description###The symbols say: draw 3 cards from the deck.
+diligenza_title###Diligenza
+diligenza_description###The symbols say: draw 2 cards from the deck.
+general_store_title###General Store
+general_store_description###When you play this card, turn as many cards from the deck face up as the players still playing. Starting with the player who played the card, and proceeding clockwise, each player chooses one of those cards and puts it in his hands.
+panic_title###Panic!
+panic_description###The symbols state: "draw a card" from "a player at distance 1".
+cat_balou_title###Cat Balou
+cat_balou_description###The symbol say: "discard 1 card" to "1 player", from hand or table.
+indians_title###Indians!
+indians_description###Each player, excluding the one who played this card, may discard a BANG! card, or lose a life point. Neither Missed! nor Barrel has effect in this case.
+duel_title###Duel
+duel_description###The player playing this card challenges any other player (at any distance), staring him in the eyes. The challenged player may discard a BANG! card (even though it is not his turn!). If he does, the player who played the Duel card may discard a BANG! card, and so on: the first player failing to play a BANG! card loses one life point, and the duel is over. Note: you cannot use the Barrel or play Missed! cards during a duel, and the Duel is not considered a BANG! card.
+gatling_title###Gatling
+gatling_description###The symbols show: "a BANG!" to "all the other players".
+mustang_title###Mustang
+mustang_description###The distance between other players and one who has a Mustang card in play is increased by 1. However, he still sees the other players at the normal distance. In the figure, if A has a Mustang horse in play, players B and F would see him at a distance of 2, C and E at a distance of 3, and D at a distance of 4, while A would continue seeing all the other players at the normal distance.
+appaloosa_title###Appaloosa/Scope
+appaloosa_description###A player who has a prized Appaloosa in play sees all the other players at a distance decreased by 1. However, other players still see him at the normal distance. Distances less than 1 are considered to be 1. In the figure, if A has an Appaloosa in play, he would see B and F at a distance of 1, C and E at a distance of 1, D at a distance of 2, while A would be seen by other players at a normal distance.
+barrel_title###Barrel
+barrel_description###C is the target of A's BANG!. C has a Barrel card in play: this card lets him "draw!" to cancel a BANG! card. So, C flips the top card of the deck and puts it on the discard pile: it's a 4 of Hearts. The use of the Barrel is successful and cancels the BANG! If the flipped card were of a different suit, then the Barrel would have had no effect, but C could have still tried to cancel the BANG! with a Missed! card.
+dynamite_title###Dynamite
+dynamite_description###The player who plays this card puts the Dynamite in front of him, face up: the Dynamite will stay there for a whole turn. When the player starts his next turn (he has Dynamite already in play), before the first phase ("draw two cards" he must "draw!": if he draws a card showing Spades and a number between 2 and 9, the Dynamite explodes (discard it)! The player immediately loses 3 life points. Otherwise, the Dynamite is passed to the player on his left, who will "draw!" on his turn. Players keep passing the Dynamite around until it explodes (with the effect explained above) or it is removed from play by a Panic! or a Cat Balou card. If a player has both the Dynamite and a Jail card, check the Dynamite first. If a character is eliminated by a Dynamite card, his elimination is not considered to be caused by any player.
+jail_title###Jail
+jail_description###This card is played in front of any player, who is now in Jail. A player in Jail must "draw!" before the beginning of his turn: if he draws a Heart card, then he escapes from Jail, discards the Jail card, and continues his turn as normal. Otherwise he discards the Jail and skips phase 1 and 2 of his turn, simply discarding exceeding cards. However, he remains a possible target for BANG! cards and can still play Missed! and Beer out of his turn. Jail cannot be played on the Sheriff.
+volcanic_title###Volcanic
+volcanic_description###A player having this card in play may play any number of BANG! cards during his turn. This BANG! cards can be aimed at the same or different targets, but are limited to a distance of 1 (as shown by the number in the sight).
+schofield_title###Schofield
+schofield_description###You can shoot to distance 2 with this weapon.
+remington_title###Remington
+remington_description###You can shoot to distance 3 with this weapon.
+rev_carabine_title###Rev.Carabine
+rev_carabine_description###You can shoot to distance 4 with this weapon.
+winchester_title###Winchester
+winchester_description###You can shoot to distance 5 with this weapon.
+dodge_title###Dodge
+dodge_description###This card cancels the BANG! cards and then draws a card from the deck.
+punch_title###Punch
+punch_description###This card has same effect as BANG! card, but on distance 1. This cards isnt count as BANG!
+springfield_title###Springfield
+springfield_description###Player which is on turn, discard card Springfield together with another card on the deck. Than he choose one player, which is target of attack with BANG! effect.
+brawl_title###Brawl
+brawl_description###The current player plays a Brawl card, discarding another card from her hand, of her choice, in addition to the Brawl card. After doing so, the Brawl effect is to force all the other players to discard a card, either from his hand of from play, chosen by the player who played the Brawl card (she can choose differently for each player).
+rag_time_title###Rag Time
+rag_time_description###Player which is on turn, discard card Rag Time together with another card on the deck. Than he chooses one player, and take him one card from hand or table, and keep it.
+tequila_title###Tequila
+tequila_description###The current player plays a Tequila, and discards another card too. He chooses any one player to regain one life point ( he can even choose himself).
+hideout_title###Hideout
+hideout_description###The distance between other players and one who has a Hideout card in play is increased by 1. However, he still sees the other players at the normal distance.
+silver_title###Silver
+silver_description###A player who has a prized Silver in play sees all the other players at a distance decreased by 1. However, other players still see him at the normal distance. Distances less than 1 are considered to be 1.
+sombrero_title###Sombrero
+sombrero_description###The current player play a Sombrero card in front of him. Starting with the next player's turn, he can discard it for the Missed! effect.
+iron_plate_title###Iron plate
+iron_plate_description###The current player play a Iron plate card in front of him. Starting with the next player's turn, he can discard it for the Missed! effect.
+ten_gallon_hat###Ten Gallon Hat
+ten_gallon_description###The current player play a Gallon Hat card in front of him. Starting with the next player's turn, he can discard it for the Missed! effect.
+bible_title###Bible
+bible_description###The current player play a Bible card in front of him. Starting with the next player's turn, he can discard it for the Missed! effect. And then he "draw!" one card from the deck.
+canteen_title###Canteen
+canteen_description###The current player plays a Canteen card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to discard it to gain 1 life point.
+knife_title###Knife
+knife_description###The current player plays a Knife card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to discard it to cause a BANG! on a player at a distance of 1. This card is not count as BANG!.
+derringer_title###Derringer
+derringer_description###The current player plays a Derringer card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to discard it to cause a BANG! on a player at a distance of 1, and also draw a card from the deck. This card is not count as BANG!.
+howitzer_title###Howitzer
+howitzer_description###The current player plays a Howitzer card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to discard it to cause a BANG! to all the players. This card is not count as BANG!.
+pepperbox_title###Pepperbox
+pepperbox_description###The current player plays a Pepperbox card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to discard it to cause a BANG! on a player at reachable distance. This card is not count as BANG!.
+buffalo_rifle_title###Buffalo Rifle
+buffalo_rifle_description###The current player plays a Buffalo Rifle card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to discard it to cause a BANG! on a player at any distance. This card is not count as BANG!.
+can_can_title###Can Can
+can_can_description###The current player plays a Can Can card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to use it to discard 1 card to 1 player at any distance, from hand or from table.
+conestoga_title###Conestoga
+conestoga_desciption###The current player plays a Conestoga card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to use it to take 1 card to 1 player at any distance, from hand or from table.
+pony_express_title###Pony Express
+pony_express_desciption###The current player plays a Pony Express card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to use it to "draw!" 3 cards from the deck.
+whisky_title###Whisky
+whisky_description###The current player plays a Whisky, and discards another card too. This card lets a player regain two life points.

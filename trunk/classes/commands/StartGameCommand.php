@@ -55,6 +55,7 @@ class StartGameCommand extends Command {
 					$player['phase'] = Player::PHASE_DRAW;
 					$player['actual_lifes'] = $player['actual_lifes'] + 1;
 				}
+				$player['max_lifes'] = $player['actual_lifes'];
 
 				$player['hand_cards'] = serialize($playerCards);
 				$player['table_cards'] = serialize(array());

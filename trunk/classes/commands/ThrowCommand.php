@@ -6,15 +6,32 @@ class ThrowCommand extends Command {
 
 	const OK = 1;
 
+	const NO_CARDS = 2;
+
+	const NOT_YOUR_TURN = 3;
+
+	const NO_GAME = 4;
+
 	protected function check() {
-		// aj tu budu chodit parametre bud ako string - nazov karty, alebo idecko vo forme card-xy231zq - co bude unikatne idecko karty pre danu hru pocas aktualneho pouzivania
-		// todo posledny parameter bude hand alebo table a urci ci sa mame pozriet na ruku alebo na stol
-		$card = ucfirst($this->params[0]);
-		$method = 'getHas' . $card . 'OnHand';
-		$res = $this->actualPlayer->$method();
-		if ($res) {
-			$this->thrownCards[] = $res;
-			$this->check = self::OK;
+		if ($this->game && $this->game['status'] == Game::GAME_STATUS_STARTED) {
+			$playerOnTurn = $this->game->getPlayerOnTurn();
+			if ($playerOnTurn['id'] == $this->actualPlayer['id']) {
+			// aj tu budu chodit parametre bud ako string - nazov karty, alebo idecko vo forme card-xy231zq - co bude unikatne idecko karty pre danu hru pocas aktualneho pouzivania
+			// todo posledny parameter bude hand alebo table a urci ci sa mame pozriet na ruku alebo na stol
+				$card = ucfirst($this->params[0]);
+				$method = 'getHas' . $card . 'OnHand';
+				$res = $this->actualPlayer->$method();
+				if ($res) {
+					$this->thrownCards[] = $res;
+					$this->check = self::OK;
+				} else {
+					$this->check = self::NO_CARDS;
+				}
+			} else {
+				$this->check = self::NOT_YOUR_TURN;
+			}
+		} else {
+			self::NO_GAME;
 		}
 	}
 	protected function run() {
