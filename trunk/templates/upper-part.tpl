@@ -7,7 +7,9 @@
 {if $languages}
 	{foreach from=$languages item='language' name='languages'}
 		<a href="{$language.correspondingUrl}">
-			{if $language.shortcut == $actualLanguage}<strong>{/if}{$language.title}{if $language.shortcut == $actualLanguage}</strong>{/if}
+			{if $language.shortcut == $actualLanguage}<strong>{/if}
+			{$language.title}
+			{if $language.shortcut == $actualLanguage}</strong>{/if}
 			{if not $smarty.foreach.languages.last} | {/if}
 		</a>
 	{/foreach}

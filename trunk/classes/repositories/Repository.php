@@ -378,6 +378,7 @@ abstract class Repository {
 			throw new Exception('Value property is missing in where array', 1316289795);
 		}
 
+		// rename to comparator
 		if (!isset($where['xxx'])) {
 			$where['xxx'] = '=';
 		} else {
