@@ -1,11 +1,10 @@
 <?php
 
-try {
-	
-	require_once('config.php');
-	require_once('auto.php');
-	require_once('init.php');
+require_once('config.php');
+require_once('auto.php');
+require_once('init.php');
 
+try {
 	BangSeo::addTitlePart('Bang!');
 
 	$language = Utils::get('language');
@@ -24,6 +23,8 @@ try {
 
 	$action = PageActionMap::getActionByPageAndLanguage(Utils::get('action'));
 	$actionClassName = ucfirst($action) . 'Action';
+
+	// TODO caching
 
 	if (LoggedUser::whoIsLogged() === NULL && $pageType['needs_login'] == 1) {
 		if ($pageType['action'] != 'logout') {

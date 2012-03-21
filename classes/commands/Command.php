@@ -72,6 +72,7 @@ abstract class Command {
 		'.choose_cards' => array('class' => 'ChooseCardsCommand'),
 		'.throw' => array('class' => 'ThrowCommand'),
 		'.pass' => array('class' => 'PassCommand'),
+		'.bang' => array('class' => 'BangCommand'),
 	//	'.diligenza' => array('class' => 'DiligenzaCommand'),
 	//	'.wells_fargo' => array('class' => 'WellsFargoCommand'),
 	//	'.beer' => array('class' => 'BeerCommand'),
@@ -109,11 +110,13 @@ abstract class Command {
 			$class = new $commandClassName($params, $game);
 			return $class->execute();
 		} else {
-			// TODO add message command not found
+			throw new Exception('Command not found', 1332363146);// TODO add message command not found
 		}
 	}
 
 	protected final function execute() {
+		// TODO add method pre-check wich will check if game is created, if player is on turn etc - these things are common for all commands
+
 		$this->check();
 		$this->run();
 		$this->generateMessages();

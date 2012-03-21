@@ -8,6 +8,7 @@ class Player extends Item {
 	const PHASE_JAIL = 3;
 	const PHASE_DRAW = 4;
 	const PHASE_PLAY = 5;
+	const PHASE_UNDER_ATTACK = 6;
 	
 	public function __construct($player) {
 		parent::__construct($player);
