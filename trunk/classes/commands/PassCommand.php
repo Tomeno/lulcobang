@@ -14,7 +14,7 @@ class PassCommand extends Command {
 
 	protected function check() {
 		if ($this->game && $this->game['status'] == Game::GAME_STATUS_STARTED) {
-			$playerOnTurn = $this->game->getPlayerOnTurn();
+			$playerOnTurn = $this->game->getPlayerOnMove();
 			if ($playerOnTurn['id'] == $this->actualPlayer['id']) {
 				if ($this->actualPlayer['phase'] == Player::PHASE_PLAY) {
 					$handCardsCount = count($this->actualPlayer->getHandCards());
@@ -33,17 +33,29 @@ class PassCommand extends Command {
 			self::NO_GAME;
 		}
 	}
+	
 	protected function run() {
 		if ($this->check == self::OK) {
 			$this->actualPlayer['phase'] = Player::PHASE_NONE;
 			$this->actualPlayer->save();
 
-			// TODO next player check if is sheriff - phase predraw, if has dynamite and/or jail - phase blue cards, else phase draw
-
 			// TODO dat to priamo do triedy Game
 			$nextPosition = GameUtils::getNextPosition($this->game);
 			$this->game['turn'] = $nextPosition;
 			$this->game->save();
+
+			// TODO next player check if is sheriff - phase predraw, if has dynamite and/or jail - phase blue cards, else phase draw
+			foreach ($this->players as $player) {
+				if ($player['position'] == $nextPosition) {
+					$player['phase'] = Player::PHASE_DRAW;
+					$tableCards = unserialize($player['table_cards']);
+					$waitCards = unserialize($player['wait_cards']);
+					$player['table_cards'] = serialize(array_merge($tableCards, $waitCards));
+					$player['wait_cards'] = serialize(array());
+					$player->save();
+					break;
+				}
+			}
 		}
 	}
 

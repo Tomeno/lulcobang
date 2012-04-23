@@ -24,7 +24,7 @@ class Game extends Item {
 				$drawPileCards[] = $cardRepository->getOneById($cardId);
 			}
 		}
-		$this->addAdditionalField('draw_pile', $drawPileCards);
+		$this->setAdditionalField('draw_pile', $drawPileCards);
 		
 		$throwPile = unserialize($game['throw_pile']);
 		$throwPileCards = array();
@@ -33,11 +33,11 @@ class Game extends Item {
 				$throwPileCards[] = $cardRepository->getOneById($cardId);
 			}
 		}
-		$this->addAdditionalField('throw_pile', $throwPileCards);
+		$this->setAdditionalField('throw_pile', $throwPileCards);
 		
 		$playerRepository = new PlayerRepository();
 		$players = $playerRepository->getByGame($game['id']);
-		$this->addAdditionalField('players', $players);
+		$this->setAdditionalField('players', $players);
 	}
 
 	public function getThrowPile() {
@@ -60,6 +60,11 @@ class Game extends Item {
 		return $this->getAdditionalField('players');
 	}
 
+	/**
+	 * gets the player on turn - he can draw cards, bangs the enemies etc
+	 *
+	 * @return	Player|NULL
+	 */
 	public function getPlayerOnTurn() {
 		foreach ($this->getPlayers() as $player) {
 			if ($player['position'] == $this['turn']) {
@@ -67,6 +72,24 @@ class Game extends Item {
 			}
 		}
 		return NULL;
+	}
+
+	/**
+	 * gets the player on move if inter_turn is set - this player is under attack or has some other reason for inter_turn
+	 * if inter_turn is not set, returns player on turn
+	 * 
+	 * @return	Player|NULL
+	 */
+	public function getPlayerOnMove() {
+		if ($this['inter_turn']) {
+			foreach ($this->getPlayers() as $player) {
+				if ($player['position'] == $this['inter_turn']) {
+					return $player;
+				}
+			}
+		} else {
+			return $this->getPlayerOnTurn();
+		}
 	}
 	
 	public function getPlayerByUsername($username) {

@@ -63,20 +63,22 @@ abstract class Command {
 	 * @var array
 	 */
 	protected static $commands = array(
-		'.create' => array('class' => 'CreateGameCommand'),
-		'.join' => array('class' => 'JoinGameCommand'),
-		'.init' => array('class' => 'InitGameCommand'),
-		'.choose_character' => array('class' => 'ChooseCharacterCommand'),
-		'.start' => array('class' => 'StartGameCommand'),
-		'.draw' => array('class' => 'DrawCommand'),
-		'.choose_cards' => array('class' => 'ChooseCardsCommand'),
-		'.throw' => array('class' => 'ThrowCommand'),
-		'.pass' => array('class' => 'PassCommand'),
-		'.bang' => array('class' => 'BangCommand'),
-	//	'.diligenza' => array('class' => 'DiligenzaCommand'),
-	//	'.wells_fargo' => array('class' => 'WellsFargoCommand'),
-	//	'.beer' => array('class' => 'BeerCommand'),
-	//	'.life' => array('class' => 'LifeCommand'),
+		'create' => array('class' => 'CreateGameCommand'),
+		'join' => array('class' => 'JoinGameCommand'),
+		'init' => array('class' => 'InitGameCommand'),
+		'choose_character' => array('class' => 'ChooseCharacterCommand'),
+		'start' => array('class' => 'StartGameCommand'),
+		'draw' => array('class' => 'DrawCommand'),
+		'choose_cards' => array('class' => 'ChooseCardsCommand'),
+		'throw' => array('class' => 'ThrowCommand'),
+		'put' => array('class' => 'PutCommand'),
+		'pass' => array('class' => 'PassCommand'),
+		'bang' => array('class' => 'BangCommand'),
+		'diligenza' => array('class' => 'DiligenzaCommand'),
+		'wells_fargo' => array('class' => 'WellsFargoCommand'),
+		'pony_express' => array('class' => 'PonyExpressCommand'),
+	//	'beer' => array('class' => 'BeerCommand'),
+	//	'life' => array('class' => 'LifeCommand'),
 	
 	);
 
@@ -103,10 +105,33 @@ abstract class Command {
 
 	public final static function setup($command, $game) {
 		$commandArray = explode(' ', $command);
-		$command = $commandArray[0];
-		$params = array_slice($commandArray, 1);
-		if (array_key_exists($command, self::$commands)) {
-			$commandClassName = self::$commands[$command]['class'];
+		$commandAlias = str_replace('.', '', $commandArray[0]);
+		
+		$commandAliasRepository = new CommandAliasRepository();
+		$command = $commandAliasRepository->getOneByLocalizedCommandName($commandAlias);
+		
+		// toto asi vyhodime lebo vsetky commandy budu musiet byt v db ale zatial to tu necham lebo sa mi to nechce plnit aj pre en
+		if ($command) {
+			$commandName = $command['default_command_name'];
+		} else {
+			$commandName = $commandAlias;
+		}
+
+		$localizedParams = array_slice($commandArray, 1);
+		if (array_key_exists($commandName, self::$commands)) {
+			$commandClassName = self::$commands[$commandName]['class'];
+			
+			$params = array();
+			$cardAliasRepository = new CardAliasRepository();
+			foreach($localizedParams as $param) {
+				$cardAlias = $cardAliasRepository->getOneByLocalizedCardName($param);
+				if ($cardAlias) {
+					$params[] = $cardAlias['default_card_name'];
+				} else {
+					$params[] = $param;
+				}
+			}
+
 			$class = new $commandClassName($params, $game);
 			return $class->execute();
 		} else {

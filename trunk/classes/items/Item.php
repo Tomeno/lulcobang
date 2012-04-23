@@ -1,21 +1,39 @@
 <?php
 
+/**
+ * abstract class for all items in database
+ *
+ * @author Michal Lulco <michal.lulco@gmail.com>
+ */
 abstract class Item extends ArrayObject {
-	
+
+	/**
+	 * additional fields - array of fields which are not in database but they are used somewhere
+	 *
+	 * @var	array
+	 */
 	protected $additionalFields = array();
 
+	/**
+	 * offset get - get method is used if exists
+	 *
+	 * @param	string	$key
+	 * @return	mixed
+	 */
 	public function offsetGet($key) {
-//		if (property_exists($this, $key)) {
-//			return $this->$key;
-//		} else {
-			$method = 'get' . ucfirst($key);
-			if (method_exists($this, $method)) {
-				return $this->$method();
-			}
-			return parent::offsetGet($key);
-//		}
+		$method = 'get' . ucfirst($key);
+		if (method_exists($this, $method)) {
+			return $this->$method();
+		}
+		return parent::offsetGet($key);
 	}
 
+	/**
+	 * saves Item object to database
+	 *
+	 * @param	boolean	$returnModifiedObject
+	 * @return	Item	if $returnModifiedObject is TRUE
+	 */
 	public function save($returnModifiedObject = FALSE) {
 		$params = array();
 		$update = FALSE;
@@ -44,13 +62,13 @@ abstract class Item extends ArrayObject {
 	}
 
 	/**
-	 * adds additional field to item
+	 * setter for additional field to item
 	 *
 	 * @param	string	$key
 	 * @param	mixed	$value
 	 * @return	void
 	 */
-	public function addAdditionalField($key, $value) {
+	public function setAdditionalField($key, $value) {
 		$this->additionalFields[$key] = $value;
 	}
 
@@ -96,7 +114,6 @@ abstract class Item extends ArrayObject {
 		$repository = new $repositoryClassName();
 		return $repository->getTable();
 	}
-
 }
 
 ?>

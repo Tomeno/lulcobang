@@ -45,6 +45,8 @@ class DrawCommand extends Command {
 
 	protected function run() {
 		if ($this->check == self::OK) {
+			throw new Exception("TODO: draw command prerobit cez GameUtils:drawCards");
+
 			$cards = $this->game->getDrawPile();
 			$counts = $this->getCountCards();
 
@@ -62,7 +64,7 @@ class DrawCommand extends Command {
 			$this->actualPlayer['possible_choices'] = serialize($possibleChoices);
 			$this->actualPlayer->save();
 
-			$this->game->addAdditionalField('draw_pile', $cards);
+			$this->game->setAdditionalField('draw_pile', $cards);
 			$drawPile = array();
 			foreach ($this->game->getDrawPile() as $card) {
 				$drawPile[] = $card['id'];

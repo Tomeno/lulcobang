@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * class for object card
+ */
 class Card extends LinkableItem {
 
 	// TODO db model - farba (modra, zelena, hneda), typ - bang, vedla, pivo ..., vacsi typ - zabija, obranuje, zbran, vzdialenost..., ucinok - vsetci hraci,
@@ -7,79 +10,108 @@ class Card extends LinkableItem {
 
 	protected $imageFolder = 'images/cards/bang/playing_cards/';
 	protected $back = 'images/cards/bang/special/playing_card_back.jpg';
-	
-	const BANG = 1;
-	const VEDLA = 2;
-	const PIVO = 3;
-	const SALOON = 4;
-	const HOKYNARSTVI = 7;
-	const WELLS_FARGO = 5;
-	const DOSTAVNIK = 6;
-	const PANIKA = 8;
-	const CAT_BALOU = 9;
-	const INDIANI = 10;
-	const GULOMET = 11;
-	const DUEL = 12;
-	const MUSTANG = 13;
-	const APPALOOSA = 14;
-	const BAREL = 15;
-	const DYNAMIT = 16;
-	const VAZENIE = 17;
-	const VOLCANIC = 18;
-	const SCHOFIELD = 19;
-	const REMINGTON = 20;
-	const CARABINA = 21;
-	const WINCHESTER = 22;
-	
-	protected static $guns = array('volcanic', 'schofield', 'remington', 'carabina', 'winchester');
 
+	// group types
+	const ATTACKER = 1;
+	const DEFENDER = 2;
+	const ALCOHOL = 3;
+	const DISTANCE_CHANGER = 4;
+	const WEAPON = 5;
+	const CARD_STOLER = 6;
+	const CARD_MAKER = 7;
+
+	// border colors
+	const NORMAL = 1;
+	const BLUE = 2;
+	const GREEN = 3;
+
+	/**
+	 * constructor
+	 *
+	 * @param	array	$card
+	 */
 	public function __construct($card) {
 		parent::__construct($card);
 
 		$cardBaseTypeRepository = new CardBaseTypeRepository();
 		$cardBaseType = $cardBaseTypeRepository->getOneById($this['card_base_type']);
 
-		$this->addAdditionalField('cardBaseType', $cardBaseType);
+		$this->setAdditionalField('cardBaseType', $cardBaseType);
 	}
-	
+
+	/**
+	 * getter for card image path
+	 *
+	 * @return	string
+	 */
 	public function getImagePath() {
 		return $this->imageFolder . $this['image'];
 	}
 
+	/**
+	 * getter for back card image
+	 *
+	 * @return	string
+	 */
 	public function getBackImagePath() {
 		return $this->back;
 	}
 
+	/**
+	 * getter for page type - part of url
+	 *
+	 * @return	string
+	 */
 	public function getPageType() {
 		return 'card';
 	}
-	
+
+	/**
+	 * getter for item alias
+	 *
+	 * @return	string
+	 */
 	public function getItemAlias() {
 		$cardBaseType = $this->getAdditionalField('cardBaseType');
 		if ($cardBaseType) {
 			return $cardBaseType['alias'];
-		}
-	}
-
-	public function getTitle() {
-		$cardBaseType = $this->getAdditionalField('cardBaseType');
-		if ($cardBaseType) {
-			return $cardBaseType->getLocalizedTitle();
-		}
-	}
-
-	public function getDescription() {
-		$cardBaseType = $this->getAdditionalField('cardBaseType');
-		if ($cardBaseType) {
-			return $cardBaseType->getLocalizedDescription();
+		} else {
+			throw new Exception('Card ' . $this['title'] . ' has no card_base_type', 1332794787);
 		}
 	}
 
 	/**
-	 * getter for related cards
+	 * getter for localized title of the card
 	 *
-	 * @todo doplnit do db typy kariet inym sposobom ako su teraz
-	 * @return	array
+	 * @return	string
+	 */
+	public function getTitle() {
+		$cardBaseType = $this->getAdditionalField('cardBaseType');
+		if ($cardBaseType) {
+			return $cardBaseType->getLocalizedTitle();
+		} else {
+			throw new Exception('Card ' . $this['title'] . ' has no card_base_type', 1332794788);
+		}
+	}
+
+	/**
+	 * getter for localized description of the card
+	 *
+	 * @return	string
+	 */
+	public function getDescription() {
+		$cardBaseType = $this->getAdditionalField('cardBaseType');
+		if ($cardBaseType) {
+			return $cardBaseType->getLocalizedDescription();
+		} else {
+			throw new Exception('Card ' . $this['title'] . ' has no card_base_type', 1332794789);
+		}
+	}
+
+	/**
+	 * getter for related cards via common card_group_type of their cardBaseType
+	 *
+	 * @return	array<Card>
 	 */
 	public function getRelatedCards() {
 		$cardBaseType = $this->getAdditionalField('cardBaseType');
@@ -99,6 +131,11 @@ class Card extends LinkableItem {
 		}
 	}
 
+	/**
+	 * getter for related characters
+	 *
+	 * @return	array<Character>
+	 */
 	public function getRelatedCharacters() {
 		$characterRelatedCardRepository = new CharacterRelatedCardRepository();
 		$characterRelatedCards = $characterRelatedCardRepository->getByCardBaseType($this['card_base_type']);
@@ -112,6 +149,11 @@ class Card extends LinkableItem {
 		return $characterRepository->getById($characters);
 	}
 
+	/**
+	 * checks if card is red
+	 *
+	 * @return	boolean
+	 */
 	public function getIsRed() {
 		if ($this['color'] == 2 || $this['color'] == 4) {
 			return TRUE;
@@ -120,124 +162,499 @@ class Card extends LinkableItem {
 		}
 	}
 
-	public function getIsType($type) {
+	/**
+	 * checks if card is type of $type
+	 *
+	 * @param	integer	$type
+	 * @return	boolean
+	 */
+	protected function getIsType($type) {
 		if ($this['card_base_type'] == $type) {
-			return true;
+			return TRUE;
+		} else {
+			return FALSE;
 		}
-		return false;
 	}
-	
+
+	/**
+	 * checks if card is type of bang
+	 *
+	 * @return	boolean
+	 */
 	public function getIsBang() {
-		return $this->getIsType(Card::BANG);
+		return $this->getIsType(CardBaseType::BANG);
 	}
-	
-	public function getIsVedla() {
-		return $this->getIsType(Card::VEDLA);
+
+	/**
+	 * checks if card is type of missed
+	 *
+	 * @return	boolean
+	 */
+	public function getIsMissed() {
+		return $this->getIsType(CardBaseType::MISSED);
 	}
-	
-	public function getIsPivo() {
-		return $this->getIsType(Card::PIVO);
+
+	/**
+	 * checks if card is type of beer
+	 *
+	 * @return	boolean
+	 */
+	public function getIsBeer() {
+		return $this->getIsType(CardBaseType::BEER);
 	}
-	
+
+	/**
+	 * checks if card is type of saloon
+	 *
+	 * @return	boolean
+	 */
 	public function getIsSaloon() {
-		return $this->getIsType(Card::SALOON);
+		return $this->getIsType(CardBaseType::SALOON);
 	}
-	
-	public function getIsHokynarstvi() {
-		return $this->getIsType(Card::HOKYNARSTVI);
+
+	/**
+	 * checks if card is type of general store
+	 *
+	 * @return	boolean
+	 */
+	public function getIsGeneralStore() {
+		return $this->getIsType(CardBaseType::GENERAL_STORE);
 	}
-	
+
+	/**
+	 * checks if card is type of wells fargo
+	 *
+	 * @return	boolean
+	 */
 	public function getIsWellsFargo() {
-		return $this->getIsType(Card::WELLS_FARGO);
+		return $this->getIsType(CardBaseType::WELLS_FARGO);
 	}
-	
-	public function getIsDostavnik() {
-		return $this->getIsType(Card::DOSTAVNIK);
+
+	/**
+	 * checks if card is type of diligenza
+	 *
+	 * @return	boolean
+	 */
+	public function getIsDiligenza() {
+		return $this->getIsType(CardBaseType::DILIGENZA);
 	}
-	
-	public function getIsPanika() {
-		return $this->getIsType(Card::PANIKA);
+
+	/**
+	 * checks if card is type of panic
+	 *
+	 * @return	boolean
+	 */
+	public function getIsPanic() {
+		return $this->getIsType(CardBaseType::PANIC);
 	}
-	
-	public function getIsCatbalou() {
-		return $this->getIsType(Card::CAT_BALOU);
+
+	/**
+	 * checks if card is type of cat balou
+	 *
+	 * @return	boolean
+	 */
+	public function getIsCatBalou() {
+		return $this->getIsType(CardBaseType::CAT_BALOU);
 	}
-	
-	public function getIsIndiani() {
-		return $this->getIsType(Card::INDIANI);
+
+	/**
+	 * checks if card is type of indians
+	 *
+	 * @return	boolean
+	 */
+	public function getIsIndians() {
+		return $this->getIsType(CardBaseType::INDIANS);
 	}
-	
-	public function getIsGulomet() {
-		return $this->getIsType(Card::GULOMET);
+
+	/**
+	 * checks if card is type of gatling
+	 *
+	 * @return	boolean
+	 */
+	public function getIsGatling() {
+		return $this->getIsType(CardBaseType::GATLING);
 	}
-	
+
+	/**
+	 * checks if card is type of duel
+	 *
+	 * @return	boolean
+	 */
 	public function getIsDuel() {
-		return $this->getIsType(Card::DUEL);
+		return $this->getIsType(CardBaseType::DUEL);
 	}
-	
+
+	/**
+	 * checks if card is type of mustang
+	 *
+	 * @return	boolean
+	 */
 	public function getIsMustang() {
-		return $this->getIsType(Card::MUSTANG);
+		return $this->getIsType(CardBaseType::MUSTANG);
 	}
-	
+
+	/**
+	 * checks if card is type of appaloosa
+	 *
+	 * @return	boolean
+	 */
 	public function getIsAppaloosa() {
-		return $this->getIsType(Card::APPALOOSA);
+		return $this->getIsType(CardBaseType::APPALOOSA);
 	}
-	
-	public function getIsBarel() {
-		return $this->getIsType(Card::BAREL);
+
+	/**
+	 * checks if card is type of barrel
+	 *
+	 * @return	boolean
+	 */
+	public function getIsBarrel() {
+		return $this->getIsType(CardBaseType::BARREL);
 	}
-	
-	public function getIsDynamit() {
-		return $this->getIsType(Card::DYNAMIT);
+
+	/**
+	 * checks if card is type of dynamite
+	 *
+	 * @return	boolean
+	 */
+	public function getIsDynamite() {
+		return $this->getIsType(CardBaseType::DYNAMITE);
 	}
-	
-	public function getIsVazenie() {
-		return $this->getIsType(Card::VAZENIE);
+
+	/**
+	 * checks if card is type of jail
+	 *
+	 * @return	boolean
+	 */
+	public function getIsJail() {
+		return $this->getIsType(CardBaseType::JAIL);
 	}
-	
+
+	/**
+	 * checks if card is type of volcanic
+	 *
+	 * @return	boolean
+	 */
 	public function getIsVolcanic() {
-		return $this->getIsType(Card::VOLCANIC);
+		return $this->getIsType(CardBaseType::VOLCANIC);
 	}
-	
+
+	/**
+	 * checks if card is type of schofield
+	 *
+	 * @return	boolean
+	 */
 	public function getIsSchofield() {
-		return $this->getIsType(Card::SCHOFIELD);
+		return $this->getIsType(CardBaseType::SCHOFIELD);
 	}
-	
+
+	/**
+	 * checks if card is type of remington
+	 *
+	 * @return	boolean
+	 */
 	public function getIsRemington() {
-		return $this->getIsType(Card::REMINGTON);
+		return $this->getIsType(CardBaseType::REMINGTON);
 	}
-	
-	public function getIsCarabina() {
-		return $this->getIsType(Card::CARABINA);
+
+	/**
+	 * checks if card is type of rev. carabine
+	 *
+	 * @return	boolean
+	 */
+	public function getIsRevCarabine() {
+		return $this->getIsType(CardBaseType::REV_CARABINE);
 	}
-	
+
+	/**
+	 * checks if card is type of winchester
+	 *
+	 * @return	boolean
+	 */
 	public function getIsWinchester() {
-		return $this->getIsType(Card::WINCHESTER);
+		return $this->getIsType(CardBaseType::WINCHESTER);
 	}
-	
-	public function getIsGun() {
-		if ($this->getIsVolcanic() || $this->getIsSchofield() || $this->getIsRemington() || $this->getIsCarabina() || $this->getIsWinchester()) {
-			return true;
+
+	/**
+	 * checks if card is type of dodge
+	 *
+	 * @return	boolean
+	 */
+	public function getIsDodge() {
+		return $this->getIsType(CardBaseType::DODGE);
+	}
+
+	/**
+	 * checks if card is type of punch
+	 *
+	 * @return	boolean
+	 */
+	public function getIsPunch() {
+		return $this->getIsType(CardBaseType::PUNCH);
+	}
+
+	/**
+	 * checks if card is type of springfield
+	 *
+	 * @return	boolean
+	 */
+	public function getIsSpringfield() {
+		return $this->getIsType(CardBaseType::SPRINGFIELD);
+	}
+
+	/**
+	 * checks if card is type of brawl
+	 *
+	 * @return	boolean
+	 */
+	public function getIsBrawl() {
+		return $this->getIsType(CardBaseType::BRAWL);
+	}
+
+	/**
+	 * checks if card is type of rag time
+	 *
+	 * @return	boolean
+	 */
+	public function getIsRagTime() {
+		return $this->getIsType(CardBaseType::RAG_TIME);
+	}
+
+	/**
+	 * checks if card is type of tequila
+	 *
+	 * @return	boolean
+	 */
+	public function getIsTequila() {
+		return $this->getIsType(CardBaseType::TEQUILA);
+	}
+
+	/**
+	 * checks if card is type of hideout
+	 *
+	 * @return	boolean
+	 */
+	public function getIsHideout() {
+		return $this->getIsType(CardBaseType::HIDEOUT);
+	}
+
+	/**
+	 * checks if card is type of silver
+	 *
+	 * @return	boolean
+	 */
+	public function getIsSilver() {
+		return $this->getIsType(CardBaseType::SILVER);
+	}
+
+	/**
+	 * checks if card is type of sombrero
+	 *
+	 * @return	boolean
+	 */
+	public function getIsSombrero() {
+		return $this->getIsType(CardBaseType::SOMBRERO);
+	}
+
+	/**
+	 * checks if card is type of iron plate
+	 *
+	 * @return	boolean
+	 */
+	public function getIsIronPlate() {
+		return $this->getIsType(CardBaseType::IRON_PLATE);
+	}
+
+	/**
+	 * checks if card is type of ten gallon hat
+	 *
+	 * @return	boolean
+	 */
+	public function getIsTenGallonHat() {
+		return $this->getIsType(CardBaseType::TEN_GALLON_HAT);
+	}
+
+	/**
+	 * checks if card is type of bible
+	 *
+	 * @return	boolean
+	 */
+	public function getIsBible() {
+		return $this->getIsType(CardBaseType::BIBLE);
+	}
+
+	/**
+	 * checks if card is type of canteen
+	 *
+	 * @return	boolean
+	 */
+	public function getIsCanteen() {
+		return $this->getIsType(CardBaseType::CANTEEN);
+	}
+
+	/**
+	 * checks if card is type of knife
+	 *
+	 * @return	boolean
+	 */
+	public function getIsKnife() {
+		return $this->getIsType(CardBaseType::KNIFE);
+	}
+
+	/**
+	 * checks if card is type of derringer
+	 *
+	 * @return	boolean
+	 */
+	public function getIsDerringer() {
+		return $this->getIsType(CardBaseType::DERRINGER);
+	}
+
+	/**
+	 * checks if card is type of howitzer
+	 *
+	 * @return	boolean
+	 */
+	public function getIsHowitzer() {
+		return $this->getIsType(CardBaseType::HOWITZER);
+	}
+
+	/**
+	 * checks if card is type of pepperbox
+	 *
+	 * @return	boolean
+	 */
+	public function getIsPepperbox() {
+		return $this->getIsType(CardBaseType::PEPPERBOX);
+	}
+
+	/**
+	 * checks if card is type of buffalo rifle
+	 *
+	 * @return	boolean
+	 */
+	public function getIsBuffaloRifle() {
+		return $this->getIsType(CardBaseType::BUFFALO_RIFLE);
+	}
+
+	/**
+	 * checks if card is type of can can
+	 *
+	 * @return	boolean
+	 */
+	public function getIsCanCan() {
+		return $this->getIsType(CardBaseType::CAN_CAN);
+	}
+
+	/**
+	 * checks if card is type of conestoga
+	 *
+	 * @return	boolean
+	 */
+	public function getIsConestoga() {
+		return $this->getIsType(CardBaseType::CONESTOGA);
+	}
+
+	/**
+	 * checks if card is type of pony express
+	 *
+	 * @return	boolean
+	 */
+	public function getIsPonyExpress() {
+		return $this->getIsType(CardBaseType::PONY_EXPRESS);
+	}
+
+	/**
+	 * checks if card is type of whisky
+	 *
+	 * @return	boolean
+	 */
+	public function getIsWhisky() {
+		return $this->getIsType(CardBaseType::WHISKY);
+	}
+
+	/**
+	 * getter for card group type
+	 *
+	 * @return	integer
+	 */
+	protected function getCardGroupType() {
+		$cardBaseType = $this->getAdditionalField('cardBaseType');
+		return $cardBaseType['card_group_type'];
+	}
+
+	/**
+	 * getter for card border color
+	 *
+	 * @return	integer
+	 */
+	protected function getCardBorderColor() {
+		$cardBaseType = $this->getAdditionalField('cardBaseType');
+		return $cardBaseType['card_border_color'];
+	}
+
+	/**
+	 * checks if card is weapon
+	 *
+	 * @return	boolean
+	 */
+	public function getIsWeapon() {
+		if ($this->getCardGroupType() == self::WEAPON) {
+			return TRUE;
+		} else {
+			return FALSE;
 		}
-		return false;
 	}
-	
+
+	/**
+	 * checks if card changes distance
+	 *
+	 * @return	boolean
+	 */
 	public function getIsDistanceChanger() {
-		if ($this->getIsMustang() || $this->getIsAppaloosa()) {
-			return true;
+		if ($this->getCardGroupType() == self::DISTANCE_CHANGER) {
+			return TRUE;
+		} else {
+			return FALSE;
 		}
-		return false;
 	}
-	
+
+	/**
+	 * checks if card is blue
+	 *
+	 * @return	boolean
+	 */
+	public function getIsBlue() {
+		if ($this->getCardBorderColor() == self::BLUE) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
+
+	/**
+	 * checks if card is green
+	 *
+	 * @return	boolean
+	 */
+	public function getIsGreen() {
+		if ($this->getCardBorderColor() == self::GREEN) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
+
+	/**
+	 * checks if player can put card to the table
+	 *
+	 * @return	boolean
+	 */
 	public function getIsPuttable() {
-		if ($this->getIsGun() || $this->getIsDistanceChanger() || $this->getIsVazenie() || $this->getIsBarel() || $this->getIsDynamit()) {
-			return true;
+		if ($this->getIsBlue() || $this->getIsGreen()) {
+			return TRUE;
+		} else {
+			return FALSE;
 		}
-		return false;
-	}
-	
-	public static function getGuns() {
-		return self::$guns;
 	}
 }
 

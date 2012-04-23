@@ -36,14 +36,18 @@ class BangCommand extends Command {
 	protected function run() {
 		if ($this->check == self::OK) {
 
-			// TODO throw bangCard and save the game
-
 			$this->attackedPlayer['phase'] = Player::PHASE_UNDER_ATTACK;
-			$this->attackedPlayer->save();
+			$this->attackedPlayer->save(TRUE);
 
 			$this->game['inter_turn'] = $this->attackedPlayer['position'];
 			$this->game['inter_turn_reason'] = serialize(array('action' => 'bang', 'from' => $this->actualPlayer['id'], 'to' => $this->attackedPlayer['id']));
 			$this->game->save();
+
+			$retval = GameUtils::throwCards($this->game, $this->actualPlayer, array($this->bangCard));
+
+			// toto zatial nepotrebujeme
+			// $this->game = $retval['game'];
+			// $this->actualPlayer = $retval['player'];
 		}
 	}
 
