@@ -90,15 +90,15 @@ class GameUtils {
 					if ($player2->getHasMustangOnTheTable()) {
 						$distance++;
 					}
-					if ($player2->getIsPaulRegret()) {
-						$distance++;
-					}
+//					if ($player2->getIsPaulRegret()) {
+//						$distance++;
+//					}
 					if ($player1->getHasAppaloosaOnTheTable()) {
 						$distance--;
 					}
-					if ($player1->getIsRoseDoolan()) {
-						$distance--;
-					}
+//					if ($player1->getIsRoseDoolan()) {
+//						$distance--;
+//					}
 					
 					$matrix[$player1['user']['username']][$player2['user']['username']] = $distance > 0 ? $distance : 0;
 				}
@@ -148,24 +148,22 @@ class GameUtils {
 		DB::update(self::$table, $params, 'id = ' . intval($game['id']));
 	}
 	
-	public static function getNextPosition($game) {
-		//throw new Exception('GameUtils::getNetxPosition ide to nejako do cikcaku');
+	public static function getNextPosition($game, $actualPosition = 0) {
 		$playerRepository = new PlayerRepository();
 		$players = $playerRepository->getLivePlayersByGame($game['id']);
 		$playersCount = count($players);
+
+		if ($actualPosition) {
+			$next = $actualPosition + 1;
+		} else {
+			$next = $game['turn'] + 1;
+		}
 		
-		$next = $game['turn'] + 1;
 		return $next <= $playersCount ? $next : $next - $playersCount;
 	}
 	
-	/**
-	 * inter turn of the game
-	 *
-	 * @param Game $game
-	 * @param int $position
-	 * @param string $reason
-	 */
 	public static function setInterTurn($game, $position, $reason = '') {
+	throw new Exception('GameUtils::setInterTurn remove this function');
 		$params = array(
 			'inter_turn' => intval($position),
 			'inter_turn_reason' => addslashes($reason),
@@ -202,37 +200,117 @@ class GameUtils {
 		}
 		return ' nehrá túto hru.';
 	}
-	
-	public static function throwCard($game, $player, $card, $place = 'hand') {
-		foreach ($game['players'] as &$gamePlayer) {
-			if ($gamePlayer['id'] == $player['id']) {
-			//	if (self::checkTurn($game, $player)) {
-					$playerCards = $gamePlayer[$place . '_cards'];
-					$throwPile = $game['throw_pile'];
-					$newPlayerCards = array();
-					foreach ($playerCards as $playerCard) {
-						if ($playerCard['id'] == $card['id']) {
-							$throwPile[] = $playerCard;
-						}
-						else {
-							$newPlayerCards[] = $playerCard;
-						}
-					}
-					
-					$gamePlayer[$place . '_cards'] = $newPlayerCards;
-					$game['throw_pile'] = $throwPile;
-					
-					self::save($game);
-					
-					return ' vyhodil kartu ' . $card['title'];
-					
-			//	}
-			//	return ' nemôže vyhodiť karty, lebo nie je na rade.';
+
+	/**
+	 * draw cards from draw pile of a $game
+	 *
+	 * @param	Game	$game
+	 * @param	integer	$count
+	 * @return	array	- IDs array of drawn cards
+	 */
+	public static function drawCards(Game $game, $count) {
+		$drawPile = $game->getDrawPile();
+		$drawnCards = array();
+		for ($i = 0; $i < $count; $i++) {
+			$card = array_pop($drawPile);
+			$drawnCards[] = $card['id'];
+			if (empty($drawPile)) {
+				$drawPile = shuffle($game->getThrowPile());
+				$game->setAdditionalField('throw_pile', array());
+				$game['throw_pile'] = serialize(array());
 			}
 		}
-		return ' nehrá túto hru.';
+		
+		$game->setAdditionalField('draw_pile', $drawPile);
+		$newDrawPile = array();
+		foreach ($drawPile as $card) {
+			$newDrawPile[] = $card['id'];
+		}
+		
+		$game['draw_pile'] = serialize($newDrawPile);
+		$game->save();
+
+		return $drawnCards;
 	}
-	
+
+	/**
+	 * used for throwing cards from player to throw_pile
+	 *
+	 * @param	Game	$game
+	 * @param	Player	$player
+	 * @param	array	$thrownCards
+	 * @param	string	$place
+	 * @return	array
+	 */
+	public static function throwCards(Game $game, Player $player, array $thrownCards, $place = 'hand') {
+		$thrownCardsIds = array();
+		foreach ($thrownCards as $card) {
+			$thrownCardsIds[] = $card['id'];
+		}
+
+		$playerCards = unserialize($player[$place . '_cards']);
+		$throwPile = unserialize($game['throw_pile']);
+		$newPlayerCards = array();
+		foreach ($playerCards as $playerCard) {
+			if (in_array($playerCard, $thrownCardsIds)) {
+				$throwPile[] = $playerCard;
+			} else {
+				$newPlayerCards[] = $playerCard;
+			}
+		}
+
+		$player[$place . '_cards'] = serialize($newPlayerCards);
+		$game['throw_pile'] = serialize($throwPile);
+
+		$player = $player->save(TRUE);
+		$game = $game->save(TRUE);
+		return array('game' => $game, 'player' => $player);
+	}
+
+	/**
+	 * used for putting cards from one player to another to the table, or to the hand, or to the waiting box
+	 *
+	 * @param	Game	$game
+	 * @param	Player	$playerFrom
+	 * @param	array	$putCards
+	 * @param	string	$place
+	 * @param	Player	$playerTo
+	 * @return	array
+	 */
+	public static function putCards(Game $game, Player $playerFrom, array $putCards, $place = 'table', Player $playerTo = NULL) {
+		$samePlayer = FALSE;
+		if ($playerTo === NULL) {
+			$playerTo = $playerFrom;
+			$samePlayer = TRUE;
+		}
+		$putCardsIds = array();
+		foreach ($putCards as $card) {
+			$putCardsIds[] = $card['id'];
+		}
+
+		$playerFromCards = unserialize($playerFrom['hand_cards']);
+		$playerToCards = unserialize($playerTo[$place . '_cards']);
+
+		$newPlayerHandCards = array();
+		foreach ($playerFromCards as $card) {
+			if (in_array($card, $putCardsIds)) {
+				$playerToCards[] = $card;
+			} else {
+				$newPlayerHandCards[] = $card;
+			}
+		}
+
+		$playerFrom['hand_cards'] = serialize($newPlayerHandCards);
+		if ($samePlayer === TRUE) {
+			$playerFrom[$place . '_cards'] = serialize($playerToCards);
+		} else {
+			$playerTo[$place . '_cards'] = serialize($playerToCards);
+			$playerTo = $playerTo->save(TRUE);
+		}
+		$playerFrom = $playerFrom->save(TRUE);
+		return array('game' => $game, 'playerFrom' => $playerFrom, 'playerTo' => $playerTo);
+	}
+
 	public static function checkTurn($game, $player) {
 		if ($game['status'] == Game::GAME_STATUS_STARTED) {
 			if ($game['inter_turn']) {

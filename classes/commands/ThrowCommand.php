@@ -36,28 +36,29 @@ class ThrowCommand extends Command {
 	}
 	protected function run() {
 		if ($this->check == self::OK) {
-			$throwPile = unserialize($this->game['throw_pile']);
-
-			$playerCards = unserialize($this->actualPlayer['hand_cards']);
-
-			$thrownCardsIds = array();
-			foreach ($this->thrownCards as $card) {
-				$thrownCardsIds[] = $card['id'];
-			}
-
-			$newPlayerCards = array();
-			foreach ($playerCards as $playerCard) {
-				if (in_array($playerCard, $thrownCardsIds)) {
-					$throwPile[] = $playerCard;
-				} else {
-					$newPlayerCards[] = $playerCard;
-				}
-			}
-			$this->game['throw_pile'] = serialize($throwPile);
-			$this->game->save();
-
-			$this->actualPlayer['hand_cards'] = serialize($newPlayerCards);
-			$this->actualPlayer->save();
+			GameUtils::throwCards($this->game, $this->actualPlayer, $this->thrownCards);
+//			$throwPile = unserialize($this->game['throw_pile']);
+//
+//			$playerCards = unserialize($this->actualPlayer['hand_cards']);
+//
+//			$thrownCardsIds = array();
+//			foreach ($this->thrownCards as $card) {
+//				$thrownCardsIds[] = $card['id'];
+//			}
+//
+//			$newPlayerCards = array();
+//			foreach ($playerCards as $playerCard) {
+//				if (in_array($playerCard, $thrownCardsIds)) {
+//					$throwPile[] = $playerCard;
+//				} else {
+//					$newPlayerCards[] = $playerCard;
+//				}
+//			}
+//			$this->game['throw_pile'] = serialize($throwPile);
+//			$this->game->save();
+//
+//			$this->actualPlayer['hand_cards'] = serialize($newPlayerCards);
+//			$this->actualPlayer->save();
 		}
 	}
 

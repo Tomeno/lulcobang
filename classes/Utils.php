@@ -45,7 +45,7 @@ class Utils {
 
 
 	/**
-	 * getter for site language
+	 * getter for actual site language
 	 *
 	 * @param	string	$lang	language shortcut
 	 * @return	Language

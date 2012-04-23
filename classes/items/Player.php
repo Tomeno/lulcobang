@@ -15,15 +15,15 @@ class Player extends Item {
 		
 		$userRepository = new UserRepository();
 		$user = $userRepository->getOneById($player['user']);
-		$this->addAdditionalField('user', $user);
+		$this->setAdditionalField('user', $user);
 		
 		$roleRepository = new RoleRepository();
 		$role = $roleRepository->getOneById($player['role']);
-		$this->addAdditionalField('role', $role);
+		$this->setAdditionalField('role', $role);
 		
 		$characterRepository = new CharacterRepository();
 		$character = $characterRepository->getOneById($player['charakter']);
-		$this->addAdditionalField('character', $character);
+		$this->setAdditionalField('character', $character);
 		
 		$cardRepository = new CardRepository();
 		
@@ -33,7 +33,7 @@ class Player extends Item {
 			$cardRepository->addOrderBy(array('card_base_type' => 'ASC'));
 			$handCards = $cardRepository->getById($handCardsId);
 		}
-		$this->addAdditionalField('hand_cards', $handCards);
+		$this->setAdditionalField('hand_cards', $handCards);
 		
 		$cardRepository = new CardRepository();
 
@@ -43,7 +43,15 @@ class Player extends Item {
 			$cardRepository->addOrderBy(array('card_base_type' => 'ASC'));
 			$tableCards = $cardRepository->getById($tableCardsId);
 		}
-		$this->addAdditionalField('table_cards', $tableCards);
+		$this->setAdditionalField('table_cards', $tableCards);
+
+		$waitCardsId = unserialize($player['wait_cards']);
+		$waitCards= array();
+		if ($waitCardsId) {
+			$cardRepository->addOrderBy(array('card_base_type' => 'ASC'));
+			$waitCards = $cardRepository->getById($waitCardsId);
+		}
+		$this->setAdditionalField('wait_cards', $waitCards);
 	}
 	
 	public function __call($methodName, $arguments) {
@@ -51,12 +59,14 @@ class Player extends Item {
 			$place = '';
 			if (strpos($methodName, 'OnTheTable')) {
 				$place = 'table';
-			}
-			elseif (strpos($methodName, 'OnHand')) {
+			} elseif (strpos($methodName, 'OnHand')) {
 				$place = 'hand';
+			} elseif (strpos($methodName, 'OnWait')) {
+				$place = 'wait';
 			}
+
 			if ($place) {
-				$cardType = str_replace(array('getHas', 'OnTheTable', 'OnHand'), '', $methodName);
+				$cardType = str_replace(array('getHas', 'OnTheTable', 'OnHand', 'OnWait'), '', $methodName);
 				return $this->hasCardType($cardType, $place);
 			}
 		}
@@ -101,6 +111,10 @@ class Player extends Item {
 
 	public function getTableCards() {
 		return $this->getAdditionalField('table_cards');
+	}
+
+	public function getWaitCards() {
+		return $this->getAdditionalField('wait_cards');
 	}
 
 	public function setPhase($phase) {

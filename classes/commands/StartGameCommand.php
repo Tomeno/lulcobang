@@ -59,6 +59,7 @@ class StartGameCommand extends Command {
 
 				$player['hand_cards'] = serialize($playerCards);
 				$player['table_cards'] = serialize(array());
+				$player['wait_cards'] = serialize(array());
 
 				$player->save();
 			}
