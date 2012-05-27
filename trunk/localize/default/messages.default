@@ -2,7 +2,6 @@ create_game###Create game
 join_game###Join game
 start_game###Start game
 game_created###Game was created
-game_already_created###Game was already created, you can join
 you_joined_game###You have joined the game
 player_joined_game###%s joined the game
 already_joined###You are already joined
@@ -13,7 +12,6 @@ you_draw_cards###You draw cards
 draw_extension_card_first###Draw extension card first
 draw_dynamite_first###Draw dynamite first
 draw_jail_first###Draw jail first
-not_your_turn###This is not your turn
 cannot_draw_no_game_in_room###No game in room, you cannot draw
 you_have_already_draw###You have already draw
 you_draw_these_cards###You draw these cards
