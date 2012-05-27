@@ -67,6 +67,7 @@ class Player extends Item {
 
 			if ($place) {
 				$cardType = str_replace(array('getHas', 'OnTheTable', 'OnHand', 'OnWait'), '', $methodName);
+				$cardType = Utils::createLowercaseFromText($cardType);
 				return $this->hasCardType($cardType, $place);
 			}
 		}
@@ -81,16 +82,16 @@ class Player extends Item {
 	 * @return Card if has card | false if has not | 0 if method doesn't exist
 	 */
 	protected function hasCardType($cardType, $place = 'table') {
-		$methodName = 'getIs' . $cardType;
+		$methodName = 'getIs' . ucfirst($cardType);
 		if (method_exists('Card', $methodName)) {
 			foreach ($this->getAdditionalField($place . '_cards') as $card) {
 				if ($card->$methodName()) {
 					return $card;
 				}
 			}
-			return false;
+			return NULL;
 		}
-		return 0;
+		return FALSE;
 	}
 
 	public function getCharacter() {
@@ -174,11 +175,7 @@ class Player extends Item {
 	}
 	
 	public function addLife() {
-		$character = $this->getAdditionalField('character');
-		$maxLifes = $character['lifes'];
-		$role = $this->getAdditionalField('role');
-		$maxLifes = $role['type'] == Role::SHERIFF ? $maxLifes + 1 : $maxLifes;
-		if ($this['actual_lifes'] < $maxLifes) {
+		if ($this['actual_lifes'] < $this['max_lifes']) {
 			$newLifes = $this['actual_lifes'] + 1;
 			$GLOBALS['db']->update('player', array('actual_lifes' => $newLifes), 'id = ' . intval($this['id']));
 			return $newLifes;

@@ -217,7 +217,7 @@ class Card extends LinkableItem {
 	 *
 	 * @return	boolean
 	 */
-	public function getIsGeneralStore() {
+	public function getIsGeneralstore() {
 		return $this->getIsType(CardBaseType::GENERAL_STORE);
 	}
 
@@ -226,7 +226,7 @@ class Card extends LinkableItem {
 	 *
 	 * @return	boolean
 	 */
-	public function getIsWellsFargo() {
+	public function getIsWellsfargo() {
 		return $this->getIsType(CardBaseType::WELLS_FARGO);
 	}
 
@@ -253,7 +253,7 @@ class Card extends LinkableItem {
 	 *
 	 * @return	boolean
 	 */
-	public function getIsCatBalou() {
+	public function getIsCatbalou() {
 		return $this->getIsType(CardBaseType::CAT_BALOU);
 	}
 
@@ -361,7 +361,7 @@ class Card extends LinkableItem {
 	 *
 	 * @return	boolean
 	 */
-	public function getIsRevCarabine() {
+	public function getIsRevcarabine() {
 		return $this->getIsType(CardBaseType::REV_CARABINE);
 	}
 
@@ -415,7 +415,7 @@ class Card extends LinkableItem {
 	 *
 	 * @return	boolean
 	 */
-	public function getIsRagTime() {
+	public function getIsRagtime() {
 		return $this->getIsType(CardBaseType::RAG_TIME);
 	}
 
@@ -460,7 +460,7 @@ class Card extends LinkableItem {
 	 *
 	 * @return	boolean
 	 */
-	public function getIsIronPlate() {
+	public function getIsIronplate() {
 		return $this->getIsType(CardBaseType::IRON_PLATE);
 	}
 
@@ -469,7 +469,7 @@ class Card extends LinkableItem {
 	 *
 	 * @return	boolean
 	 */
-	public function getIsTenGallonHat() {
+	public function getIsTengallonhat() {
 		return $this->getIsType(CardBaseType::TEN_GALLON_HAT);
 	}
 
@@ -532,7 +532,7 @@ class Card extends LinkableItem {
 	 *
 	 * @return	boolean
 	 */
-	public function getIsBuffaloRifle() {
+	public function getIsBuffalorifle() {
 		return $this->getIsType(CardBaseType::BUFFALO_RIFLE);
 	}
 
@@ -541,7 +541,7 @@ class Card extends LinkableItem {
 	 *
 	 * @return	boolean
 	 */
-	public function getIsCanCan() {
+	public function getIsCancan() {
 		return $this->getIsType(CardBaseType::CAN_CAN);
 	}
 
@@ -559,7 +559,7 @@ class Card extends LinkableItem {
 	 *
 	 * @return	boolean
 	 */
-	public function getIsPonyExpress() {
+	public function getIsPonyexpress() {
 		return $this->getIsType(CardBaseType::PONY_EXPRESS);
 	}
 
