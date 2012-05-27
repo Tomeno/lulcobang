@@ -209,13 +209,17 @@ class GameUtils {
 	 * @return	array	- IDs array of drawn cards
 	 */
 	public static function drawCards(Game $game, $count) {
+		// TODO check this
+		//throw new Exception('Draw pile sa nevymeni s throw pile');
 		$drawPile = $game->getDrawPile();
 		$drawnCards = array();
 		for ($i = 0; $i < $count; $i++) {
 			$card = array_pop($drawPile);
 			$drawnCards[] = $card['id'];
+
 			if (empty($drawPile)) {
-				$drawPile = shuffle($game->getThrowPile());
+				$drawPile = $game->getThrowPile();
+				shuffle($drawPile);
 				$game->setAdditionalField('throw_pile', array());
 				$game['throw_pile'] = serialize(array());
 			}
