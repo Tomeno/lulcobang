@@ -195,6 +195,62 @@ class Utils {
 		}
 		return NULL;
 	}
+
+	/**
+	 * creates lowercase with underscores title from upper camel case title
+	 *
+	 * @param	string	$upperCamelCase
+	 * @return	string
+	 */
+	public static function createLowercaseUnderscoredFromUpperCamelCase($upperCamelCase) {
+		$lowercaseUnderscored = '';
+		for ($i = 0; $i < strlen($upperCamelCase); $i++) {
+			$char = $upperCamelCase[$i];
+			if (Utils::isUpperCase($char)) {
+				$lowercaseUnderscored .= '_';
+			}
+			$lowercaseUnderscored .= strtolower($char);
+		}
+		return $lowercaseUnderscored;
+	}
+
+	/**
+	 * converts string from lowercase with underscores to upper camel case
+	 *
+	 * @param	string	$keyString
+	 * @return	string
+	 */
+	public static function createUpperCamelCaseFromLowercaseUnderscored($lowercaseUnderscoredText) {
+		$upperCamelCase = '';
+		$underscore = FALSE;
+		for ($i = 0; $i < strlen($lowercaseUnderscoredText); $i++) {
+			$char = $lowercaseUnderscoredText[$i];
+
+			if ($underscore === TRUE || $i = 0) {
+				$char = strtoupper($char);
+				$underscore = FALSE;
+			}
+
+			if ($char == '_') {
+				$underscore = TRUE;
+				$char = '';
+			}
+			
+			$upperCamelCase .= $char;
+		}
+		return $upperCamelCase;
+	}
+
+	/**
+	 * converts text to lowercase without space, underscores, dashes
+	 * @param <type> $text
+	 * @return <type>
+	 */
+	public static function createLowercaseFromText($text) {
+		$text = str_replace(array(' ', '_', '-'), '', $text);
+		$text = strtolower($text);
+		return $text;
+	}
 }
 
 ?>
