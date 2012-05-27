@@ -30,7 +30,7 @@ class PassCommand extends Command {
 				$this->check = self::NOT_YOUR_TURN;
 			}
 		} else {
-			self::NO_GAME;
+			$this->check = self::NO_GAME;
 		}
 	}
 	
