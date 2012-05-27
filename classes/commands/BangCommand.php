@@ -55,10 +55,12 @@ class BangCommand extends Command {
 	}
 
 	protected function createResponse() {
-		MySmarty::assign('card', $this->bangCard);
-		$response = MySmarty::fetch($this->template);
-		$this->attackedPlayer['command_response'] = $response;
-		$this->attackedPlayer->save();
+		if ($this->check == self::OK) {
+			MySmarty::assign('card', $this->bangCard);
+			$response = MySmarty::fetch($this->template);
+			$this->attackedPlayer['command_response'] = $response;
+			$this->attackedPlayer->save();
+		}
 
 		return '';
 	}

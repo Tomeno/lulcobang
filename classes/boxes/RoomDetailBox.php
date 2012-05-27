@@ -16,12 +16,13 @@ class RoomDetailBox extends AbstractBox {
 			$game = $gameRepository->getOneByRoom($room['id']);
 
 			if (Utils::post()) {
-				if (trim(Utils::post('message'))) {
-					if (strpos($_POST['message'], '.') === 0) {
-						$response = Command::setup($_POST['message'], $game);
+				$message = addslashes(trim(Utils::post('message')));
+				if ($message != '') {
+					if (strpos($message, '.') === 0) {
+						$response = Command::setup($message, $game);
 					} else {
 						$messageParams = array(
-							'text' => $_POST['message'],
+							'text' => $message,
 							'room' => $room['id'],
 						);
 						Chat::addMessage($messageParams);

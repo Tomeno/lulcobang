@@ -55,7 +55,7 @@ class Chat {
 		$query = 'SELECT message.*, user.*
 			FROM ' . self::$table . '
 			LEFT JOIN user ON message.user = user.id
-			WHERE room=' . intval($room) . ' AND tstamp > ' . intval($time) . ' AND to_user IN (' . $toUser . ', 0)';
+			WHERE room=' . intval($room) . ' AND tstamp > ' . intval($time) . ' AND to_user IN (' . intval($toUser) . ', 0)';
 		if ($toUser) {
 			$query .= ' AND NOT not_to_user IN (' . $toUser . ')';
 		}
