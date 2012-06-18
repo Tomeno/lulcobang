@@ -66,6 +66,20 @@ abstract class Command {
 	protected $cards = array();
 
 	/**
+	 * enemy player
+	 * 
+	 * @var	Player
+	 */
+	protected $enemyPlayer = NULL;
+	
+	/**
+	 * enemy players cards
+	 *
+	 * @var	array<Card>
+	 */
+	protected $enemyPlayersCards = array();
+
+	/**
 	 * command messages
 	 * @var	array
 	 */
@@ -96,7 +110,10 @@ abstract class Command {
 			'precheckers' => array('GameChecker'),
 			'precheckParams' => array('GameChecker' => 'noGameExists'),
 		),
-		'join' => array('class' => 'JoinGameCommand'),
+		'join' => array(
+			'class' => 'JoinGameCommand',
+			//'precheckers' => array(),
+		),
 		'init' => array('class' => 'InitGameCommand'),
 		'choose_character' => array('class' => 'ChooseCharacterCommand'),
 		'start' => array('class' => 'StartGameCommand'),
@@ -108,7 +125,7 @@ abstract class Command {
 			'precheckParams' => array(
 				'GameChecker' => 'gameStarted',
 				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHas###PLACEHOLDER###OnHand'
+				'ActualPlayerHasCardsChecker' => 'getHas###CARD_PLACEHOLDER######PLACE_PLACEHOLDER###'
 			),
 		),
 		'put' => array(
@@ -117,7 +134,7 @@ abstract class Command {
 			'precheckParams' => array(
 				'GameChecker' => 'gameStarted',
 				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => array('getHas###PLACEHOLDER###OnHand', '!getHas###PLACEHOLDER###OnTheTable', '!getHas###PLACEHOLDER###OnWait'),
+				'ActualPlayerHasCardsChecker' => array('getHas###CARD_PLACEHOLDER###OnHand', '!getHas###CARD_PLACEHOLDER###OnTheTable', '!getHas###CARD_PLACEHOLDER###OnWait'),
 				'CardChecker' => 'isPuttable',
 			),
 		),
@@ -129,12 +146,43 @@ abstract class Command {
 				'PlayerPhaseChecker' => 'isInPlayPhase',
 			),
 		),
-		'bang' => array('class' => 'BangCommand'),
+		'bang' => array(
+			'class' => 'BangCommand',
+			'precheckers' => array('GameChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'ActualPlayerHasCardsChecker' => 'getHasBangOnHand',
+			),
+		),
 		'diligenza' => array('class' => 'DiligenzaCommand'),
-		'wells_fargo' => array('class' => 'WellsFargoCommand'),
-		'pony_express' => array('class' => 'PonyExpressCommand'),
-	//	'beer' => array('class' => 'BeerCommand'),
-	//	'life' => array('class' => 'LifeCommand'),
+		'wellsfargo' => array('class' => 'WellsFargoCommand'),
+		'ponyexpress' => array('class' => 'PonyExpressCommand'),
+		'catbalou' => array(
+			'class' => 'CatbalouCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasCatbalouOnHand',
+			),
+		),
+		'beer' => array(
+			'class' => 'BeerCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',	// TODO zatial sa tu jedna o pivo ked si na tahu, treba doplnit pivo ako zachranu zivota
+				'ActualPlayerHasCardsChecker' => 'getHasBeerOnHand',
+			),
+		),
+		'life' => array(
+			'class' => 'LifeCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isUnderAttack',
+			),
+		),
 	
 	);
 
@@ -143,9 +191,10 @@ abstract class Command {
 		$this->game = $game;
 		$this->localizedParams = $localizedParams;
 
-		$roomAlias = Utils::get('identifier');
 		$roomRepository = new RoomRepository();
-		$room = $roomRepository->getOneByAlias($roomAlias);
+//		$roomAlias = Utils::get('identifier');
+//		$room = $roomRepository->getOneByAlias($roomAlias);
+		$room = $roomRepository->getOneById($game['room']);
 		$this->room = $room;
 
 		$this->loggedUser = LoggedUser::whoIsLogged();
@@ -364,6 +413,24 @@ abstract class Command {
 
 	public function getCards() {
 		return $this->cards;
+	}
+
+	public function getEnemyPlayer() {
+		return $this->enemyPlayer;
+	}
+
+	public function addEnemyPlayerCard(Player $player, Card $card) {
+		$this->enemyPlayersCards[$player['id']][] = $card;
+	}
+
+	public function addEnemyPlayerCards(Player $player, array $cards) {
+		foreach ($cards as $card) {
+			$this->addEnemyPlayerCard($player, $card);
+		}
+	}
+
+	public function getEnemyPlayerCards() {
+		return $this->enemyPlayersCards;
 	}
 }
 

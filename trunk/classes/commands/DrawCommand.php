@@ -183,6 +183,7 @@ class DrawCommand extends Command {
 			MySmarty::assign('possiblePickCount', $possibleChoices['possible_pick_count']);
 			MySmarty::assign('possibleCards', $possibleCards);
 			MySmarty::assign('possibleCardsCount', count($possibleCards));
+			MySmarty::assign('game', $this->game);
 			$response = MySmarty::fetch($this->template);
 
 			$this->actualPlayer['command_response'] = $response;

@@ -6,9 +6,11 @@
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 		<meta name="description" content="{$description}" />
 		<meta name="keywords" content="{$keywords}" />
-		<script type="text/JavaScript" src="js/prototype.js"></script>
-		<script type="text/JavaScript" src="js/prototip.js"></script>
-		<script type="text/JavaScript" src="js/bang.js"></script>
+		<script type="text/javascript" src="{$baseUrl}js/prototype.js"></script>
+		<script type="text/javascript" src="{$baseUrl}js/prototip.js"></script>
+		<script type="text/javascript" src="{$baseUrl}js/bang.js"></script>
+		<script type="text/javascript" src="{$baseUrl}js/cards.js"></script>
+		{* <script type="text/javascript" src="{$baseUrl}js/click.js"></script> *}
 		<link type="text/css" rel="stylesheet" media="all" href="static/css/style.css" />
 		<link type="text/css" rel="stylesheet" media="all" href="static/css/prototip.css" />
 	</head>

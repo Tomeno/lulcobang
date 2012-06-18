@@ -4,7 +4,7 @@
 	<p>{localize key='you_draw_these_cards'}</p>
 {/if}
 
-<form action="{actualurl}" method="post">
+<form action="{baseurl}{$game.roomObject.url}" method="post">
 	<fieldset>
 		{foreach from=$possibleCards item='possibleCard'}
 			{image src=$possibleCard.imagePath alt=$possibleCard.name width='150' height='230'}

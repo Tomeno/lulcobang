@@ -1,6 +1,6 @@
 <?php
 
-class Player extends Item {
+class Player extends LinkableItem {
 
 	const PHASE_NONE = 0;
 	const PHASE_PREDRAW = 1;
@@ -9,6 +9,7 @@ class Player extends Item {
 	const PHASE_DRAW = 4;
 	const PHASE_PLAY = 5;
 	const PHASE_UNDER_ATTACK = 6;
+	const PHASE_WAITING = 7;
 	
 	public function __construct($player) {
 		parent::__construct($player);
@@ -74,6 +75,18 @@ class Player extends Item {
 		throw new Exception('Method ' . $methodName . ' doesn\'t exist');
 	}
 	
+	protected function getPageType() {
+		return 'user';
+	}
+
+	protected function getItemAlias() {
+		$user = $this->getUser();
+		if ($user) {
+			return $user['username'];
+		}
+		return '';
+	}
+
 	/**
 	 * checks if player has card type
 	 *
@@ -166,12 +179,6 @@ class Player extends Item {
 				return $card;
 			}
 		}
-	}
-	
-	public function takeLife() {
-		$newLifes = $this['actual_lifes'] - 1;
-		$GLOBALS['db']->update('player', array('actual_lifes' => $newLifes), 'id = ' . intval($this['id']));
-		return $newLifes;
 	}
 	
 	public function addLife() {

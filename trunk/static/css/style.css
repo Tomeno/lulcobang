@@ -86,7 +86,7 @@ body
 	margin:7px;
 }
 
-#player_01, #player_02, #player_03, #player_04, #player_05, #player_06, #player_07, #player_08, #hokynarstvi, #kopa, #odpad
+#player_01, #player_02, #player_03, #player_04, #player_05, #player_06, #player_07, #player_08, #hokynarstvi, #kopa, #odpad, .throw, .play
 {
 	position:absolute;
 }
@@ -118,9 +118,23 @@ body
 
 #odpad
 {
-	left:497px;
-	top:422px;}
-	.gray{
+	left:477px;
+	top:422px;
+}
+
+.throw
+{
+	left:537px;
+	top:422px;
+}
+
+.play
+{
+	left:537px;
+	top:472px;
+}
+
+.gray{
 	background:url('../images/gray.png') no-repeat left top;
 	height:41px;
 	left:5px;
