@@ -18,8 +18,10 @@ class ActualPlayerHasCardsChecker extends Checker {
 			$params = $this->command->getParams();
 			$localizedParams = $this->command->getLocalizedParams();
 			$precheck = TRUE;
+
 			foreach ($this->precheckerParams as $checkingMethod) {
-				$index = 0;
+				$cardIndex = 0;
+				$placeIndex = 1;
 				$negation = FALSE;
 
 				if (substr($checkingMethod, 0, 7) === '!getHas') {
@@ -27,7 +29,20 @@ class ActualPlayerHasCardsChecker extends Checker {
 					$negation = TRUE;
 				}
 
-				$checkingMethod = str_replace('###PLACEHOLDER###', ucfirst($params[$index]), $checkingMethod);
+				// TODO ked zahram catbalou alebo paniku a. i. - je to hned prvy parameter z prikazu, ktory sa ale sem nedostane, treba to domysliet tak aby sa to dostalo aj sem
+
+				$checkingMethod = str_replace('###CARD_PLACEHOLDER###', ucfirst($params[$cardIndex]), $checkingMethod);
+
+				$placeParam = $params[1];
+				if ($placeParam == 'table') {
+					$place = 'OnTheTable';
+				} elseif ($placeParam == 'wait') {
+					$place = 'OnWait';
+				} else {
+					$place = 'OnHand';
+				}
+				$checkingMethod = str_replace('###PLACE_PLACEHOLDER###', $place, $checkingMethod);
+
 				$card = $actualPlayer->$checkingMethod();
 				
 				if ($card) {
@@ -37,7 +52,7 @@ class ActualPlayerHasCardsChecker extends Checker {
 						$precheck = TRUE;
 					} else {
 						$message = array(
-							'localizeKey' => 'you_have_card_on_table',
+							'localizeKey' => 'you_have_card_on_table',	// toto tu by sa malo menit podla miesta, nie stale table
 							'localizeParams' => array($localizedParams[$index]),
 						);
 						$this->addMessage($message);
@@ -56,7 +71,7 @@ class ActualPlayerHasCardsChecker extends Checker {
 						$precheck = FALSE;
 						break;
 					} else {
-						return TRUE;
+						$precheck = TRUE;
 					}
 				}
 			}

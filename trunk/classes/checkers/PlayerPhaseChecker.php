@@ -69,6 +69,10 @@ class PlayerPhaseChecker extends Checker {
 			case Player::PHASE_UNDER_ATTACK:
 				throw new Exception('Player is under attack, what now? :D');
 				break;
+			case Player::PHASE_WAITING:
+				$message = array(
+					'localizeKey' => 'you_have_to_wait',
+				);
 		}
 		if ($message) {
 			$this->addMessage($message);
@@ -102,6 +106,16 @@ class PlayerPhaseChecker extends Checker {
 			return TRUE;
 		} else {
 			$this->getPhaseMessage('play');
+			return FALSE;
+		}
+	}
+
+	protected function isUnderAttack() {
+		$actualPlayer = $this->command->getActualPlayer();
+		if ($actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
+			return TRUE;
+		} else {
+			$this->getPhaseMessage('under_attack');
 			return FALSE;
 		}
 	}
