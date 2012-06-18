@@ -30,7 +30,7 @@ class Localize {
 	}
 
 	protected static function readDir($dir) {
-		echo $dirname = dirname(__FILE__) . '/../' . $dir . '/';
+		$dirname = dirname(__FILE__) . '/../' . $dir . '/';
 		if (file_exists($dirname) && is_dir($dirname)) {
 			$directory = opendir($dirname);
 			while ($item = readdir($directory)) {

@@ -88,9 +88,9 @@ function focusToInput() {
 document.observe('dom:loaded', function() {
 	$$('.popup').each(function(el) {
 		new Tip(el.down('.popup-source'), el.down('.popup-target'), {
-			hook: { tip: 'bottomLeft', target: 'topRight' },
-			offset: { x: -25, y: 25 },
-			hideOn: { element: 'body', event: 'click' },
+			hook: {tip: 'bottomLeft', target: 'topRight'},
+			offset: {x: -25, y: 25},
+			hideOn: {element: 'body', event: 'click'},
 			images: '/fileadmin/template/images/prototip/styles/default/',
 			javascript: '',
 			hideAfter: 0.500,
@@ -108,3 +108,36 @@ document.observe('dom:loaded', function() {
 	});
 });
 
+function getLocalizedMessage(key) {
+	new Ajax.Request('services/LocalizeMessage.php', {
+		method: 'post',
+		parameters: {key: key},
+
+		onSuccess: function(transport) {
+			alert(transport.responseText);
+		},
+
+		onFailure: function() {
+		}
+	});
+	return true;
+}
+
+function executeCommand() {
+	var game = $('game').value;
+	var card = $('selected-card').value;
+	var player = $('selected-player').value;
+	var command = $('command').value;
+	var place = $('place').value;
+
+	new Ajax.Request('services/ExecuteCommand.php', {
+		method: 'post',
+		parameters: {game: game, card: card, player: player, command: command, place: place},
+
+		onSuccess: function(transport) {
+			// temporary reload page after execute command
+			window.location.reload();
+			// alert(transport.responseText);
+		}
+	});
+}

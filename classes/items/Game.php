@@ -100,6 +100,12 @@ class Game extends Item {
 		}
 		return null;
 	}
+
+	public function getRoomObject() {
+		$roomRepository = new RoomRepository();
+		$room = $roomRepository->getOneById($this['room']);
+		return $room;
+	}
 }
 
 ?>

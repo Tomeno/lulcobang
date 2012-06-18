@@ -209,8 +209,6 @@ class GameUtils {
 	 * @return	array	- IDs array of drawn cards
 	 */
 	public static function drawCards(Game $game, $count) {
-		// TODO check this
-		//throw new Exception('Draw pile sa nevymeni s throw pile');
 		$drawPile = $game->getDrawPile();
 		$drawnCards = array();
 		for ($i = 0; $i < $count; $i++) {
@@ -242,7 +240,7 @@ class GameUtils {
 	 *
 	 * @param	Game	$game
 	 * @param	Player	$player
-	 * @param	array	$thrownCards
+	 * @param	array<Card>	$thrownCards
 	 * @param	string	$place
 	 * @return	array
 	 */

@@ -9,7 +9,7 @@ class JoinGameCommand extends Command {
 
 	protected function check() {
 		if ($this->game) {
-			if ($game['status'] == 0) {
+			if ($this->game['status'] == 0) {
 				$userCount = GameUtils::checkUserInGame($this->loggedUser, $this->game);
 
 				if ($userCount > 0) {
@@ -17,7 +17,7 @@ class JoinGameCommand extends Command {
 				} else {
 					$this->check = self::OK;
 				}
-			} elseif ($this->game['status'] == 1) {
+			} else {
 				$this->check = self::GAME_STARTED;
 			}
 		} else {
