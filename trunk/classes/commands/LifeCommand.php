@@ -32,6 +32,10 @@ class LifeCommand extends Command {
 					$handCards[] = $card;
 				}
 				$attackingPlayer['hand_cards'] = serialize($handCards);
+
+				$this->game = GameUtils::changePositions($this->game);
+
+				// TODO po zmene positions sa pravdepodobne zmeni aj pozicia hraca ktory je na tahu, treba to tu na tomto mieste znovu preratat a nastavit game[position] na poziciu hraca s ideckom ktore ma attacking player a rovnako aj inter_turn bude treba preratat
 		//	}
 		}
 		$this->actualPlayer['actual_lifes'] = $newLifes;
