@@ -1,15 +1,3 @@
-function timedRefresh(timeoutPeriod, room) {
-	//setTimeout("location.reload(true);",timeoutPeriod);
-//	setInterval("refreshChat(" + room + ")", timeoutPeriod);
-	//setInterval("refreshUsersBox(" + room + ")", timeoutPeriod);
-	setInterval("refreshGameBox(" + room + ")", timeoutPeriod);
-	
-//	chatarea = document.getElementById('chatbox');
-//	scrollArea(chatarea);
-	
-//	focusToInput();
-}
-		
 function insertEmoticon(emoticon) {
 	input = document.getElementById('message');
 	input.value += emoticon;
@@ -125,6 +113,7 @@ function getLocalizedMessage(key) {
 
 function executeCommand() {
 	var game = $('game').value;
+	var room = $('room').value;
 	var card = $('selected-card').value;
 	var player = $('selected-player').value;
 	var command = $('command').value;
@@ -137,6 +126,7 @@ function executeCommand() {
 		onSuccess: function(transport) {
 			// temporary reload page after execute command
 			refreshGameBox(game);
+			refreshChat(room);
 			// alert(transport.responseText);
 		}
 	});

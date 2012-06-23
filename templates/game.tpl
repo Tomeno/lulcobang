@@ -175,6 +175,7 @@
 		<form action="{actualurl}" method="post">
 			<fieldset>
 				<input type="hidden" name="game" id="game" value="{$game.id}" />
+				<input type="hidden" name="room" id="room" value="{$game.room}" />
 				<input type="hidden" name="card" id="selected-card" value="" />
 				<input type="hidden" name="player" id="selected-player" value="" />
 				<input type="hidden" name="command" id="command" value="" />
