@@ -14,6 +14,16 @@ class GameBox extends AbstractBox {
 			MySmarty::assign('game', $this->game);
 			MySmarty::assign('gameStartedStatus', Game::GAME_STATUS_STARTED);
 
+			$playerRepository = new PlayerRepository();
+			$actualPlayer = $playerRepository->getOneByGameAndUser($this->game['id'], $loggedUser['id']);
+
+			// phases when we want to make autoreload
+			if (in_array($actualPlayer['phase'], array(Player::PHASE_NONE, Player::PHASE_WAITING))) {
+				MySmarty::assign('refreshGameBox', TRUE);
+			}
+
+			MySmarty::assign('response', $actualPlayer['command_response']);
+
 			if ($this->game['status'] == Game::GAME_STATUS_CREATED) {
 				if (!GameUtils::checkUserInGame($loggedUser, $this->game)) {
 					MySmarty::assign('joinGameAvailable', TRUE);

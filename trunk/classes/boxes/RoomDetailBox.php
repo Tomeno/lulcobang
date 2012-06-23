@@ -49,10 +49,6 @@ class RoomDetailBox extends AbstractBox {
 
 			$gameBox = new GameBox();
 			if ($game !== NULL) {
-				$playerRepository = new PlayerRepository();
-				$actualPlayer = $playerRepository->getOneByGameAndUser($game['id'], $loggedUser['id']);
-				MySmarty::assign('response', $actualPlayer['command_response']);
-
 				$gameBox->setGame($game);
 			}
 			MySmarty::assign('gameBox', $gameBox->render());

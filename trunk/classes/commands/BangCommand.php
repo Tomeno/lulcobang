@@ -12,6 +12,12 @@ class BangCommand extends Command {
 	protected $template = 'you-are-attacked.tpl';
 
 	protected function check() {
+
+		// TODO check actual player state - if waiting cannot play bang again
+
+		// TODO check if has volcanic or is willy the kid for playing more than one bang in a round
+
+		// TODO create as checker
 		$attackedPlayer = $this->params[0];
 		foreach ($this->players as $player) {
 			$user = $player->getUser();
@@ -21,6 +27,8 @@ class BangCommand extends Command {
 			}
 		}
 		
+		// TODO replace bangCard by $this->card (from checker)
+
 		$method = 'getHasBangOnHand';
 		$res = $this->actualPlayer->$method();
 		if ($res) {
@@ -42,9 +50,12 @@ class BangCommand extends Command {
 			$this->actualPlayer['phase'] = Player::PHASE_WAITING;
 			$this->actualPlayer->save();
 
+			// TODO toto plati len ak je to utok bangom, ale bang sa pouziva na viacerych miestach - premysliet a dorobit aj duel a indianov prip dalsie
 			$this->game['inter_turn'] = $this->attackedPlayer['position'];
 			$this->game['inter_turn_reason'] = serialize(array('action' => 'bang', 'from' => $this->actualPlayer['id'], 'to' => $this->attackedPlayer['id']));
 			$this->game->save();
+
+			// TODO nastavit ze hrac pouzil bang ak sa jedna o jeho utok na niekoho pomocou bangu
 
 			$retval = GameUtils::throwCards($this->game, $this->actualPlayer, array($this->bangCard));
 		}
@@ -55,6 +66,8 @@ class BangCommand extends Command {
 
 	protected function createResponse() {
 		if ($this->check == self::OK) {
+			// TODO prerobit tak aby to fungovalo aj bez javascriptu, onclick treba nahradit niecim inym, pripadne doplnit tlacitko ktore skryje ten overlay
+
 			MySmarty::assign('card', $this->bangCard);
 			$response = MySmarty::fetch($this->template);
 			$this->attackedPlayer['command_response'] = $response;

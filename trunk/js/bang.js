@@ -1,13 +1,13 @@
 function timedRefresh(timeoutPeriod, room) {
 	//setTimeout("location.reload(true);",timeoutPeriod);
-	setInterval("refreshChat(" + room + ")", timeoutPeriod);
+//	setInterval("refreshChat(" + room + ")", timeoutPeriod);
 	//setInterval("refreshUsersBox(" + room + ")", timeoutPeriod);
 	setInterval("refreshGameBox(" + room + ")", timeoutPeriod);
 	
-	chatarea = document.getElementById('chatbox');
-	scrollArea(chatarea);
+//	chatarea = document.getElementById('chatbox');
+//	scrollArea(chatarea);
 	
-	focusToInput();
+//	focusToInput();
 }
 		
 function insertEmoticon(emoticon) {
@@ -57,16 +57,16 @@ function refreshUsersBox(room) {
 	return false;
 }
 
-function refreshGameBox(room) {
+function refreshGameBox(game) {
 	gamebox = document.getElementById('table');
 	
 	new Ajax.Request('services/RefreshGame.php', {
 		method: 'post',
-		parameters: {room: room},
+		parameters: {game: game},
 		
 		onSuccess: function(transport) {
 			newtext = transport.responseText;
-			gamebox.innerHTML = newtext;
+			gamebox.replace(newtext);
 		},
 		
 		onFailure: function() {
@@ -136,7 +136,7 @@ function executeCommand() {
 
 		onSuccess: function(transport) {
 			// temporary reload page after execute command
-			window.location.reload();
+			refreshGameBox(game);
 			// alert(transport.responseText);
 		}
 	});

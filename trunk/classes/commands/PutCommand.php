@@ -40,7 +40,7 @@ class PutCommand extends Command {
 	}
 	protected function run() {
 		if ($this->check == self::OK) {
-			GameUtils::putCards($this->game, $this->actualPlayer, $this->putCards, $this->place);
+			GameUtils::moveCards($this->game, $this->putCards, $this->actualPlayer, $this->place);
 		}
 	}
 

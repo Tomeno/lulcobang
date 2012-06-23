@@ -44,10 +44,17 @@ class PassCommand extends Command {
 			$this->game['turn'] = $nextPosition;
 			$this->game->save();
 
-			// TODO next player check if is sheriff - phase predraw, if has dynamite and/or jail - phase blue cards, else phase draw
+			// TODO next player check if is sheriff - phase predraw, if has dynamite and/or jail - phase dynamite / jail, else phase draw
 			foreach ($this->players as $player) {
 				if ($player['position'] == $nextPosition) {
-					$player['phase'] = Player::PHASE_DRAW;
+					if ($player->getHasDynamiteOnTheTable()) {
+						$phase = Player::PHASE_DYNAMITE;
+					} elseif ($player->getHasJailOnTheTable()) {
+						$phase = Player::PHASE_JAIL;
+					} else {
+						$phase = Player::PHASE_DRAW;
+					}
+					$player['phase'] = $phase;
 					$tableCards = unserialize($player['table_cards']);
 					$waitCards = unserialize($player['wait_cards']);
 					$player['table_cards'] = serialize(array_merge($tableCards, $waitCards));

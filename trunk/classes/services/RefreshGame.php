@@ -3,23 +3,17 @@
 class RefreshGame {
 	
 	public function main() {
-		$room = intval($_POST['room']);
+		$gameId = intval(Utils::post('game'));
 		
 		$gameRepository = new GameRepository();
-		$game = $gameRepository->getOneByRoom($room);
+		$game = $gameRepository->getOneById($gameId);
 		
 		if ($game) {
-			$GLOBALS['smarty']->assign('game', $game);
+			$gameBox = new GameBox();
+			$gameBox->setGame($game);
+			echo $gameBox->render();
 		}
-		
-		$loggedUser = LoggedUser::whoIsLogged();
-		$GLOBALS['smarty']->assign('loggedUser', $loggedUser);
-		
-		echo $GLOBALS['smarty']->fetch('game.tpl');
 	}
 }
-
-$service = new RefreshGame();
-$service->main();
 
 ?>

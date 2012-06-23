@@ -82,6 +82,8 @@ body
 	width:28px;
 }
 
+.lifes a { font-size: 33px; text-decoration: none; }
+
 .card img, .char img, .role img{
 	margin:7px;
 }
@@ -218,7 +220,7 @@ body
 
 #overlay-response
 {
-	position: absolute;
+	position: fixed;
 	top: 0px;
 	left: 0px;
 	z-index: 300;
