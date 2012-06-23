@@ -162,6 +162,24 @@ abstract class Command {
 				'ActualPlayerHasCardsChecker' => 'getHasMissedOnHand',
 			),
 		),
+		'dodge' => array(
+			'class' => 'DodgeCommand',
+			'precheckers' => array('GameChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isUnderAttack',
+				'ActualPlayerHasCardsChecker' => 'getHasDodgeOnHand',
+			),
+		),
+		'sombrero' => array(
+			'class' => 'SombreroCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isUnderAttack',
+				'ActualPlayerHasCardsChecker' => 'getHasSombreroOnTheTable',
+			),
+		),
 		'diligenza' => array('class' => 'DiligenzaCommand'),
 		'wellsfargo' => array('class' => 'WellsFargoCommand'),
 		'ponyexpress' => array('class' => 'PonyExpressCommand'),
@@ -192,6 +210,15 @@ abstract class Command {
 				'ActualPlayerHasCardsChecker' => 'getHasBeerOnHand',
 			),
 		),
+		'saloon' => array(
+			'class' => 'SaloonCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasSaloonOnHand',
+			),
+		),
 		'life' => array(
 			'class' => 'LifeCommand',
 			'precheckers' => array('GameChecker', 'PlayerPhaseChecker'),
@@ -207,6 +234,24 @@ abstract class Command {
 				'GameChecker' => 'gameStarted',
 				'PlayerPhaseChecker' => 'isInPlayPhase',
 				'ActualPlayerHasCardsChecker' => 'getHasJailOnHand',
+			),
+		),
+		'indians' => array(
+			'class' => 'IndiansCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasIndiansOnHand',
+			),
+		),
+		'gatling' => array(
+			'class' => 'GatlingCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasGatlingOnHand',
 			),
 		),
 	);
