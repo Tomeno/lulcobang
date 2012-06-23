@@ -7,8 +7,13 @@ class BeerCommand extends Command {
 	}
 
 	protected function run() {
-		// Tequila Joe ma myslim 2 zivoty za kazde pivo, preto by sa mohlo stat ze sa max_lifes presvihne
-		$newLifes = min($this->actualPlayer['actual_lifes'] + 1, $this->actualPlayer['max_lifes']);
+		$additionalLifes = 1;
+		if ($this->actualPlayer->getCharacter()->getIsTequilaJoe()) {
+			$additionalLifes = 2;
+		}
+		$newLifes = min($this->actualPlayer['actual_lifes'] + $additionalLifes, $this->actualPlayer['max_lifes']);
+		$this->actualPlayer['actual_lifes'] = $newLifes;
+		$this->actualPlayer->save();
 	}
 
 	protected function generateMessages() {
