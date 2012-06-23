@@ -274,39 +274,39 @@ class GameUtils {
 	 *
 	 * @param	Game	$game
 	 * @param	Player	$playerFrom
-	 * @param	array	$putCards
-	 * @param	string	$place
+	 * @param	array	$movedCards
+	 * @param	string	$placeTo
 	 * @param	Player	$playerTo
 	 * @return	array
 	 */
-	public static function putCards(Game $game, Player $playerFrom, array $putCards, $place = 'table', Player $playerTo = NULL) {
+	public static function moveCards(Game $game, array $movedCards, Player $playerFrom, $placeTo = 'table', Player $playerTo = NULL, $placeFrom = 'hand') {
 		$samePlayer = FALSE;
 		if ($playerTo === NULL) {
 			$playerTo = $playerFrom;
 			$samePlayer = TRUE;
 		}
-		$putCardsIds = array();
-		foreach ($putCards as $card) {
-			$putCardsIds[] = $card['id'];
+		$movedCardsIds = array();
+		foreach ($movedCards as $card) {
+			$movedCardsIds[] = $card['id'];
 		}
 
-		$playerFromCards = unserialize($playerFrom['hand_cards']);
-		$playerToCards = unserialize($playerTo[$place . '_cards']);
+		$playerFromCards = unserialize($playerFrom[$placeFrom . '_cards']);
+		$playerToCards = unserialize($playerTo[$placeTo . '_cards']);
 
 		$newPlayerHandCards = array();
 		foreach ($playerFromCards as $card) {
-			if (in_array($card, $putCardsIds)) {
+			if (in_array($card, $movedCardsIds)) {
 				$playerToCards[] = $card;
 			} else {
 				$newPlayerHandCards[] = $card;
 			}
 		}
 
-		$playerFrom['hand_cards'] = serialize($newPlayerHandCards);
+		$playerFrom[$placeFrom . '_cards'] = serialize($newPlayerHandCards);
 		if ($samePlayer === TRUE) {
-			$playerFrom[$place . '_cards'] = serialize($playerToCards);
+			$playerFrom[$placeTo . '_cards'] = serialize($playerToCards);
 		} else {
-			$playerTo[$place . '_cards'] = serialize($playerToCards);
+			$playerTo[$placeTo . '_cards'] = serialize($playerToCards);
 			$playerTo = $playerTo->save(TRUE);
 		}
 		$playerFrom = $playerFrom->save(TRUE);

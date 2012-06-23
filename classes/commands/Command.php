@@ -154,6 +154,14 @@ abstract class Command {
 				'ActualPlayerHasCardsChecker' => 'getHasBangOnHand',
 			),
 		),
+		'missed' => array(
+			'class' => 'MissedCommand',
+			'precheckers' => array('GameChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'ActualPlayerHasCardsChecker' => 'getHasMissedOnHand',
+			),
+		),
 		'diligenza' => array('class' => 'DiligenzaCommand'),
 		'wellsfargo' => array('class' => 'WellsFargoCommand'),
 		'ponyexpress' => array('class' => 'PonyExpressCommand'),
@@ -164,6 +172,15 @@ abstract class Command {
 				'GameChecker' => 'gameStarted',
 				'PlayerPhaseChecker' => 'isInPlayPhase',
 				'ActualPlayerHasCardsChecker' => 'getHasCatbalouOnHand',
+			),
+		),
+		'panic' => array(
+			'class' => 'PanicCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasPanicOnHand',
 			),
 		),
 		'beer' => array(
@@ -183,7 +200,15 @@ abstract class Command {
 				'PlayerPhaseChecker' => 'isUnderAttack',
 			),
 		),
-	
+		'jail' => array(
+			'class' => 'JailCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasJailOnHand',
+			),
+		),
 	);
 
 	private function  __construct($params, $localizedParams, $game) {
@@ -192,9 +217,12 @@ abstract class Command {
 		$this->localizedParams = $localizedParams;
 
 		$roomRepository = new RoomRepository();
-//		$roomAlias = Utils::get('identifier');
-//		$room = $roomRepository->getOneByAlias($roomAlias);
-		$room = $roomRepository->getOneById($game['room']);
+		if ($game) {
+			$room = $roomRepository->getOneById($game['room']);
+		} else {
+			$roomAlias = Utils::get('identifier');
+			$room = $roomRepository->getOneByAlias($roomAlias);
+		}
 		$this->room = $room;
 
 		$this->loggedUser = LoggedUser::whoIsLogged();

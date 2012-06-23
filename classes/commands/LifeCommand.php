@@ -15,13 +15,13 @@ class LifeCommand extends Command {
 		$newLifes = $this->actualPlayer['actual_lifes'] - 1;
 		if ($newLifes == 0) {
 			// TODO message ze hrac zomrel
-			// ak v hre nie su mrtvozruti, odhodi uplne vsetky karty, inak si ich rozdelia tito hraci
+			// TODO ak v hre nie su mrtvozruti, odhodi uplne vsetky karty, inak si ich rozdelia tito hraci
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->actualPlayer->getHandCards(), 'hand');
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->actualPlayer->getTableCards(), 'table');
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->actualPlayer->getWaitCards(), 'wait');
 
 			$role = $this->actualPlayer->getRoleObject();
-			if ($role['id'] == Role::BANDIT) {
+		//	if ($role['id'] == Role::BANDIT) {
 				// za banditu dostane utocnik 3 karty
 				// TODO doplnit pocty ak su ine pre rozne charaktery utociacich hracov
 				// TODO doplnit podmienky pre typy utokov ktorych sa tieto tahania tykaju - indiani tam myslim nepatria
@@ -31,11 +31,11 @@ class LifeCommand extends Command {
 				foreach ($drawnCards as $card) {
 					$handCards[] = $card;
 				}
-				$attackingPlayer['hand_cards'] = $handCards;
-			}
+				$attackingPlayer['hand_cards'] = serialize($handCards);
+		//	}
 		}
 		$this->actualPlayer['actual_lifes'] = $newLifes;
-		$this->actualPlayer['phase'] = 0;
+		$this->actualPlayer['phase'] = Player::PHASE_NONE;
 		$this->actualPlayer['command_response'] = '';
 		$this->actualPlayer->save();
 

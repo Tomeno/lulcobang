@@ -1,4 +1,7 @@
 {if $game && $game.status == $gameStartedStatus}
+	<script type="text/javascript">
+		var gameBoxTimeInterval;
+	</script>
 	<div id="table">
 		{foreach from=$game.players item='player'}
 			{if $loggedUser.id == $player.user.id}
@@ -30,7 +33,15 @@
 				</div>
 				{if $game.status == $gameStartedStatus}
 					<div class="row">
-						<div class="lifes">{$player.actual_lifes}</div>
+						<div class="lifes">
+							{if $player.user.id == $me.user.id}
+								<a href="#" onclick="lostLife(); return false;">
+							{/if}
+							{$player.actual_lifes}
+							{if $player.user.id == $me.user.id}
+								</a>
+							{/if}
+							</div>
 						<div class="char popup">
 							<a href="{$player.character.url}" onclick="window.open(this.href, '_blank'); return false;" class="popup-source">
 								{image src=$player.character.imagePath alt=$player.character.name width='44' height='76'}
@@ -158,16 +169,28 @@
 		{/if}
 		<a href="#" onclick="throwCard(); return false;" title="Click here to throw selected card"><span class="card throw"><img src="static/images/odpad.jpg" /></span></a>
 		<a href="#" onclick="playCard(); return false;" title="Click here to play selected card"><span class="card play"></span></a>
+		<div id="overlay-response"{if not $response} style="display: none;"{/if}>
+			{$response}
+		</div>
+		<form action="{actualurl}" method="post">
+			<fieldset>
+				<input type="hidden" name="game" id="game" value="{$game.id}" />
+				<input type="hidden" name="card" id="selected-card" value="" />
+				<input type="hidden" name="player" id="selected-player" value="" />
+				<input type="hidden" name="command" id="command" value="" />
+				<input type="hidden" name="place" id="place" value="" />
+			</fieldset>
+		</form>
+		<script type="text/javascript">
+			clearInterval(gameBoxTimeInterval);
+			{if $refreshGameBox}
+				gameBoxTimeInterval = setInterval('refreshGameBox({$game.id})', 5000);
+			{/if}
+		</script>
 	</div>
-	<form action="{actualurl}" method="post">
-		<fieldset>
-			<input type="hidden" name="game" id="game" value="{$game.id}" />
-			<input type="hidden" name="card" id="selected-card" value="" />
-			<input type="hidden" name="player" id="selected-player" value="" />
-			<input type="hidden" name="command" id="command" value="" />
-			<input type="hidden" name="place" id="place" value="" />
-		</fieldset>
-	</form>
+
+	
+
 {else}
 	<form action="{actualurl}" method="post">
 		<fieldset>
@@ -185,3 +208,5 @@
 		</fieldset>
 	</form>
 {/if}
+
+
