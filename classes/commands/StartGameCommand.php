@@ -32,13 +32,25 @@ class StartGameCommand extends Command {
 	}
 	protected function run() {
 		if ($this->check == self::OK) {
+
+			$cardBaseTypeRepository = new CardBaseTypeRepository();
+			$validCardBaseTypes = $cardBaseTypeRepository->getByValid(1);
+
+			$validCardBaseTypesIdList = array();
+			foreach ($validCardBaseTypes as $cardBaseType) {
+				$validCardBaseTypesIdList[] = $cardBaseType['id'];
+			}
+
 			$cardRepository = new CardRepository();
-
-			$players = $this->players;
-
+			$where = array(
+				'column' => 'card_base_type',
+				'value' => $validCardBaseTypesIdList
+			);
+			$cardRepository->addAdditionalWhere($where);
 			$cards = $cardRepository->getCardIds();
 			shuffle($cards);
 
+			$players = $this->players;
 			foreach ($players as $player) {
 				$playerCards = array();
 

@@ -47,11 +47,16 @@ abstract class Item extends ArrayObject {
 			}
 		}
 
+		$table = $this->getTable();
+//		if ($table == 'game') {
+//			$params['last_change'] = time();
+//		}
+
 		if ($update === TRUE) {
-			DB::update($this->getTable(), $params, 'id = ' . intval($this['id']));
+			DB::update($table, $params, 'id = ' . intval($this['id']));
 			$params['id'] = $this['id'];
 		} else {
-			$id = DB::insert($this->getTable(), $params);
+			$id = DB::insert($table, $params);
 			$params['id'] = $id;
 		}
 

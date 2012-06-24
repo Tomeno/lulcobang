@@ -31,6 +31,20 @@ abstract class Command {
 	protected $actualPlayer = NULL;
 
 	/**
+	 * interturn reason
+	 *
+	 * @var	string
+	 */
+	protected $interTurnReason = NULL;
+
+	/**
+	 * attacking player
+	 *
+	 * @var	Player
+	 */
+	protected $attackingPlayer = NULL;
+
+	/**
 	 * players in game
 	 *
 	 * @var	array<Player>
@@ -260,6 +274,11 @@ abstract class Command {
 		$this->params = $params;
 		$this->game = $game;
 		$this->localizedParams = $localizedParams;
+
+		$this->interTurnReason = unserialize($this->game['inter_turn_reason']);
+		$attackingPlayerId = $this->interTurnReason['from'];
+		$playerRepository = new PlayerRepository();
+		$this->attackingPlayer = $playerRepository->getOneById($attackingPlayerId);
 
 		$roomRepository = new RoomRepository();
 		if ($game) {
