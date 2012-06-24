@@ -14,3 +14,7 @@
 		</fieldset>
 	</form>
 </div>
+
+<script type="text/javascript">
+	chatBoxTimeInterval = setInterval('refreshChat({$room.id})', 10000);
+</script>

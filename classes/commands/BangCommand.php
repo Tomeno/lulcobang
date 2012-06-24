@@ -13,6 +13,8 @@ class BangCommand extends Command {
 
 	protected function check() {
 
+		// TODO check if actual player is in play state - momentalne moze hrat bang aj ked este nepotiahol jail a myslim ze by to slo aj keby nepotiahol vobec
+
 		// TODO check actual player state - if waiting cannot play bang again
 
 		// TODO check if has volcanic or is willy the kid for playing more than one bang in a round
