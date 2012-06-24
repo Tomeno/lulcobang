@@ -15,7 +15,7 @@ function selectCard(id, type, playerId, place) {
 	
 	// sluzi momentalne pri cat balou ako vyber karty hraca zo stola, uvidime ci to budeme oddelovat alebo to nechame tu - asi to bude musiet byt nejaka specialna metoda ktora spravi nieco ine ako select PLayer
 	if (playerId) {
-		selectPlayer(playerId);
+		selectPlayer(playerId, true);
 	}
 
 	// TODO show help message - vypinatelne aby to furt neotravovalo - v  html to aj tak bude cele predgenerovane cize si moze kliknut na nejaky info kruzok
@@ -42,12 +42,13 @@ function putCard() {
 	executeCommand();
 }
 
-function selectPlayer(id) {
+function selectPlayer(id, fromSelectCard) {
 	$('selected-player').value = id;
-	// zrusim nastavenie karty - neviem ci toto je spravny krok ale pre cat balou to potrebujeme
+	if (fromSelectCard) {
 
-	// pre paniku to nefunguje :) ak vyberam hracovu kartu zo stola :)
-//	$('selected-card').value = 0;
+	} else {
+		$('selected-card').value = 0;
+	}
 	executeCommand();
 }
 

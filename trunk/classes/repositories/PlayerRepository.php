@@ -17,6 +17,19 @@ class PlayerRepository extends Repository {
 		}
 		return null;
 	}
+
+	public function getCountLivePlayersWithRoles($game, $roles = array()) {
+		$roleWhere = '';
+		if (!is_array($roles)) {
+			$roles = array($roles);
+		}
+		if (!empty ($roles)) {
+			$roleWhere = ' AND role IN (' . implode(', ', $roles) . ')';
+		}
+		$query = 'SELECT count(*) AS pocet FROM ' . $this->table . ' WHERE game = ' . intval($game) . ' AND actual_lifes > 0' . $roleWhere;
+		$res = DB::fetchFirst($query);
+		return $res['pocet'];
+	}
 }
 
 ?>
