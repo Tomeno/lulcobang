@@ -18,7 +18,7 @@ class ChatBox extends AbstractBox {
 			MySmarty::assign('users', Room::getUsers($this->room['id']));
 			MySmarty::assign('emoticonDir', EMOTICONS_DIR);
 			MySmarty::assign('emoticons', Emoticons::getEmoticons());
-			//MySmarty::assign('bodyAdded', 'onload="JavaScript:timedRefresh(10000, ' . $this->room['id'] . ');"');
+			MySmarty::assign('room', $this->room);
 		}
 	}
 

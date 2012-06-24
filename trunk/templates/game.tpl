@@ -193,6 +193,11 @@
 	
 
 {else}
+
+	<div id="overlay-response"{if not $response} style="display: none;"{/if}>
+		{$response}
+	</div>
+
 	<form action="{actualurl}" method="post">
 		<fieldset>
 			{if not $game}
