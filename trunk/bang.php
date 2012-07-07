@@ -50,6 +50,7 @@ $upperPartBox = new UpperPartBox();
 MySmarty::assign('upperPart', $upperPartBox->render());
 
 $menuBox = new MenuBox();
+$menuBox->setActualAction($action);
 MySmarty::assign('menu', $menuBox->render());
 
 MySmarty::assign('title', BangSeo::getTitle());
