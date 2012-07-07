@@ -1,0 +1,266 @@
+*
+{
+	margin:0;
+	padding:0;
+	border: none;
+	font-family:"Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+	font-size: 11px;
+	color:white;
+
+}
+
+body
+{
+	background:url('../images/background.jpg');
+}
+
+#left_side {
+	width: 10%;
+	float: left;
+}
+
+.logo {
+	padding-left: 10px;
+}
+
+.logo a {
+	height: 100px;
+	width: 100px;
+	background:url('../images/logo.png') no-repeat;
+	display: block;
+}
+
+.logo .hdn {
+	display: none;
+}
+
+.user_info {
+	height: 100px;
+	padding-left: 10px;
+}
+
+.menu {
+	padding-left: 10px;
+}
+
+.menu ul {
+	list-style: none;
+}
+
+.menu ul li a {
+	font-size: 15px;
+	text-decoration: none;
+}
+
+.menu ul li a:hover {
+	text-decoration: underline;
+}
+
+.menu ul li.sel a {
+	font-weight: bold;
+	text-decoration: underline;
+}
+
+#table {
+	width: 80%;
+	height: 800px;
+	float: left;
+	background:url("../images/table.jpg") no-repeat scroll 0px -126px transparent;
+	position: relative;
+}
+
+.player
+{
+	width:325px;
+	margin:0 3px 3px 0;
+	position: absolute;
+}
+
+.player_info
+{
+	float:left;
+	width:50px;
+	padding: 10px 0 0 0;
+	margin:0 4px 0 0;
+}
+
+.photo
+{
+	background:url('../images/photo.png') no-repeat left top;
+	width:43px;
+	float:left;
+	padding:4px;
+	height:200px;
+}
+
+.photo img
+{
+	width:40px;
+}
+
+.player, .row
+{
+	float:left;
+	min-width:249px;
+	
+}
+
+.card, .char, .role
+{
+	background:url('../images/card_micro.png') no-repeat left top;
+	width:36px;
+	height:51px;
+	float:left;
+}
+
+
+.lifes
+{
+	background:url('../images/lifes.png') no-repeat left top;
+	float:left;
+	font-size:33px;
+	height:43px;
+	margin:4px 4px 0;
+	padding:4px 0 0;
+	text-align:center;
+	width:28px;
+}
+
+.lifes a { font-size: 33px; text-decoration: none; }
+
+.card img, .char img, .role img{
+	margin:7px;
+}
+
+#player_01 { left:450px; top:480px; }
+#player_02 { left:50px; top:480px; }
+#player_03 { left:0px; top:240px; }
+#player_04 { left:50px; top:0px; }
+#player_05 { left:450px; top:0px; }
+#player_06 { left:850px; top:0px; }
+#player_07 { left:900px; top:240px; }
+#player_08 { left:850px; top:480px; }
+
+#kopa, #odpad, .throw, .play {
+	position: absolute;
+}
+
+
+#kopa
+{
+	left:750px;
+	top:300px;
+}
+
+#odpad
+{
+	left:450px;
+	top:300px;
+}
+
+.throw
+{
+	left:600px;
+	top:275px;
+}
+
+.play
+{
+	left:600px;
+	top:375px;
+}
+
+#chat {
+	width: 10%;
+	bottom: 0px;
+	right: 0px;
+	position: absolute;
+}
+
+#chatbox
+{
+	height:250px;
+	padding:10px;
+	overflow-y:scroll;
+	scroll:true;
+}
+
+.message
+{
+	width: 100%;
+	height: 30px;
+	color: black;
+	float: left;
+}
+
+.submit
+{
+	width: 100%;
+	height:20px;
+	color:black;
+	float:left;
+}
+
+.clear
+{
+	clear:both;
+	
+}
+
+p.copy {
+	position: absolute;
+	bottom: 0px;
+}
+
+.login {
+	position: relative;
+	left: 350px;
+	top: 150px;
+	color: black;
+}
+
+.login input {
+	height: 30px;
+	width: 300px;
+	color: black;
+}
+
+.login span.label {
+	display: block;
+}
+
+.login .field {
+	padding-top: 20px;
+}
+
+.login .notice {
+	padding-bottom: 10px;
+	width: 300px;
+}
+
+.detail
+{
+	padding: 10px;
+}
+
+.detail .image
+{
+	 float: left;
+	 padding-right: 10px;
+}
+
+.detail .title h2
+{
+	font-size: 40px;
+}
+
+.item
+{
+	float: left;
+	padding: 5px;
+}
+
+.item .text p
+{
+	text-align: center;
+}

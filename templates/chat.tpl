@@ -9,8 +9,8 @@
 				<a onclick="insertEmoticon('{$emoticon.default}'); return false;" title="{$emoticon.title}"><img src="{$emoticonDir}{$emoticon.image}" alt="" /></a>
 			{/foreach}
 			*}
-			<input name="message" type="text" id="message" size="63" />
-			<input name="submit" type="submit" id="submitmsg" value="Send" />
+			<input name="message" type="text" id="message" class="message" />
+			<input name="submit" type="submit" id="submitmsg" class="submit" value="Send" />
 		</fieldset>
 	</form>
 </div>
