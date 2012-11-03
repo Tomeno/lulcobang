@@ -37,9 +37,6 @@ abstract class Checker {
 	 */
 	protected function addMessage($message) {
 		// vsetky prechecky su od systemu urcene pre aktualneho usera
-		if (!$message['user']) {
-			$message['user'] = User::SYSTEM;
-		}
 		if (!$message['toUser']) {
 			$loggedUser = $this->command->getLoggedUser();
 			$message['toUser'] = $loggedUser['id'];

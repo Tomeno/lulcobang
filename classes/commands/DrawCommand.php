@@ -53,13 +53,14 @@ class DrawCommand extends Command {
 		} else {
 			$this->check = self::NO_GAME;
 		}
+	//	var_dump($this->check);
 	}
 
 	protected function run() {
 		if ($this->check == self::OK) {
 			if ($this->params[0] == 'jail') {
 
-				// TODO tieto karty treba najprv ukazat hracom cez response a aby sa dali vyhodit, musia byt najprv v ruke aktualneho hraca a potom ich vyhodi
+				// TODO tieto karty treba najprv ukazat hracom cez log a aby sa dali vyhodit, musia byt najprv v ruke aktualneho hraca a potom ich vyhodi
 
 				$drawnCards = GameUtils::drawCards($this->game, 1);
 				$isRed = FALSE;
@@ -127,50 +128,55 @@ class DrawCommand extends Command {
 	}
 
 	private function getCountCards() {
-		$character = $this->actualPlayer->getCharacter();
-		if ($character->getIsKitCarlson()) {
-			$counts = array(
-				'draw' => 3,
-				'pick' => 2,
-				'rest_action' => 'back_to_deck',
-			);
-		} elseif ($character->getIsPixiePete()) {
-			$counts = array(
-				'draw' => 3,
-				'pick' => 3,
-				'rest_action' => '',
-			);
-		} elseif ($character->getIsBillNoface()) {
-			$drawAndPick = 1 + ($this->actualPlayer['max_lifes'] - $this->actualPlayer['actual_lifes']);
-			$counts = array(
-				'draw' => $drawAndPick,
-				'pick' => $drawAndPick,
-				'rest_action' => '',
-			);
-		} elseif ($character->getIsBlackJack()) {
-			$cards = $this->game->getDrawPile();
-			for ($i = 0; $i < 2; $i++) {
-				$card = array_pop($cards);
-			}
+		// default
+		$counts = array(
+			'draw' => 2,
+			'pick' => 2,
+			'rest_action' => '',
+		);
+		
+		// TODO ak mame extension a je tu vlak alebo zizen tak su pocty ine
+		//var_dump($this->useCharacter);exit();
+		if ($this->useCharacter === TRUE) {
+			$character = $this->actualPlayer->getCharacter();
+			if ($character->getIsKitCarlson()) {
+				$counts = array(
+					'draw' => 3,
+					'pick' => 2,
+					'rest_action' => 'back_to_deck',
+				);
+			} elseif ($character->getIsPixiePete()) {
+				$counts = array(
+					'draw' => 3,
+					'pick' => 3,
+					'rest_action' => '',
+				);
+			} elseif ($character->getIsBillNoface()) {
+				$drawAndPick = 1 + ($this->actualPlayer['max_lifes'] - $this->actualPlayer['actual_lifes']);
+				$counts = array(
+					'draw' => $drawAndPick,
+					'pick' => $drawAndPick,
+					'rest_action' => '',
+				);
+			} elseif ($character->getIsBlackJack()) {
+				$cards = $this->game->getDrawPile();
+				for ($i = 0; $i < 2; $i++) {
+					$card = array_pop($cards);
+				}
 
-			$draw = 2;
-			$pick = 2;
-			if ($card->getIsRed()) {
-				$draw = 3;
-				$pick = 3;
-			}
+				$draw = 2;
+				$pick = 2;
+				if ($card->getIsRed()) {
+					$draw = 3;
+					$pick = 3;
+				}
 
-			$counts = array(
-				'draw' => $draw,
-				'pick' => $pick,
-				'rest_action' => 'show_second',
-			);
-		} else {
-			$counts = array(
-				'draw' => 2,
-				'pick' => 2,
-				'rest_action' => '',
-			);
+				$counts = array(
+					'draw' => $draw,
+					'pick' => $pick,
+					'rest_action' => 'show_second',
+				);
+			}
 		}
 		return $counts;
 	}
@@ -182,63 +188,55 @@ class DrawCommand extends Command {
 			} elseif ($this->params[0] == 'dynamite') {
 
 			} else {
-				$this->messages[] = array(
-					'user' => User::SYSTEM,
+				$message = array(
 					'notToUser' => $this->loggedUser['id'],
-					'room' => $this->room['id'],
 					'localizeKey' => 'player_draw_cards',
 					'localizeParams' => array($this->loggedUser['username']),
 				);
+				$this->addMessage($message);
 
-				$this->messages[] = array(
-					'user' => User::SYSTEM,
+				$message = array(
 					'toUser' => $this->loggedUser['id'],
-					'room' => $this->room['id'],
 					'localizeKey' => 'you_draw_cards',
 				);
+				$this->addMessage($message);
 			}
 		} elseif ($this->check == self::DRAW_EXTENSION_CARD_FIRST) {
-			$this->messages[] = array(
-				'user' => User::SYSTEM,
+			$message = array(
 				'toUser' => $this->loggedUser['id'],
-				'room' => $this->room['id'],
 				'localizeKey' => 'draw_extension_card_first',
 			);
+			$this->addMessage($message);
 		} elseif ($this->check == self::DRAW_DYNAMITE_FIRST) {
-			$this->messages[] = array(
-				'user' => User::SYSTEM,
+			$message = array(
 				'toUser' => $this->loggedUser['id'],
-				'room' => $this->room['id'],
 				'localizeKey' => 'draw_dynamite_first',
 			);
+			$this->addMessage($message);
 		} elseif ($this->check == self::DRAW_JAIL_FIRST) {
-			$this->messages[] = array(
-				'user' => User::SYSTEM,
+			$message = array(
 				'toUser' => $this->loggedUser['id'],
-				'room' => $this->room['id'],
 				'localizeKey' => 'draw_jail_first',
 			);
+			$this->addMessage($message);
 		} elseif ($this->check == self::NOT_YOUR_TURN) {
-			$this->messages[] = array(
-				'user' => User::SYSTEM,
+			$message = array(
 				'toUser' => $this->loggedUser['id'],
-				'room' => $this->room['id'],
 				'localizeKey' => 'not_your_turn',
 			);
+			$this->addMessage($message);
 		} elseif ($this->check == self::NO_GAME) {
-			$this->messages[] = array(
-				'user' => User::SYSTEM,
+			$message = array(
 				'toUser' => $this->loggedUser['id'],
-				'room' => $this->room['id'],
 				'localizeKey' => 'cannot_draw_no_game_in_room',
 			);
+			$this->addMessage($message);
 		} elseif ($this->check == self::ALREADY_DRAW) {
-			$this->messages[] = array(
-				'user' => User::SYSTEM,
+			$message = array(
 				'toUser' => $this->loggedUser['id'],
-				'room' => $this->room['id'],
 				'localizeKey' => 'you_have_already_draw',
 			);
+			$this->addMessage($message);
 		}
 	}
 

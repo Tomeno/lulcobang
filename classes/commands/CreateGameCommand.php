@@ -18,6 +18,7 @@ class CreateGameCommand extends Command {
 		if ($this->check) {
 			$params = array(
 				'room' => $this->room['id'],
+				'creator' => $this->loggedUser['id']
 			);
 			DB::insert('game', $params);
 		}

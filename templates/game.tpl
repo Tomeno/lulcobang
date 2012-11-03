@@ -1,8 +1,9 @@
-{if $game && $game.status == $gameStartedStatus}
+<div id="table">
 	<script type="text/javascript">
 		var gameBoxTimeInterval;
 	</script>
-	<div id="table">
+
+	{if $game && $game.status == $gameStartedStatus}
 		{foreach from=$game.players item='player'}
 			{if $loggedUser.id == $player.user.id}
 				{assign var='me' value=$player}
@@ -26,6 +27,13 @@
 						<a href="{$player.url}" onclick="selectPlayer({$player.id});return false;">
 							{image src="static/images/photo.jpg" alt="foto" width='50' height='50'}
 						</a>
+						{if $me.user.need_help}
+							{if $me.phase == 5 && $me.id != $player.id}
+								<div class="help">
+									Klikni sem a vyber hraca
+								</div>
+							{/if}
+						{/if}
 						{if $game.playerOnTurn.id == $player.id && $me.id == $player.id}
 							<a href="#" onclick="putCard(); return false;" title="Click here to put selected card"><span class="card"></span></a>
 						{/if}
@@ -41,9 +49,9 @@
 							{if $player.user.id == $me.user.id}
 								</a>
 							{/if}
-							</div>
-						<div class="char popup">
-							<a href="{$player.character.url}" onclick="window.open(this.href, '_blank'); return false;" class="popup-source">
+						</div>
+						<div class="char{* popup*}">
+							<a href="{$player.character.url}" onclick="{if $player.user.id == $me.user.id}useCharacter();{else}window.open(this.href, '_blank');{/if} return false;" title="{$player.character.name}: {$player.character.localizedDescription}" class="popup-source">
 								{image src=$player.character.imagePath alt=$player.character.name width='44' height='76'}
 							</a>
 							<div class="popup-target" style="display:none;">
@@ -55,7 +63,7 @@
 							</div>
 						</div>
 
-						<div class="role{if $player.roleObject.isSheriff or $player.user.id == $me.user.id or $player.actual_lifes == 0} popup{/if}">
+						<div class="role{if $player.roleObject.isSheriff or $player.user.id == $me.user.id or $player.actual_lifes == 0}{* popup*}{/if}">
 							{if $player.roleObject.isSheriff or $player.user.id == $me.user.id or $player.actual_lifes == 0}
 								<a href="{$player.roleObject.url}" onclick="window.open(this.href, '_blank'); return false;" class="popup-source">
 									{image src=$player.roleObject.imagePath alt=$player.roleObject.title width='44' height='76'}
@@ -75,7 +83,7 @@
 					{if $player.handCards}
 						{foreach from=$player.handCards item='handCard' name='handCards'}
 							{if $smarty.foreach.handCards.index mod 6 == 0}<div class="row">{/if}
-								<div class="card{if $player.user.id == $me.user.id} popup{/if}">
+								<div class="card{if $player.user.id == $me.user.id}{* popup*}{/if}">
 									{if $player.user.id == $me.user.id}
 										<a href="{$handCard.url}" onclick="selectCard('{$handCard.id}', '{$handCard.itemAlias}'); return false;" class="popup-source">
 											{image src=$handCard.imagePath alt=$handCard.title width='44' height='76'}
@@ -97,7 +105,7 @@
 					{if $player.tableCards}
 						{foreach from=$player.tableCards item='tableCard' name='tableCards'}
 							{if $smarty.foreach.tableCards.index mod 6 == 0}<div class="row">{/if}
-								<div class="card popup">
+								<div class="card{* popup*}">
 									<a href="{$tableCard.url}" onclick="{if $player.id == $me.id}selectCard('{$tableCard.id}', '{$tableCard.itemAlias}', 0, 'table');{else}selectCard('{$tableCard.id}', '', '{$player.id}');{/if} return false;" class="popup-source">
 										{image src=$tableCard.imagePath alt="card" width='44' height='76'}
 									</a>
@@ -115,7 +123,7 @@
 					{if $player.waitCards}
 						{foreach from=$player.waitCards item='waitCard' name='waitCards'}
 							{if $smarty.foreach.waitCards.index mod 6 == 0}<div class="row">{/if}
-								<div class="card popup">
+								<div class="card{* popup*}">
 									<a href="{$waitCard.url}" onclick="{if $player.id == $me.id}selectCard('{$waitCard.id}', '{$waitCard.itemAlias}', 0, 'wait');{else}selectCard('{$waitCard.id}', '', '{$player.id}');{/if} return false;" class="popup-source">
 										{image src=$waitCard.imagePath alt="card" width='44' height='76'}
 									</a>
@@ -151,10 +159,18 @@
 		{if $game.draw_pile}
 			<div id="kopa" class="card">
 				<a href="#" onclick="drawCards();return false">{image src=$game.topDrawPile.backImagePath alt="draw pile" width='44' height='76'}</a>
+				{if $me.user.need_help}
+					{if $me.phase == 4}
+						<div class="help">
+							{localize key='click_here_to_draw_cards'}
+						</div>
+					{/if}
+				{/if}
 			</div>
+			
 		{/if}
 		{if $game.topThrowPile}
-			<div id="odpad" class="card popup">
+			<div id="odpad" class="card{* popup*}">
 				<a href="{$game.topThrowPile.url}" onclick="window.open(this.href, '_blank'); return false;" class="popup-source">
 					{image src=$game.topThrowPile.imagePath alt=$game.topThrowPile.title width='44' height='76'}
 				</a>
@@ -180,39 +196,36 @@
 				<input type="hidden" name="player" id="selected-player" value="" />
 				<input type="hidden" name="command" id="command" value="" />
 				<input type="hidden" name="place" id="place" value="" />
+				<input type="hidden" name="character" id="use-character" value="" />
 			</fieldset>
 		</form>
-		<script type="text/javascript">
-			clearInterval(gameBoxTimeInterval);
-			{if $refreshGameBox}
-				gameBoxTimeInterval = setInterval('refreshGameBox({$game.id})', 5000);
-			{/if}
-		</script>
-	</div>
+	{else}
+		<div id="overlay-response"{if not $response} style="display: none;"{/if}>
+			{$response}
+		</div>
 
-	
-
-{else}
-
-	<div id="overlay-response"{if not $response} style="display: none;"{/if}>
-		{$response}
-	</div>
-
-	<form action="{actualurl}" method="post">
-		<fieldset>
-			{if not $game}
-				<input type="submit" value="{localize key='create_game'}" name="create" />
-			{elseif $game.status == 0}
-				{if $joinGameAvailable}
-					<input type="submit" value="{localize key='join_game'}" name="join" />
+		<form action="" method="post">
+			<fieldset class="formular game">
+				{if $createGameAvailable}
+					<div class="field"><input type="submit" value="{localize key='create_game'}" name="create" /></div>
+				{elseif $game.status == 0}
+					{if $joinGameAvailable}
+						<div class="field"><input type="submit" value="{localize key='join_game'}" name="join" /></div>
+					{elseif $startGameAvailable}
+						<div class="field"><input type="submit" value="{localize key='start_game'}" name="start" /></div>
+					{else}
+						<div class="field"><p class="wait_message">{localize key='wait_for_game'}</p></div>
+					{/if}
 				{/if}
-
-				{if $startGameAvailable}
-					<input type="submit" value="{localize key='start_game'}" name="start" />
-				{/if}
-			{/if}
-		</fieldset>
-	</form>
-{/if}
+			</fieldset>
+		</form>
+	{/if}
 
 
+	<script type="text/javascript">
+		clearInterval(gameBoxTimeInterval);
+		{if $refreshGameBox}
+			gameBoxTimeInterval = setInterval('refreshGameBox({$game.id})', 5000);
+		{/if}
+	</script>
+</div>

@@ -56,6 +56,7 @@ MySmarty::assign('menu', $menuBox->render());
 MySmarty::assign('title', BangSeo::getTitle());
 MySmarty::assign('description', BangSeo::getDescription());
 MySmarty::assign('keywords', BangSeo::getKeywords());
+MySmarty::assign('actualYear', date('Y'));
 MySmarty::assign('baseUrl', BASE_URL);
 echo MySmarty::fetch('index.tpl');
 

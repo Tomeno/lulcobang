@@ -206,34 +206,41 @@ body
 	clear:both;
 	
 }
-
+/*
 p.copy {
 	position: absolute;
 	bottom: 0px;
 }
+*/
 
-.login {
+.formular {
 	position: relative;
 	left: 350px;
-	top: 150px;
+	top: 50px;
 	color: black;
 }
 
-.login input {
+.formular input {
 	height: 30px;
 	width: 300px;
 	color: black;
 }
 
-.login span.label {
+.formular textarea {
+	height: 90px;
+	width: 300px;
+	color: black;
+}
+
+.formular span.label {
 	display: block;
 }
 
-.login .field {
+.formular .field {
 	padding-top: 20px;
 }
 
-.login .notice {
+.formular .notice {
 	padding-bottom: 10px;
 	width: 300px;
 }
@@ -263,4 +270,22 @@ p.copy {
 .item .text p
 {
 	text-align: center;
+}
+
+.formular.game {
+	top: 200px;
+}
+
+.formular.game .wait_message {
+	background: white;
+	color: black;
+	width: 200px;
+	height: 25px;
+	padding-top: 5px;
+	padding-left: 15px;
+}
+
+.listing {
+	display: block;
+	float: right;
 }

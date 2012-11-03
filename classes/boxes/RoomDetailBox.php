@@ -13,6 +13,7 @@ class RoomDetailBox extends AbstractBox {
 
 		if ($room) {
 			$gameRepository = new GameRepository();
+			$gameRepository->addAdditionalWhere(array('column' => 'status', 'value' => Game::GAME_STATUS_ENDED, 'xxx' => '!='));
 			$game = $gameRepository->getOneByRoom($room['id']);
 
 			if (Utils::post()) {
@@ -33,7 +34,7 @@ class RoomDetailBox extends AbstractBox {
 				} elseif (Utils::post('join')) {
 					$response = Command::setup('.join', $game);
 				} elseif (Utils::post('start')) {
-					$response = Command::setup('.start', $game);
+					$response = Command::setup('.init', $game);
 				} elseif (Utils::post('choose_character')) {
 					$response = Command::setup('.choose_character ' . Utils::post('character'), $game);
 				} elseif (Utils::post('choose_cards')) {
