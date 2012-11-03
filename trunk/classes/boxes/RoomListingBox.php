@@ -8,9 +8,13 @@ class RoomListingBox extends AbstractBox {
 		$loggedUser = LoggedUser::whoIsLogged();
 
 		if (Utils::post('create_room') && $loggedUser['admin']) {
-			throw new Exception('NOT YET IMPLEMENTED', 1324243936);
-			$room = Room::addRoom(addslashes(Utils::post('title')), addslashes(Utils::post('description')));
-			Utils::redirect('chat/' . $room . '.html');
+			$params = array(
+				'title' => Utils::post('title'),
+				'alias' => Utils::createAlias(Utils::post('title'), 'room'),
+				'description' => Utils::post('description'),
+			);
+			$room = new Room($params);
+			$room->save();
 		}
 
 		$roomRepository = new RoomRepository();

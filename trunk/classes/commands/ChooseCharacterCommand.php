@@ -16,7 +16,7 @@ class ChooseCharacterCommand extends Command {
 				$this->check = self::NOT_POSSIBLE_CHARACTER_CHOSEN;
 			}
 		} else {
-			$this->check = self::NO_CHARACTER_CHOOSE;
+			$this->check = self::NO_CHARACTER_CHOSEN;
 		}
 	}
 

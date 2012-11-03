@@ -31,7 +31,19 @@ class DiligenzaCommand extends Command {
 	}
 
 	protected function generateMessages() {
-		// TODO
+		if ($this->check == self::OK) {
+			$message = array(
+				'text' => 'pouzil si kartu diligenza',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+			
+			$message = array(
+				'text' => $this->loggedUser['username'] . ' pouzil kartu diligenza',
+				'notToUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		}
 	}
 
 	protected function createResponse() {

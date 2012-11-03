@@ -1,0 +1,53 @@
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background:url('../images/background.jpg');
+}
+
+#content_wrapper {
+	background: red;
+}
+
+#left_side {
+	background: blue;
+	float: left;
+	width: 10%;
+}
+
+#main_content {
+	background: green;
+	float: left;
+	width: 80%;
+}
+
+#right_side {
+	background: orange;
+	float: right;
+	width: 10%;
+}
+
+#footer {
+	clear: both;
+	background: yellow;
+}
+
+.item {
+	float: left;
+	padding: 7px;
+}
+
+.card_listing .text {
+	text-align: center;
+}
+
+.card_listing .item .image {
+	background: url('../images/card_big.png') no-repeat left top; 
+	padding: 10px;
+}
+
+.card_listing .item .image img {
+	width: 140px;
+}

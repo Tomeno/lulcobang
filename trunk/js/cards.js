@@ -49,7 +49,7 @@ function selectPlayer(id, fromSelectCard) {
 	} else {
 		$('selected-card').value = 0;
 	}
-	executeCommand();
+	//executeCommand();
 }
 
 function passTurn() {
@@ -60,4 +60,8 @@ function passTurn() {
 function lostLife() {
 	$('command').value = 'life';
 	executeCommand();
+}
+
+function useCharacter() {
+	$('use-character').value = 1;
 }

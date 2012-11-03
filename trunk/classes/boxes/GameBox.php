@@ -27,12 +27,12 @@ class GameBox extends AbstractBox {
 			if ($this->game['status'] == Game::GAME_STATUS_CREATED) {
 				if (!GameUtils::checkUserInGame($loggedUser, $this->game)) {
 					MySmarty::assign('joinGameAvailable', TRUE);
+				} elseif ($loggedUser['id'] == $this->game['creator']) {
+					MySmarty::assign('startGameAvailable', Localize::getMessage('start_game'));
 				}
-				// TODO hru moze spustit len creator
-				MySmarty::assign('startGame', Localize::getMessage('start_game'));
 			}
 		} else {
-			MySmarty::assign('createGame', Localize::getMessage('create_game'));
+			MySmarty::assign('createGameAvailable', Localize::getMessage('create_game'));
 		}
 	}
 

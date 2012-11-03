@@ -7,12 +7,17 @@ class ExecuteCommand {
 		$playerId = intval(Utils::post('player'));
 		$command = addslashes(Utils::post('command'));
 		$place = addslashes(Utils::post('place'));
+		$useCharacter = intval(Utils::post('useCharacter'));
 
 		$gameRepository = new GameRepository();
 		$game = $gameRepository->getOneById($gameId);
 
-		$commandString = $command;
-
+		$commandString = '';
+		if ($useCharacter == 1) {
+			$commandString .= 'char ';
+		}
+		
+		$commandString .= $command;
 		if ($playerId) {
 			$playerRepository = new PlayerRepository();
 			$player = $playerRepository->getOneById($playerId);
@@ -33,7 +38,8 @@ class ExecuteCommand {
 		if ($place) {
 			$commandString .= ' ' . $place;
 		}
-//		echo $commandString;
+		//echo $commandString;
+		//exit();
 		Command::setup($commandString, $game);
 	}
 }

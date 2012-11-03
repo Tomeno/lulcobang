@@ -2,7 +2,10 @@
 
 class SaloonCommand extends Command {
 
+	const OK = 1;
+	
 	protected function check() {
+		$this->check = self::OK;
 	}
 
 	protected function run() {
@@ -16,6 +19,19 @@ class SaloonCommand extends Command {
 	}
 
 	protected function generateMessages() {
+		if ($this->check == self::OK) {
+			$message = array(
+				'text' => $this->loggedUser['username'] . ' pouzil saloon a doplnil kazdemu jeden zivota',
+				'notToUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+			
+			$message = array(
+				'text' => 'pouzil si saloon na doplnenie zivota kazdemu hracovi',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		}
 	}
 
 	protected function createResponse() {

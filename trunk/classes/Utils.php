@@ -251,6 +251,50 @@ class Utils {
 		$text = strtolower($text);
 		return $text;
 	}
+	
+	public static function createAlias($string, $table = '', $aliasField = 'alias') {
+		$alias = strtolower($string);
+		$alias = self::removeAccents($alias);
+		$alias = self::removeNonAlphanumericCharacters($alias, '-');
+		if ($table) {
+			$query = 'SELECT ' . $aliasField . ' FROM ' . $table . ' WHERE alias LIKE "' . $alias . '%"';
+			$similarRows = DB::fetchAll($query);
+			if ($similarRows) {
+				$usedNumbers = array();
+				foreach ($similarRows as $similarRow) {
+					if ($similarRow[$aliasField] == $alias) {
+						$usedNumbers[] = 0;
+					} else {
+						$parts = explode('-', $similarRow[$aliasField]);
+						$endPart = end($parts);
+						if (is_numeric($endPart)) {
+							$usedNumbers[] = $endPart;
+						}
+					}
+				}
+				
+				if (!empty($usedNumbers)) {
+					$alias .= '-' . (max($usedNumbers) + 1);
+				}
+			}
+		}
+		return $alias;
+	}
+	
+	public static function removeAccents($text) {
+		$accents   = array('á','ä','č','ď','é','ě','í','ĺ','ľ','ň','ó','ô','ř','š','ť','ú','ů','ý','ž',
+						   'Á','Č','Ď','É','Í','Ĺ','Ľ','Ň','Ó','Ř','Š','Ť','Ú','Ý','Ž');
+		$noAccents = array('a','a','c','d','e','e','i','l','l','n','o','o','r','s','t','u','u','y','z',
+		                   'A','C','D','E','I','L','L','N','O','R','S','T','U','Y','Z');
+		
+		return str_replace($accents,$noAccents,$text);
+	}
+	
+	public static function removeNonAlphanumericCharacters($text, $replace = '') {
+		$characters = array(' ', '', '-', '_', '+', '/', '*', '.', ',', '?', '~', '!', '#', '$', '%', '^',
+			'&', '(', ')', '\\', '_', '[', ']', '"', '\'', ':', ';', '<', '>', '|', '`', '°');
+		return str_replace($characters, $replace, $text);
+	}
 }
 
 ?>

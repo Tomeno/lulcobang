@@ -118,10 +118,11 @@ function executeCommand() {
 	var player = $('selected-player').value;
 	var command = $('command').value;
 	var place = $('place').value;
+	var useCharacter = $('use-character').value;
 
 	new Ajax.Request('services/ExecuteCommand.php', {
 		method: 'post',
-		parameters: {game: game, card: card, player: player, command: command, place: place},
+		parameters: {game: game, card: card, player: player, command: command, place: place, useCharacter: useCharacter},
 
 		onSuccess: function(transport) {
 			// temporary reload page after execute command

@@ -1,12 +1,14 @@
 <?php
 
 class LifeCommand extends Command {
+	
+	const OK = 1;
+	
 	protected function check() {
-		;
+		$this->check = self::OK;
 	}
 
 	protected function run() {
-
 		$newLifes = $this->actualPlayer['actual_lifes'] - 1;
 		$this->actualPlayer['actual_lifes'] = $newLifes;
 		$this->actualPlayer->save();
@@ -116,7 +118,19 @@ class LifeCommand extends Command {
 	}
 
 	protected function generateMessages() {
-		;
+		if ($this->check == self::OK) {
+			$message = array(
+				'text' => 'zobral si si jeden zivot',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+			
+			$message = array(
+				'text' => $this->loggedUser['username'] . ' si zobral jeden zivot',
+				'notToUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		}
 	}
 
 	protected function createResponse() {

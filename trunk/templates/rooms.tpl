@@ -9,10 +9,24 @@
 {/if}
 
 {if $loggedUser.admin}
-	<h3>Vytvoriť novú miestnosť</h3>
-	<form action="{actualurl}" method="post">
-		<input type="text" name="title" />
-		<textarea name="description"></textarea>
-		<input type="submit" name="create_room" value="vytvor" />
-	</form>
+	<div>
+		<h3>Vytvoriť novú miestnosť</h3>
+		<form action="{actualurl}" method="post">
+			<fieldset class="formular">
+				<div class="field">
+					<label>
+						<span class="label">{localize key='room_name'}:</span>
+						<input type="text" value="" name="title" />
+					</label>
+				</div>
+				<div class="field">
+					<label>
+						<span class="label">{localize key='room_description'}:</span> 
+						<textarea name="description"></textarea>
+					</label>
+				</div>
+				<div class="field"><input type="submit" name="create_room" value="vytvor" /></div>
+			</fieldset>
+		</form>
+	</div>
 {/if}

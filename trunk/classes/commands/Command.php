@@ -114,6 +114,12 @@ abstract class Command {
 	protected $precheckersParams = array();
 
 	/**
+	 * says use character - special way of command
+	 * @var	boolean
+	 */
+	protected $useCharacter = FALSE;
+	
+	/**
 	 * map command to method and checkers
 	 *
 	 * @var array
@@ -194,9 +200,9 @@ abstract class Command {
 				'ActualPlayerHasCardsChecker' => 'getHasSombreroOnTheTable',
 			),
 		),
-		'diligenza' => array('class' => 'DiligenzaCommand'),
-		'wellsfargo' => array('class' => 'WellsFargoCommand'),
-		'ponyexpress' => array('class' => 'PonyExpressCommand'),
+		'diligenza' => array('class' => 'DiligenzaCommand'),	// ADD CHECKER
+		'wellsfargo' => array('class' => 'WellsFargoCommand'),	// ADD CHECKER
+		'ponyexpress' => array('class' => 'PonyExpressCommand'),	// ADD CHECKER
 		'catbalou' => array(
 			'class' => 'CatbalouCommand',
 			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
@@ -302,8 +308,16 @@ abstract class Command {
 	}
 
 	public final static function setup($command, $game) {
+		$command = str_replace('.', '', $command);
 		$commandArray = explode(' ', $command);
-		$commandAlias = str_replace('.', '', $commandArray[0]);
+		$useCharacter = FALSE;
+		// check if first part of command says: use character
+		if ($commandArray[0] == 'char') {
+			$commandAlias = $commandArray[1];
+			$useCharacter = TRUE;
+		} else {
+			$commandAlias = $commandArray[0];
+		}
 		
 		$commandAliasRepository = new CommandAliasRepository();
 		$command = $commandAliasRepository->getOneByLocalizedCommandName($commandAlias);
@@ -331,6 +345,7 @@ abstract class Command {
 			}
 
 			$class = new $commandClassName($params, $localizedParams, $game);
+			$class->setUseCharacter($useCharacter);
 			$precheckers = array();
 			if (self::$commands[$commandName]['precheckers']) {
 				$precheckers = self::$commands[$commandName]['precheckers'];
@@ -463,6 +478,11 @@ abstract class Command {
 			$room = $this->getRoom();
 			$message['room'] = $room['id'];
 		}
+		// ak nie je urcene od koho je sprava tak je od systemu
+		if (!$message['user']) {
+			$message['user'] = User::SYSTEM;
+		}
+		
 		$this->messages[] = $message;
 	}
 
@@ -523,6 +543,14 @@ abstract class Command {
 
 	public function getEnemyPlayerCards() {
 		return $this->enemyPlayersCards;
+	}
+	
+	public function setUseCharacter($useCharacter) {
+		$this->useCharacter = $useCharacter;
+	}
+	
+	public function getUseCharacter() {
+		return $this->useCharacter;
 	}
 }
 

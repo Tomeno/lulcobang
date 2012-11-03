@@ -5,6 +5,10 @@ class BangCommand extends Command {
 	
 	const NO_CARDS = 2;
 	
+	const NOT_YOUR_TURN = 3;
+	
+	const CANNOT_PLAY_BANG = 4;
+	
 	protected $bangCard = NULL;
 
 	protected $attackedPlayer = NULL;
@@ -12,18 +16,7 @@ class BangCommand extends Command {
 	protected $template = 'you-are-attacked.tpl';
 
 	protected function check() {
-		// TODO check if actual player is in play state - momentalne moze hrat bang aj ked este nepotiahol jail a myslim ze by to slo aj keby nepotiahol vobec
-
-		// TODO check actual player state - if waiting cannot play bang again
-
-		// TODO check if has volcanic or is willy the kid for playing more than one bang in a round
-
-		// TODO create as checker
-		
-		if ($this->interTurnReason['action'] == 'indians') {
-			// TODO check player is under attack and this is his interturn
-			$this->check = self::OK;
-		} else {
+		if ($this->actualPlayer['phase'] == Player::PHASE_PLAY) {
 			$attackedPlayer = $this->params[0];
 			foreach ($this->players as $player) {
 				$user = $player->getUser();
@@ -33,18 +26,34 @@ class BangCommand extends Command {
 				}
 			}
 
-			// TODO replace bangCard by $this->card (from checker)
-
-			$method = 'getHasBangOnHand';
-			$res = $this->actualPlayer->$method();
-			if ($res) {
-				$this->bangCard = $res;
-			}
+			$this->bangCard = $this->cards[0];
 
 			if ($this->bangCard !== NULL && $this->attackedPlayer !== NULL) {
 				$this->check = self::OK;
 			}
+		} elseif ($this->actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
+			if ($this->interTurnReason['action'] == 'indians') {
+				// TODO check player is under attack and this is his interturn
+				$this->check = self::OK;
+			} else {
+				$this->check = self::CANNOT_PLAY_BANG;
+			}
+		} elseif ($this->actualPlayer['phase'] == Player::PHASE_DRAW) {
+			$message = array(
+				'localizeKey' => 'draw_cards_first',
+			);
+			$this->addMessage($message);
+		} else {
+			$this->check = self::NOT_YOUR_TURN;
 		}
+		// TODO check if actual player is in play state - momentalne moze hrat bang aj ked este nepotiahol jail a myslim ze by to slo aj keby nepotiahol vobec
+
+		// TODO check actual player state - if waiting cannot play bang again
+
+		// TODO check if has volcanic or is willy the kid for playing more than one bang in a round
+
+		// TODO create as checker
+			
 	}
 
 	protected function run() {
@@ -93,6 +102,32 @@ class BangCommand extends Command {
 	}
 
 	protected function generateMessages() {
+		if ($this->check == self::OK) {
+			$attackedUser = $this->attackedPlayer->getUser();
+			$message = array(
+				'text' => $this->loggedUser['username'] . ' zautocil Bangom na ' . $attackedUser['username'],
+				'notToUser' => $attackedUser['id'],
+			);
+			$this->addMessage($message);
+			
+			$message = array(
+				'text' => $this->loggedUser['username'] . ' na teba zautocil Bangom',
+				'toUser' => $attackedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::NOT_YOUR_TURN) {
+			$message = array(
+				'text' => 'nemozes strielat nie si na tahu',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::CANNOT_PLAY_BANG) {
+			$message = array(
+				'text' => 'nemozes hrat kartu bang',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		}
 	}
 
 	protected function createResponse() {
