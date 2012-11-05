@@ -53,7 +53,7 @@ class InitGameCommand extends Command {
 			$roles = $roleRepository->getAll();
 			shuffle($roles);
 
-			$characters = $characterRepository->getAll();
+			$characters = $characterRepository->getByValid(1);
 			shuffle($characters);
 
 			$j = 0;
@@ -80,9 +80,16 @@ class InitGameCommand extends Command {
 
 	protected function generateMessages() {
 		if ($this->check == self::OK) {
-
-		} elseif ($this->check == self::NOT_ENOUGH_CHARACTERS) {
-			
+			$message = array(
+				'text' => 'hra bola inicializovana',
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::NOT_ENOUGH_PLAYERS) {
+			$message = array(
+				'text' => 'prilis malo hracov na zacatie hry',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
 		}
 	}
 

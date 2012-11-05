@@ -30,8 +30,17 @@ class ActualPlayerHasCardsChecker extends Checker {
 				}
 
 				// TODO ked zahram catbalou alebo paniku a. i. - je to hned prvy parameter z prikazu, ktory sa ale sem nedostane, treba to domysliet tak aby sa to dostalo aj sem
-
-				$checkingMethod = str_replace('###CARD_PLACEHOLDER###', ucfirst($params[$cardIndex]), $checkingMethod);
+				$cardName = $params[$cardIndex];
+				$checkingMethod = str_replace('###CARD_PLACEHOLDER###', ucfirst($cardName), $checkingMethod);
+				
+				// pre calamity janet prehodime karty bang a missed ak sa pouziva charakter
+				if ($this->command->getUseCharacter() == TRUE && $this->command->getActualPlayer()->getCharacter()->getIsCalamityJanet()) {
+					if ($checkingMethod == 'getHasMissedOnHand') {
+						$checkingMethod = 'getHasBangOnHand';
+					} elseif ($checkingMethod == 'getHasBangOnHand') {
+						$checkingMethod = 'getHasMissedOnHand';
+					}
+				}
 
 				$placeParam = $params[1];
 				if ($placeParam == 'table') {

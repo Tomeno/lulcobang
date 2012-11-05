@@ -51,7 +51,7 @@
 							{/if}
 						</div>
 						<div class="char{* popup*}">
-							<a href="{$player.character.url}" onclick="{if $player.user.id == $me.user.id}useCharacter();{else}window.open(this.href, '_blank');{/if} return false;" title="{$player.character.name}: {$player.character.localizedDescription}" class="popup-source">
+							<a href="{$player.character.url}" onclick="{if $player.user.id == $me.user.id}useCharacter();{else}window.open(this.href, '_blank');{/if} return false;" title="{$player.character.name}: {$player.character.localizedDescription|escape}" class="popup-source">
 								{image src=$player.character.imagePath alt=$player.character.name width='44' height='76'}
 							</a>
 							<div class="popup-target" style="display:none;">

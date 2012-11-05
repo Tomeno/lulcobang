@@ -289,3 +289,12 @@ p.copy {
 	display: block;
 	float: right;
 }
+
+.gray{
+	background:url('../images/gray.png') no-repeat left top;
+	height:41px;
+	left:5px;
+	position:relative;
+	top:-50px;
+	width:26px;
+}

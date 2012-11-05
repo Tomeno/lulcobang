@@ -10,6 +10,8 @@ class GatlingCommand extends Command {
 	protected function run() {
 		$nextPosition = GameUtils::getNextPosition($this->game);
 		
+		// TODO utocime len na zijucich hracov
+		
 		foreach ($this->players as $player) {
 			if ($player['id'] == $this->actualPlayer['id']) {
 				$this->actualPlayer['phase'] = Player::PHASE_WAITING;

@@ -161,6 +161,14 @@ class Card extends LinkableItem {
 			return FALSE;
 		}
 	}
+	
+	public function getIsHeart() {
+		if ($this['color'] == 2) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
 
 	/**
 	 * checks if card is type of $type

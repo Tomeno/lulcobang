@@ -18,7 +18,9 @@ class PassCommand extends Command {
 			if ($playerOnTurn['id'] == $this->actualPlayer['id']) {
 				if ($this->actualPlayer['phase'] == Player::PHASE_PLAY) {
 					$handCardsCount = count($this->actualPlayer->getHandCards());
-					if (($this->actualPlayer['actual_lifes'] >= $handCardsCount) || ($handCardsCount <= 10 && $this->actualPlayer->getCharacter()->getIsSeanMallory())) {
+					if ($this->actualPlayer['actual_lifes'] >= $handCardsCount) {
+						$this->check = self::OK;
+					} elseif ($this->useCharacter == TRUE && $handCardsCount <= 10 && $this->actualPlayer->getCharacter()->getIsSeanMallory()) {
 						$this->check = self::OK;
 					} else {
 						$this->check = self::TOO_MANY_CARDS;

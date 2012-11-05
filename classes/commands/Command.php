@@ -200,9 +200,33 @@ abstract class Command {
 				'ActualPlayerHasCardsChecker' => 'getHasSombreroOnTheTable',
 			),
 		),
-		'diligenza' => array('class' => 'DiligenzaCommand'),	// ADD CHECKER
-		'wellsfargo' => array('class' => 'WellsFargoCommand'),	// ADD CHECKER
-		'ponyexpress' => array('class' => 'PonyExpressCommand'),	// ADD CHECKER
+		'diligenza' => array(
+			'class' => 'DiligenzaCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasDiligenzaOnHand',
+			),
+		),
+		'wellsfargo' => array(
+			'class' => 'WellsFargoCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasWellsfargoOnHand',
+			),
+		),
+		'ponyexpress' => array(
+			'class' => 'PonyExpressCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasPonyexpressOnTheTable',
+			),
+		),
 		'catbalou' => array(
 			'class' => 'CatbalouCommand',
 			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
@@ -277,7 +301,7 @@ abstract class Command {
 	);
 
 	private function  __construct($params, $localizedParams, $game) {
-		$this->params = $params;
+		$this->params = $params;	// TODO mozno by bolo fajn tieto parametre nejako rozdelit na kagetorie ako command, card, player, place aby sa s tym dalo lepsie robit, lebo teraz nikdy neviem kde co hladat - napr. ktoru kartu vyhadzujem atd
 		$this->game = $game;
 		$this->localizedParams = $localizedParams;
 
@@ -315,8 +339,10 @@ abstract class Command {
 		if ($commandArray[0] == 'char') {
 			$commandAlias = $commandArray[1];
 			$useCharacter = TRUE;
+			$commandArraySlice = 2;
 		} else {
 			$commandAlias = $commandArray[0];
+			$commandArraySlice = 1;
 		}
 		
 		$commandAliasRepository = new CommandAliasRepository();
@@ -329,7 +355,23 @@ abstract class Command {
 			$commandName = $commandAlias;
 		}
 
-		$localizedParams = array_slice($commandArray, 1);
+		// kvoli calamity janet musime vymenit bang a missed ak pouziva svoj charakter
+		// uprava sa tyka aj metod getHasBang/MissedOnHand()
+		if (in_array($commandName, array('bang', 'missed')) && $useCharacter === TRUE) {
+			$loggedUser = LoggedUser::whoIsLogged();
+			$playerRepository = new PlayerRepository();
+			$actualPlayer = $playerRepository->getOneByUserAndGame($loggedUser['id'], $game['id']);
+			
+			if ($actualPlayer->getCharacter()->getIsCalamityJanet()) {
+				if ($commandName == 'bang') {
+					$commandName = 'missed';
+				} elseif ($commandName == 'missed') {
+					$commandName = 'bang';
+				}
+			}
+		}
+		
+		$localizedParams = array_slice($commandArray, $commandArraySlice);
 		if (array_key_exists($commandName, self::$commands)) {
 			$commandClassName = self::$commands[$commandName]['class'];
 

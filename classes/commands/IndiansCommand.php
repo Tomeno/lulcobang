@@ -13,6 +13,8 @@ class IndiansCommand extends Command {
 		if ($this->check == self::OK) {
 			$nextPosition = GameUtils::getNextPosition($this->game);
 
+			// TODO utocime len na zijucich hracov
+			
 			foreach ($this->players as $player) {
 				if ($player['id'] == $this->actualPlayer['id']) {
 					$this->actualPlayer['phase'] = Player::PHASE_WAITING;
