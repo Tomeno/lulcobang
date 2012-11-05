@@ -64,7 +64,6 @@ class GameUtils {
 			);
 			DB::update(self::$playerTable, $params, 'id = ' . intval($player['id']));
 		}
-		
 	}
 	
 	public static function countMatrix($game) {
@@ -90,17 +89,17 @@ class GameUtils {
 					if ($player2->getHasMustangOnTheTable()) {
 						$distance++;
 					}
-//					if ($player2->getIsPaulRegret()) {
-//						$distance++;
-//					}
+					if ($player2->getCharacter()->getIsPaulRegret()) {
+						$distance++;
+					}
 					if ($player1->getHasAppaloosaOnTheTable()) {
 						$distance--;
 					}
-//					if ($player1->getIsRoseDoolan()) {
-//						$distance--;
-//					}
+					if ($player1->getCharacter()->getIsRoseDoolan()) {
+						$distance--;
+					}
 					
-					$matrix[$player1['user']['username']][$player2['user']['username']] = $distance > 0 ? $distance : 0;
+					$matrix[$player1['user']['username']][$player2['user']['username']] = $distance > 1 ? $distance : 1;
 				}
 			}
 		}
@@ -244,27 +243,30 @@ class GameUtils {
 	 * @param	string	$place
 	 * @return	array
 	 */
-	public static function throwCards(Game $game, Player $player, array $thrownCards, $place = 'hand') {
+	public static function throwCards(Game $game, Player $player = NULL, array $thrownCards = array(), $place = 'hand') {
 		$thrownCardsIds = array();
 		foreach ($thrownCards as $card) {
 			$thrownCardsIds[] = $card['id'];
 		}
 
-		$playerCards = unserialize($player[$place . '_cards']);
 		$throwPile = unserialize($game['throw_pile']);
-		$newPlayerCards = array();
-		foreach ($playerCards as $playerCard) {
-			if (in_array($playerCard, $thrownCardsIds)) {
-				$throwPile[] = $playerCard;
-			} else {
-				$newPlayerCards[] = $playerCard;
+		if ($player !== NULL) {
+			$playerCards = unserialize($player[$place . '_cards']);
+			$newPlayerCards = array();
+			foreach ($playerCards as $playerCard) {
+				if (in_array($playerCard, $thrownCardsIds)) {
+					$throwPile[] = $playerCard;
+				} else {
+					$newPlayerCards[] = $playerCard;
+				}
 			}
+			$player[$place . '_cards'] = serialize($newPlayerCards);
+			$player = $player->save(TRUE);
+		} else {
+			$throwPile = array_merge($throwPile, $thrownCardsIds);
 		}
-
-		$player[$place . '_cards'] = serialize($newPlayerCards);
 		$game['throw_pile'] = serialize($throwPile);
-
-		$player = $player->save(TRUE);
+		
 		$game = $game->save(TRUE);
 		return array('game' => $game, 'player' => $player);
 	}
@@ -273,10 +275,11 @@ class GameUtils {
 	 * used for putting cards from one player to another to the table, or to the hand, or to the waiting box
 	 *
 	 * @param	Game	$game
-	 * @param	Player	$playerFrom
 	 * @param	array	$movedCards
+	 * @param	Player	$playerFrom
 	 * @param	string	$placeTo
 	 * @param	Player	$playerTo
+	 * @param	Player	$placeFrom
 	 * @return	array
 	 */
 	public static function moveCards(Game $game, array $movedCards, Player $playerFrom, $placeTo = 'table', Player $playerTo = NULL, $placeFrom = 'hand') {
@@ -285,6 +288,7 @@ class GameUtils {
 			$playerTo = $playerFrom;
 			$samePlayer = TRUE;
 		}
+
 		$movedCardsIds = array();
 		foreach ($movedCards as $card) {
 			$movedCardsIds[] = $card['id'];

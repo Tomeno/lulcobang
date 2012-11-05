@@ -67,7 +67,9 @@ class PlayerPhaseChecker extends Checker {
 				);
 				break;
 			case Player::PHASE_UNDER_ATTACK:
-				throw new Exception('Player is under attack, what now? :D');
+				$message = array(
+					'localizeKey' => 'you_are_under_attack_use_defensive_cards',
+				);
 				break;
 			case Player::PHASE_WAITING:
 				$message = array(

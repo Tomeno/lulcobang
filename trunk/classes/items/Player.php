@@ -92,7 +92,7 @@ class Player extends LinkableItem {
 	 *
 	 * @param string $cardType
 	 * @param string $place
-	 * @return Card if has card | false if has not | 0 if method doesn't exist
+	 * @return Card if has card | NULL if has not | FALSE if method doesn't exist
 	 */
 	protected function hasCardType($cardType, $place = 'table') {
 		$methodName = 'getIs' . ucfirst($cardType);
@@ -131,9 +131,9 @@ class Player extends LinkableItem {
 		return $this->getAdditionalField('wait_cards');
 	}
 
-	public function setPhase($phase) {
-		$GLOBALS['db']->update('player', array('phase' => $phase), 'id = ' . intval($this['id']));
-	}
+//	public function setPhase($phase) {
+//		$GLOBALS['db']->update('player', array('phase' => $phase), 'id = ' . intval($this['id']));
+//	}
 	
 	/**
 	 * checks if player can pass
@@ -142,14 +142,14 @@ class Player extends LinkableItem {
 	 * 
 	 * @return boolean
 	 */
-	public function getCanPass() {
-		if ($this['actual_lifes'] >= count($this->getAdditionalField('hand_cards'))) {
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
+//	public function getCanPass() {
+//		if ($this['actual_lifes'] >= count($this->getAdditionalField('hand_cards'))) {
+//			return true;
+//		}
+//		else {
+//			return false;
+//		}
+//	}
 	
 	public function getDostrel() {
 		$card = $this->getHasGun();
@@ -181,47 +181,18 @@ class Player extends LinkableItem {
 		}
 	}
 	
-	public function addLife() {
-		if ($this['actual_lifes'] < $this['max_lifes']) {
-			$newLifes = $this['actual_lifes'] + 1;
-			$GLOBALS['db']->update('player', array('actual_lifes' => $newLifes), 'id = ' . intval($this['id']));
-			return $newLifes;
-		}
-		return false;
-	}
+//	public function addLife() {
+//		if ($this['actual_lifes'] < $this['max_lifes']) {
+//			$newLifes = $this['actual_lifes'] + 1;
+//			$GLOBALS['db']->update('player', array('actual_lifes' => $newLifes), 'id = ' . intval($this['id']));
+//			return $newLifes;
+//		}
+//		return false;
+//	}
 	
-	public function setUseBang($useBang) {
-		$GLOBALS['db']->update('player', array('use_bang' => intval($useBang)), 'id = ' . intval($this['id']));
-	}
-	
-	/*
-	public function getHasMustangOnTheTable() {
-		return $this->hasCardType(Card::MUSTANG);
-	}
-	
-	public function getHasAppaloosaOnTheTable() {
-		return $this->hasCardType(Card::APPALOOSA);
-	}
-	
-	public function getHasBarelOnTheTable() {
-		return $this->hasCardType(Card::BAREL);
-	}
-	
-	public function getHasDostavnikOnHand() {
-		return $this->hasCardType(Card::DOSTAVNIK, 'hand');
-	}
-	
-	public function getHasWellsFargoOnHand() {
-		return $this->hasCardType(Card::WELLS_FARGO, 'hand');
-	}
-	
-	public function getHasAppaloosaOnHand() {
-		return $this->hasCardType(Card::APPALOOSA, 'hand');
-	}
-	
-	public function getHasMustangOnHand() {
-		return $this->hasCardType(Card::MUSTANG, 'hand');
-	}*/
+//	public function setUseBang($useBang) {
+//		$GLOBALS['db']->update('player', array('use_bang' => intval($useBang)), 'id = ' . intval($this['id']));
+//	}
 }
 
 ?>

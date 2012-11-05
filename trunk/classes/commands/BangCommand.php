@@ -3,11 +3,17 @@
 class BangCommand extends Command {
 	const OK = 1;
 	
-	const NO_CARDS = 2;
+	const DO_NOT_HAVE_BANG = 2;
 	
 	const NOT_YOUR_TURN = 3;
 	
 	const CANNOT_PLAY_BANG = 4;
+	
+	const CANNOT_PLAY_BANG_AGAINST_YOURSELF = 5;
+	
+	const PLAYER_IS_NOT_IN_GAME = 6;
+	
+	const CANNOT_PLAY_BANG_AGAINST_DEAD_PLAYER = 7;
 	
 	protected $bangCard = NULL;
 
@@ -17,19 +23,35 @@ class BangCommand extends Command {
 
 	protected function check() {
 		if ($this->actualPlayer['phase'] == Player::PHASE_PLAY) {
+			
+			// TODO spravit k tomuto nejaku metodu v commande lebo sa to pouziva dost casto
+			// TODO zistit ci je hrac este zivy
 			$attackedPlayer = $this->params[0];
-			foreach ($this->players as $player) {
-				$user = $player->getUser();
-				if ($user['username'] == $attackedPlayer) {
-					$this->attackedPlayer = $player;
-					break;
+			if ($this->loggedUser['username'] != $attackedPlayer) {
+				foreach ($this->players as $player) {
+					$user = $player->getUser();
+					if ($user['username'] == $attackedPlayer) {
+						$this->attackedPlayer = $player;
+						break;
+					}
 				}
-			}
-
-			$this->bangCard = $this->cards[0];
-
-			if ($this->bangCard !== NULL && $this->attackedPlayer !== NULL) {
-				$this->check = self::OK;
+				
+				if ($this->attackedPlayer !== NULL) {
+					if ($this->attackedPlayer['actual_lifes'] > 0) {
+						$this->bangCard = $this->cards[0];
+						if ($this->bangCard !== NULL) {
+							$this->check = self::OK;
+						} else {
+							$this->check = self::DO_NOT_HAVE_BANG;
+						}
+					} else {
+						$this->check = self::CANNOT_PLAY_BANG_AGAINST_DEAD_PLAYER;
+					}
+				} else {
+					$this->check = self::PLAYER_IS_NOT_IN_GAME;
+				}
+			} else {
+				$this->check = self::CANNOT_PLAY_BANG_AGAINST_YOURSELF;
 			}
 		} elseif ($this->actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
 			if ($this->interTurnReason['action'] == 'indians') {
@@ -124,6 +146,30 @@ class BangCommand extends Command {
 		} elseif ($this->check == self::CANNOT_PLAY_BANG) {
 			$message = array(
 				'text' => 'nemozes hrat kartu bang',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::DO_NOT_HAVE_BANG) {
+			$message = array(
+				'text' => 'nemas kartu bang',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::CANNOT_PLAY_BANG_AGAINST_YOURSELF) {
+			$message = array(
+				'text' => 'nemozes pouzit kartu bang sam proti sebe',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::PLAYER_IS_NOT_IN_GAME) {
+			$message = array(
+				'text' => 'hrac "' . $this->params[0] . '" nehra v tejto hre',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::CANNOT_PLAY_BANG_AGAINST_DEAD_PLAYER) {
+			$message = array(
+				'text' => 'nemozes utocit na mrtveho hraca',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);

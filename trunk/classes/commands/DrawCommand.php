@@ -17,6 +17,8 @@ class DrawCommand extends Command {
 	const ALREADY_DRAW = 7;
 
 	const MISSING_JAIL_CARD = 8;
+	
+	const WAIT = 9;
 
 	protected $template = 'cards-choice.tpl';
 
@@ -44,6 +46,8 @@ class DrawCommand extends Command {
 					$this->check = self::DRAW_EXTENSION_CARD_FIRST;
 				} elseif ($this->actualPlayer['phase'] == Player::PHASE_PLAY) {
 					$this->check = self::ALREADY_DRAW;
+				} elseif ($this->actualPlayer['phase'] == Player::PHASE_WAITING) {
+					$this->check = self::WAIT;
 				} else {
 					throw new Exception('neviem co sa este moze udiat', 1328469676);
 				}
@@ -62,27 +66,36 @@ class DrawCommand extends Command {
 
 				// TODO tieto karty treba najprv ukazat hracom cez log a aby sa dali vyhodit, musia byt najprv v ruke aktualneho hraca a potom ich vyhodi
 
-				$drawnCards = GameUtils::drawCards($this->game, 1);
-				$isRed = FALSE;
+				$drawnCards = GameUtils::drawCards($this->game, 1);	// TODO pocet zavisi aj od charakteru
+				$isHeart = FALSE;
 				$cardRepository = new CardRepository();
+				$thrownCards = array();
 				foreach ($drawnCards as $drawnCardId) {
 					$drawnCard = $cardRepository->getOneById($drawnCardId);
-					if ($drawnCard->getIsRed()) {
-						$isRed = TRUE;
-						break; // je tu break ci nie?
+					$thrownCards[] = $drawnCard;
+					if ($drawnCard->getIsHeart()) {
+						$isHeart = TRUE;
+						// break tu nie je lebo musime prejst cez vsetky karty
+						// aby sme vyrobili pole kariet ktore treba vyhodit
 					}
 				}
-				if ($isRed) {
+				
+				if ($isHeart) {
 					$this->actualPlayer['phase'] = Player::PHASE_DRAW;
 					$this->actualPlayer->save();
 
 					GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards, 'table');
+					
+					// TODO pridat spravu o tom ze hrac usiel z vazenia
+					
 				} else {
 					$this->actualPlayer['phase'] = Player::PHASE_NONE;
 					$this->actualPlayer->save();
 
 					GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards, 'table');
 
+					// TODO pridat spravu o tom ze hrac neusiel z vazenia
+					
 					// TODO dat to priamo do triedy Game
 					$nextPosition = GameUtils::getNextPosition($this->game);
 					$this->game['turn'] = $nextPosition;
@@ -108,7 +121,8 @@ class DrawCommand extends Command {
 						}
 					}
 				}
-				
+				// ktora karta je v odhadzovacom balicku skor? jail ci ta ktoru som potiahol?
+				GameUtils::throwCards($this->game, NULL, $thrownCards);
 			} elseif ($this->params[0] == 'dynamite') {
 
 			} else {
@@ -235,6 +249,12 @@ class DrawCommand extends Command {
 			$message = array(
 				'toUser' => $this->loggedUser['id'],
 				'localizeKey' => 'you_have_already_draw',
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::WAIT) {
+			$message = array(
+				'toUser' => $this->loggedUser['id'],
+				'localizeKey' => 'you_have_to_wait',
 			);
 			$this->addMessage($message);
 		}

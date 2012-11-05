@@ -5,10 +5,21 @@ class Role extends LinkableItem {
 	protected $imageFolder = 'images/cards/bang/roles/';
 	protected $back = 'images/cards/bang/special/role_back.jpg';
 	
+	// TYPY
 	const SHERIFF = 1;
 	const RENEGARD = 2;
 	const BANDIT = 3;
 	const VICE = 4;
+	
+	// konretne idecka pre roly
+	const ROLE_SHERIFF = 1;
+	const ROLE_RENEGARD_1 = 2;
+	const ROLE_BANDIT_1 = 3;
+	const ROLE_BANDIT_2 = 4;
+	const ROLE_VICE_1 = 5;
+	const ROLE_BANDIT_3 = 6;
+	const ROLE_VICE_2 = 7;
+	const ROLE_RENEGARD_2 = 8;
 	
 	public function __construct($role) {
 		parent::__construct($role);

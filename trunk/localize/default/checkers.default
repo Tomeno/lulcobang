@@ -10,3 +10,4 @@ do_not_have_card###You don't have "%s" card
 you_have_card_on_table###You already have "%s" card on the table
 card_is_not_puttable###Card "%s" is not puttable
 you_have_to_wait###You have to wait while oponent(s) play
+you_are_under_attack_use_defensive_cards###You are under attack, use defensive cards or lose life
