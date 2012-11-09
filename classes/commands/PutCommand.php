@@ -13,6 +13,8 @@ class PutCommand extends Command {
 	const NOT_YOUR_TURN = 3;
 
 	const NO_GAME = 4;
+	
+	const HAS_ANOTHER_WEAPON = 5;
 
 	protected function check() {
 		if ($this->game && $this->game['status'] == Game::GAME_STATUS_STARTED) {
@@ -26,8 +28,13 @@ class PutCommand extends Command {
 					if ($res->getIsGreen()) {
 						$this->place = 'wait';
 					}
-					$this->putCards[] = $res;
-					$this->check = self::OK;
+					
+					if ($res->getIsWeapon() && $this->actualPlayer->getHasGun()) {
+						$this->check = self::HAS_ANOTHER_WEAPON;
+					} else {
+						$this->putCards[] = $res;
+						$this->check = self::OK;
+					}
 				} else {
 					$this->check = self::NO_CARDS;
 				}
@@ -41,14 +48,26 @@ class PutCommand extends Command {
 	protected function run() {
 		if ($this->check == self::OK) {
 			GameUtils::moveCards($this->game, $this->putCards, $this->actualPlayer, $this->place);
+			
+			if ($this->place == 'table') {
+				// kedze je mozne ze vykladame nejaku modru kartu, ktora ovplyvnuje vzdialenost, preratame maticu
+				// ak to bude velmi pomale, budeme to robit len ak je medzi vylozenymi kartami fakt takato karta
+				$matrix = GameUtils::countMatrix($this->game);
+				$this->game['distance_matrix'] = serialize($matrix);
+				$this->game->save();
+			}
 		}
 	}
 
 	protected function generateMessages() {
 		if ($this->check == self::OK) {
 			echo 'OK';
-		} else {
-			echo 'KO';
+		} elseif ($this->check == self::HAS_ANOTHER_WEAPON) {
+			$message = array(
+				'text' => 'momentalne pouzivas inu zbran, nemozes vylozit dalsiu, kym ju neodhodis',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
 		}
 	}
 

@@ -20,7 +20,9 @@
 							</a>
 						{/if}
 						<a href="{$player.url}" onclick="selectPlayer({$player.id});return false;">
-							{if $game.playerOnTurn.id == $player.id} * {/if}{$player.user.username}
+							{if $game.playerOnTurn.id == $player.id} * {/if}
+							{if $game.playerOnMove.id == $player.id} # {/if}
+							{$player.user.username}
 						</a>
 					</div>
 					<div class="photo">
@@ -50,6 +52,19 @@
 								</a>
 							{/if}
 						</div>
+						{if $me.actual_lifes > 0}
+							<div class="{if $player.user.id == $me.user.id}range{else}distance{/if}">
+								{if $player.user.id == $me.user.id}
+									{$player.range}
+								{else}
+									{if $game->getDistance($me.user.username, $player.user.username)}
+										{$game->getDistance($me.user.username, $player.user.username)}
+									{else}
+										X
+									{/if}
+								{/if}
+							</div>
+						{/if}
 						<div class="char{* popup*}">
 							<a href="{$player.character.url}" onclick="{if $player.user.id == $me.user.id}useCharacter();{else}window.open(this.href, '_blank');{/if} return false;" title="{$player.character.name}: {$player.character.localizedDescription|escape}" class="popup-source">
 								{image src=$player.character.imagePath alt=$player.character.name width='44' height='76'}

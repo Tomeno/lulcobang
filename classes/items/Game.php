@@ -38,6 +38,8 @@ class Game extends Item {
 		$playerRepository = new PlayerRepository();
 		$players = $playerRepository->getByGame($game['id']);
 		$this->setAdditionalField('players', $players);
+		
+		$this->setAdditionalField('matrix', unserialize($game['distance_matrix']));
 	}
 
 	public function getThrowPile() {
@@ -105,6 +107,18 @@ class Game extends Item {
 		$roomRepository = new RoomRepository();
 		$room = $roomRepository->getOneById($this['room']);
 		return $room;
+	}
+	
+	public function getMatrix() {
+		return $this->getAdditionalField('matrix');
+	}
+	
+	public function getDistance($playerFrom, $playerTo) {
+		$matrix = $this->getMatrix();
+		if (isset($matrix[$playerFrom][$playerTo])) {
+			return $matrix[$playerFrom][$playerTo];
+		}
+		return FALSE;
 	}
 }
 

@@ -76,8 +76,7 @@ class GameUtils {
 			foreach ($players as $player2) {
 				if ($player1['id'] == $player2['id']) {
 					$matrix[$player1['user']['username']][$player2['user']['username']] = 0;
-				}
-				else {
+				} else {
 					$arg1 = $player1['position'] - $player2['position'];
 					$arg2 = $player2['position'] - $player1['position'];
 					
@@ -87,12 +86,22 @@ class GameUtils {
 					$distance = min($arg1, $arg2);
 					
 					if ($player2->getHasMustangOnTheTable()) {
+						// TODO ak je tu belle stark ci ako sa vola, tak v jej tahu nemaju vplyv modre karty
+						// takze ani mustang nebude platit, a ani barel a dalsie
+						$distance++;
+					}
+					if ($player2->getHasHideoutOnTheTable()) {
+						// TODO ak je tu belle stark ci ako sa vola, tak v jej tahu nemaju vplyv modre karty
+						// takze ani hideout nebude platit, a ani barel a dalsie
 						$distance++;
 					}
 					if ($player2->getCharacter()->getIsPaulRegret()) {
 						$distance++;
 					}
 					if ($player1->getHasAppaloosaOnTheTable()) {
+						$distance--;
+					}
+					if ($player1->getHasSilverOnTheTable()) {
 						$distance--;
 					}
 					if ($player1->getCharacter()->getIsRoseDoolan()) {

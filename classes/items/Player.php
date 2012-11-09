@@ -151,7 +151,7 @@ class Player extends LinkableItem {
 //		}
 //	}
 	
-	public function getDostrel() {
+	public function getRange() {
 		$card = $this->getHasGun();
 		if ($card) {
 			if ($card->getIsSchofield()) {
@@ -160,7 +160,7 @@ class Player extends LinkableItem {
 			elseif ($card->getIsRemington()) {
 				return 3;
 			}
-			elseif ($card->getIsCarabina()) {
+			elseif ($card->getIsRevcarabine()) {
 				return 4;
 			}
 			elseif ($card->getIsWinchester()) {
@@ -171,14 +171,13 @@ class Player extends LinkableItem {
 	}
 	
 	public function getHasGun() {
-		$guns = Card::getGuns();
-		foreach ($guns as $gun) {
-			$methodName = 'getHas' . ucfirst($gun) . 'OnTheTable';
-			$card = $this->$methodName();
-			if ($card) {
-				return $card;
+		$tableCards = $this->getTableCards();
+		foreach ($tableCards as $tableCard) {
+			if ($tableCard->getIsWeapon()) {
+				return $tableCard;
 			}
 		}
+		return FALSE;
 	}
 	
 //	public function addLife() {

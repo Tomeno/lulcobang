@@ -39,6 +39,11 @@ class PassCommand extends Command {
 	protected function run() {
 		if ($this->check == self::OK) {
 			$this->actualPlayer['phase'] = Player::PHASE_NONE;
+			$this->actualPlayer['bang_used'] = 0;
+			$tableCards = unserialize($this->actualPlayer['table_cards']);
+			$waitCards = unserialize($this->actualPlayer['wait_cards']);
+			$this->actualPlayer['table_cards'] = serialize(array_merge($tableCards, $waitCards));
+			$this->actualPlayer['wait_cards'] = serialize(array());
 			$this->actualPlayer->save();
 
 			// TODO dat to priamo do triedy Game
@@ -57,10 +62,6 @@ class PassCommand extends Command {
 						$phase = Player::PHASE_DRAW;
 					}
 					$player['phase'] = $phase;
-					$tableCards = unserialize($player['table_cards']);
-					$waitCards = unserialize($player['wait_cards']);
-					$player['table_cards'] = serialize(array_merge($tableCards, $waitCards));
-					$player['wait_cards'] = serialize(array());
 					$player->save();
 					break;
 				}

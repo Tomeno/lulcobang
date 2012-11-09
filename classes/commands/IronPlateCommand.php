@@ -4,7 +4,7 @@
  * TODO vytvorit triedu DefendCommand kde bude switch na rozne typy utokov ktorym sa hrac moze branit a podla toho typu sa bude nastavovat dalsi hrac a stav hry
  */
 
-class SombreroCommand extends Command {
+class IronPlateCommand extends Command {
 
 	const OK = 1;
 	
@@ -39,13 +39,13 @@ class SombreroCommand extends Command {
 	protected function generateMessages() {
 		if ($this->check == self::OK) {
 			$message = array(
-				'text' => $this->loggedUser['username'] . ' pouzil sombrero na zachranu zivota',
+				'text' => $this->loggedUser['username'] . ' pouzil iron plate na zachranu zivota',
 				'notToUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);
 			
 			$message = array(
-				'text' => 'pouzil si sombrero na zachranu zivota',
+				'text' => 'pouzil si iron plate na zachranu zivota',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);

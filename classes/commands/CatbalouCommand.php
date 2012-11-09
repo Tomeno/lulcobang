@@ -54,6 +54,14 @@ class CatbalouCommand extends Command {
 		if ($this->check == self::OK) {
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
 			GameUtils::throwCards($this->game, $this->enemyPlayer, $this->enemyPlayersCards[$this->enemyPlayer['id']], $this->place);
+			
+			if ($this->place == 'table') {
+				// kedze je mozne ze rusime nejaku modru kartu ktora ovplyvnuje vzdialenost, preratame maticu
+				// ak to bude velmi pomale, budeme to robit len ak je medzi zrusenymi kartami fakt takato karta
+				$matrix = GameUtils::countMatrix($this->game);
+				$this->game['distance_matrix'] = serialize($matrix);
+				$this->game->save();
+			}
 		}
 	}
 

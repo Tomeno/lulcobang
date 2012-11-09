@@ -31,7 +31,7 @@ class BeerCommand extends Command {
 	protected function run() {
 		if ($this->check == self::OK) {
 			$additionalLifes = 1;
-			if ($this->actualPlayer->getCharacter()->getIsTequilaJoe()) {
+			if ($this->useCharacter === TRUE && $this->actualPlayer->getCharacter()->getIsTequilaJoe()) {
 				$additionalLifes = 2;
 			}
 			$newLifes = min($this->actualPlayer['actual_lifes'] + $additionalLifes, $this->actualPlayer['max_lifes']);

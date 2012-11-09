@@ -15,6 +15,10 @@ class BangCommand extends Command {
 	
 	const CANNOT_PLAY_BANG_AGAINST_DEAD_PLAYER = 7;
 	
+	const PLAYER_IS_TOO_FAR = 8;
+	
+	const USED_BANG_ALREADY = 9;
+	
 	protected $bangCard = NULL;
 
 	protected $attackedPlayer = NULL;
@@ -23,35 +27,54 @@ class BangCommand extends Command {
 
 	protected function check() {
 		if ($this->actualPlayer['phase'] == Player::PHASE_PLAY) {
+			$canPlayMoreBangs = FALSE;
+			if ($this->actualPlayer['bang_used'] < 1) {
+				$canPlayMoreBangs = TRUE;
+				// TODO pocet kariet bang zavisi od kariet v rozsireni kazatel a prestrelka, upravit tento if
+				// ani willy kid nemoze strielat ked pride kazatel
+			} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getCharacter()->getIsWillyTheKid()) {
+				$canPlayMoreBangs = TRUE;
+			} elseif ($this->actualPlayer->getHasVolcanicOnTheTable()) {
+				$canPlayMoreBangs = TRUE;
+			}
 			
-			// TODO spravit k tomuto nejaku metodu v commande lebo sa to pouziva dost casto
-			// TODO zistit ci je hrac este zivy
-			$attackedPlayer = $this->params[0];
-			if ($this->loggedUser['username'] != $attackedPlayer) {
-				foreach ($this->players as $player) {
-					$user = $player->getUser();
-					if ($user['username'] == $attackedPlayer) {
-						$this->attackedPlayer = $player;
-						break;
+			if ($canPlayMoreBangs) {
+				// TODO spravit k tomuto nejaku metodu v commande lebo sa to pouziva dost casto
+				$attackedPlayer = $this->params[0];
+				if ($this->loggedUser['username'] != $attackedPlayer) {
+					foreach ($this->players as $player) {
+						$user = $player->getUser();
+						if ($user['username'] == $attackedPlayer) {
+							$this->attackedPlayer = $player;
+							break;
+						}
 					}
-				}
-				
-				if ($this->attackedPlayer !== NULL) {
-					if ($this->attackedPlayer['actual_lifes'] > 0) {
-						$this->bangCard = $this->cards[0];
-						if ($this->bangCard !== NULL) {
-							$this->check = self::OK;
+
+					if ($this->attackedPlayer !== NULL) {
+						if ($this->attackedPlayer['actual_lifes'] > 0) {
+							$this->bangCard = $this->cards[0];
+							if ($this->bangCard !== NULL) {
+								$attackedUser = $this->attackedPlayer->getUser();
+								$distance = $this->game->getDistance($this->loggedUser['username'], $attackedUser['username']);
+								if ($distance <= $this->actualPlayer->getRange()) {
+									$this->check = self::OK;
+								} else {
+									$this->check = self::PLAYER_IS_TOO_FAR;
+								}
+							} else {
+								$this->check = self::DO_NOT_HAVE_BANG;
+							}
 						} else {
-							$this->check = self::DO_NOT_HAVE_BANG;
+							$this->check = self::CANNOT_PLAY_BANG_AGAINST_DEAD_PLAYER;
 						}
 					} else {
-						$this->check = self::CANNOT_PLAY_BANG_AGAINST_DEAD_PLAYER;
+						$this->check = self::PLAYER_IS_NOT_IN_GAME;
 					}
 				} else {
-					$this->check = self::PLAYER_IS_NOT_IN_GAME;
+					$this->check = self::CANNOT_PLAY_BANG_AGAINST_YOURSELF;
 				}
 			} else {
-				$this->check = self::CANNOT_PLAY_BANG_AGAINST_YOURSELF;
+				$this->check = self::USED_BANG_ALREADY;
 			}
 		} elseif ($this->actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
 			if ($this->interTurnReason['action'] == 'indians') {
@@ -109,6 +132,7 @@ class BangCommand extends Command {
 				$this->attackedPlayer->save(TRUE);
 
 				$this->actualPlayer['phase'] = Player::PHASE_WAITING;
+				$this->actualPlayer['bang_used'] = $this->actualPlayer['bang_used'] + 1;
 				$this->actualPlayer->save();
 
 				// TODO toto plati len ak je to utok bangom, ale bang sa pouziva na viacerych miestach - premysliet a dorobit aj duel a indianov prip dalsie
@@ -124,8 +148,12 @@ class BangCommand extends Command {
 	}
 
 	protected function generateMessages() {
-		if ($this->check == self::OK) {
+		if ($this->attackedPlayer) {
 			$attackedUser = $this->attackedPlayer->getUser();
+		}
+		
+		if ($this->check == self::OK) {
+			
 			$message = array(
 				'text' => $this->loggedUser['username'] . ' zautocil Bangom na ' . $attackedUser['username'],
 				'notToUser' => $attackedUser['id'],
@@ -170,6 +198,18 @@ class BangCommand extends Command {
 		} elseif ($this->check == self::CANNOT_PLAY_BANG_AGAINST_DEAD_PLAYER) {
 			$message = array(
 				'text' => 'nemozes utocit na mrtveho hraca',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::PLAYER_IS_TOO_FAR) {
+			$message = array(
+				'text' => 'Nedostrelis, ' .  $attackedUser['username'] . ' je prilis daleko',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::USED_BANG_ALREADY) {
+			$message = array(
+				'text' => 'V tomto kole si uz pouzil bang',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);
