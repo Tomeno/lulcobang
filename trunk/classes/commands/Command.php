@@ -200,6 +200,15 @@ abstract class Command {
 				'ActualPlayerHasCardsChecker' => 'getHasSombreroOnTheTable',
 			),
 		),
+		'ironplate' => array(
+			'class' => 'IronPlateCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isUnderAttack',
+				'ActualPlayerHasCardsChecker' => 'getHasIronplateOnTheTable',
+			),
+		),
 		'diligenza' => array(
 			'class' => 'DiligenzaCommand',
 			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
@@ -332,6 +341,11 @@ abstract class Command {
 	}
 
 	public final static function setup($command, $game) {
+		
+//		$matrix = GameUtils::countMatrix($game);
+//		$game['distance_matrix'] = serialize($matrix);
+//		$game = $game->save(TRUE);
+
 		$command = str_replace('.', '', $command);
 		$commandArray = explode(' ', $command);
 		$useCharacter = FALSE;

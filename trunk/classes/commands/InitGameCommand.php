@@ -101,6 +101,7 @@ class InitGameCommand extends Command {
 				$characterRepository = new CharacterRepository();
 				$possibleCharacters = $characterRepository->getById($possibleChoices['possible_characters']);
 				MySmarty::assign('possibleCharacters', $possibleCharacters);
+				MySmarty::assign('player', $player);
 				$response = MySmarty::fetch($this->template);
 				$player['command_response'] = $response;
 				$player->save();

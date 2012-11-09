@@ -18,6 +18,14 @@ class ThrowCommand extends Command {
 				$place = 'hand';
 			}
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards, $place);
+			
+			if ($place == 'table') {
+				// kedze je mozne ze rusime nejaku modru kartu ktora ovplyvnuje vzdialenost, preratame maticu
+				// ak to bude velmi pomale, budeme to robit len ak je medzi vyhodenymi kartami fakt takato karta
+				$matrix = GameUtils::countMatrix($this->game);
+				$this->game['distance_matrix'] = serialize($matrix);
+				$this->game->save();
+			}
 		}
 	}
 

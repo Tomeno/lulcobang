@@ -136,6 +136,7 @@ class DrawCommand extends Command {
 					'rest_action' => $counts['rest_action'],
 				);
 				$this->actualPlayer['possible_choices'] = serialize($possibleChoices);
+				$this->actualPlayer['phase'] = Player::PHASE_PLAY;
 				$this->actualPlayer->save();
 			}
 		}

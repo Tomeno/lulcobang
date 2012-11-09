@@ -114,9 +114,8 @@ body
 }
 
 
-.lifes
+.lifes, .distance, .range
 {
-	background:url('../images/lifes.png') no-repeat left top;
 	float:left;
 	font-size:33px;
 	height:43px;
@@ -124,6 +123,21 @@ body
 	padding:4px 0 0;
 	text-align:center;
 	width:28px;
+}
+
+.lifes
+{
+	background:url('../images/lifes.png') no-repeat left top;
+}
+
+.range
+{
+	background:url('../images/range.png') no-repeat left top;
+}
+
+.distance
+{
+	background:url('../images/distance.png') no-repeat left top;
 }
 
 .lifes a { font-size: 33px; text-decoration: none; }

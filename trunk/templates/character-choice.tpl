@@ -1,6 +1,7 @@
 {* TODO localize *}
 
-<p>Your role is xy and you have these possible characters</p>
+<p>Your role is {$player.roleObject.localizedTitle}</p>
+<p>You can choice one of these character:</p>
 <form action="{actualurl}" method="post">
 	<fieldset>
 		{foreach from=$possibleCharacters item='possibleCharacter'}

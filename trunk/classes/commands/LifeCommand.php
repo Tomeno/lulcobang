@@ -69,8 +69,8 @@ class LifeCommand extends Command {
 			
 		} elseif ($this->check == self::OK) {
 			$newLifes = $this->actualPlayer['actual_lifes'] - 1;
-//			$this->actualPlayer['actual_lifes'] = $newLifes;
-//			$this->actualPlayer = $this->actualPlayer->save(TRUE);
+			$this->actualPlayer['actual_lifes'] = $newLifes;
+			$this->actualPlayer = $this->actualPlayer->save(TRUE);
 			if ($newLifes <= 0) {
 				// TODO message ze hrac zomrel
 				
@@ -189,8 +189,8 @@ class LifeCommand extends Command {
 				$this->game = GameUtils::changePositions($this->game);
 			}
 			
-			// ak bol pouzity charakter
-			if ($this->useCharacter === TRUE) {
+			// ak bol pouzity charakter a nebol to este posledny zivot
+			if ($this->useCharacter === TRUE && $newLifes > 0) {
 				if ($this->actualPlayer->getCharacter()->getIsElGringo()) {
 					// el gringo
 					$attackingPlayerHandCards = $this->attackingPlayer->getHandCards();
