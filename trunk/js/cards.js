@@ -49,7 +49,7 @@ function selectPlayer(id, fromSelectCard) {
 	} else {
 		$('selected-card').value = 0;
 	}
-	//executeCommand();
+	$('place').value = '';
 }
 
 function passTurn() {
