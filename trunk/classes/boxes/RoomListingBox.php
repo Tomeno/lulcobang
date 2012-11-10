@@ -19,6 +19,13 @@ class RoomListingBox extends AbstractBox {
 
 		$roomRepository = new RoomRepository();
 		$rooms = $roomRepository->getAll();
+		
+		$gameRepository = new GameRepository();
+		$games = $gameRepository->getGamesByRooms(array_keys($rooms));
+		
+		foreach ($games as $game) {
+			$rooms[$game['room']]['game'] = TRUE;
+		}
 
 		MySmarty::assign('loggedUser', $loggedUser);
 		MySmarty::assign('rooms', $rooms);

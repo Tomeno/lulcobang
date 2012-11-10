@@ -33,7 +33,7 @@ class Card extends LinkableItem {
 	public function __construct($card) {
 		parent::__construct($card);
 
-		$cardBaseTypeRepository = new CardBaseTypeRepository();
+		$cardBaseTypeRepository = new CardBaseTypeRepository(TRUE);
 		$cardBaseType = $cardBaseTypeRepository->getOneById($this['card_base_type']);
 
 		$this->setAdditionalField('cardBaseType', $cardBaseType);

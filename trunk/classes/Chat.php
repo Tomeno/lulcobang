@@ -44,7 +44,7 @@ class Chat {
 	 * @return array
 	 */
 	public static function getMessages($room, $toUser = 0, $time = 0) {
-		$colorRepository = new ColorRepository();
+		$colorRepository = new ColorRepository(TRUE);
 		$colors = $colorRepository->getAll();
 
 		$colorList = array();
@@ -52,7 +52,7 @@ class Chat {
 			$colorList[$color['id']] = $color;
 		}
 
-		$query = 'SELECT message.*, user.*
+		$query = 'SELECT user.*, message.*
 			FROM ' . self::$table . '
 			LEFT JOIN user ON message.user = user.id
 			WHERE room=' . intval($room) . ' AND tstamp > ' . intval($time) . ' AND to_user IN (' . intval($toUser) . ', 0)';
@@ -70,7 +70,6 @@ class Chat {
 			}
 			$message['color'] = $colorList[$message['color']]['code'];
 		}
-
 		return $messages;
 	}
 }

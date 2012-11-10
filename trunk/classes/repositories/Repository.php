@@ -17,6 +17,16 @@ abstract class Repository {
 
 	protected $additionalWhere = array();
 
+	protected $useCache = FALSE;
+
+	public function __construct($useCache = FALSE) {
+		$this->useCache = $useCache;
+	}
+	
+	public function setUseCache($useCache) {
+		$this->useCache = $useCache;
+	}
+	
 	/**
 	 * getter for table
 	 *
@@ -58,7 +68,7 @@ abstract class Repository {
 	protected function getOne($keyString, $values) {
 		$this->setLimit(1);
 		$query = $this->getQuery($keyString, $values);
-		return DB::fetchFirst($query, get_class($this));
+		return DB::fetchFirst($query, get_class($this), $this->useCache);
 	}
 	
 	/**
@@ -70,7 +80,7 @@ abstract class Repository {
 	 */
 	protected function get($keyString, $values) {
 		$query = $this->getQuery($keyString, $values);
-		return DB::fetchAll($query, get_class($this));
+		return DB::fetchAll($query, get_class($this), $this->useCache);
 	}
 
 	/**
@@ -80,7 +90,7 @@ abstract class Repository {
 	 */
 	public function getAll() {
 		$query = 'SELECT * FROM ' . $this->table . $this->getAdditionalWhere(TRUE) . $this->getGroupBy() . $this->getOrderBy() . $this->getLimit();
-		return DB::fetchAll($query, get_class($this));
+		return DB::fetchAll($query, get_class($this), $this->useCache);
 	}
 	
 	/**
@@ -92,7 +102,7 @@ abstract class Repository {
 	 */
 	protected function getCountBy($keyString, $values) {
 		$query = $this->getCountQuery($keyString, $values);
-		$res = DB::fetchFirst($query);
+		$res = DB::fetchFirst($query, NULL, $this->useCache);
 		return intval($res['countAll']);
 	}
 

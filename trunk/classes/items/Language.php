@@ -8,12 +8,12 @@ class Language extends Item {
 	public function getCorrespondingUrl() {
 		$action = Utils::get('action');
 		if ($action) {
-			$pageRepository = new PageRepository();
+			$pageRepository = new PageRepository(TRUE);
 			$actualPage = $pageRepository->getOneByAlias($action);
 
 			$aliases = array();
 			if ($actualPage) {
-				$pageTypeRepository = new PageTypeRepository();
+				$pageTypeRepository = new PageTypeRepository(TRUE);
 				$pageType = $pageTypeRepository->getOneById($actualPage['page_type']);
 
 				$page = PageActionMap::getPageByTypeAndLanguage($pageType['alias'], $this['shortcut']);

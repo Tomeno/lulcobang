@@ -42,7 +42,7 @@ class Role extends LinkableItem {
 	}
 
 	public function getRelatedRoles() {
-		$roleRepository = new RoleRepository();
+		$roleRepository = new RoleRepository(TRUE);
 		$roleRepository->addAdditionalWhere(array('column' => 'type', 'value' => $this['type'], 'xxx' => '!='));
 		$roleRepository->addGroupBy('type');
 		return $roleRepository->getAll();
@@ -83,10 +83,6 @@ class Role extends LinkableItem {
 		}
 		return false;
 	}
-	
-//	public function getBack() {
-//		return $this->back;
-//	}
 }
 
 ?>

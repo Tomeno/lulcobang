@@ -21,7 +21,7 @@ class LoggedUser {
 	public static function whoIsLogged() {
 		if (self::$loggedUser === NULL) {
 			if (isset($_COOKIE[self::$cookieName]) && $_COOKIE[self::$cookieName] !== '') {
-				$userRepository = new UserRepository();
+				$userRepository = new UserRepository(TRUE);
 				self::$loggedUser = $userRepository->getOneByCookieValue(addslashes($_COOKIE[self::$cookieName]));
 			}
 		}

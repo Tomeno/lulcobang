@@ -3,7 +3,7 @@ function selectCard(id, type, playerId, place) {
 
 	// ak vyberame kartu hraca mimo aktualneho, nezada sa typ - neprepise sa tym padom command ktory chce aktualny hrac spravit
 	if (type) {
-		type = type.replace('-', '');
+		type = type.replace(/-/g, '');
 		$('command').value = type;
 	}
 

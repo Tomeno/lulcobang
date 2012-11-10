@@ -9,7 +9,7 @@ class PageActionMap {
 			if ($alias == '') {
 				return 'index';
 			} else {
-				$pageRepository = new PageRepository();
+				$pageRepository = new PageRepository(TRUE);
 				$page = $pageRepository->getOneByLanguageAndAlias($language['id'], $alias);
 
 				if ($page) {
@@ -36,10 +36,10 @@ class PageActionMap {
 	public static function getPageByTypeAndLanguage($type, $lang = NULL) {
 		$language = Utils::getLanguage($lang);
 		if ($language) {
-			$pageTypeRepository = new PageTypeRepository();
+			$pageTypeRepository = new PageTypeRepository(TRUE);
 			$pageType = $pageTypeRepository->getOneByAlias($type);
 
-			$pageRepository = new PageRepository();
+			$pageRepository = new PageRepository(TRUE);
 			$page = $pageRepository->getOneByLanguageAndPageType($language['id'], $pageType['id']);
 
 			if ($page) {

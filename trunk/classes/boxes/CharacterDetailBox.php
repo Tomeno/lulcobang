@@ -7,7 +7,7 @@ class CharacterDetailBox extends AbstractBox {
 	protected function setup() {
 		$characterAlias = Utils::get('identifier');
 
-		$characterRepository = new CharacterRepository();
+		$characterRepository = new CharacterRepository(TRUE);
 		$character = $characterRepository->getOneByAlias($characterAlias);
 
 		BangSeo::addTitlePart($character['name']);

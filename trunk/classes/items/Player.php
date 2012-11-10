@@ -18,15 +18,15 @@ class Player extends LinkableItem {
 		$user = $userRepository->getOneById($player['user']);
 		$this->setAdditionalField('user', $user);
 		
-		$roleRepository = new RoleRepository();
+		$roleRepository = new RoleRepository(TRUE);
 		$role = $roleRepository->getOneById($player['role']);
 		$this->setAdditionalField('role', $role);
 		
-		$characterRepository = new CharacterRepository();
+		$characterRepository = new CharacterRepository(TRUE);
 		$character = $characterRepository->getOneById($player['charakter']);
 		$this->setAdditionalField('character', $character);
 		
-		$cardRepository = new CardRepository();
+		$cardRepository = new CardRepository(TRUE);
 		
 		$handCardsId = unserialize($player['hand_cards']);
 		$handCards = array();
@@ -36,7 +36,7 @@ class Player extends LinkableItem {
 		}
 		$this->setAdditionalField('hand_cards', $handCards);
 		
-		$cardRepository = new CardRepository();
+		$cardRepository = new CardRepository(TRUE);
 
 		$tableCardsId = unserialize($player['table_cards']);
 		$tableCards= array();

@@ -6,11 +6,11 @@ class CardDetailBox extends AbstractBox {
 
 	protected function setup() {
 		$cardAlias = Utils::get('identifier');
-		$cardBaseTypeRepository = new CardBaseTypeRepository();
+		$cardBaseTypeRepository = new CardBaseTypeRepository(TRUE);
 		$cardBaseType = $cardBaseTypeRepository->getOneByAlias($cardAlias);
 
 		if ($cardBaseType) {
-			$cardRepository = new CardRepository();
+			$cardRepository = new CardRepository(TRUE);
 			$card = $cardRepository->getOneByCardBaseType($cardBaseType['id']);
 		}
 

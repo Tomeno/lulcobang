@@ -10,7 +10,7 @@ class Page extends Item {
 
 	public function getPageTypeObject() {
 		if ($this->pageType === NULL) {
-			$pageTypeRepository = new PageTypeRepository();
+			$pageTypeRepository = new PageTypeRepository(TRUE);
 			$this->pageType = $pageTypeRepository->getOneById($this['page_type']);
 		}
 		return $this->pageType;

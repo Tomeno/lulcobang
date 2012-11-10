@@ -209,6 +209,15 @@ abstract class Command {
 				'ActualPlayerHasCardsChecker' => 'getHasIronplateOnTheTable',
 			),
 		),
+		'tengallonhat' => array(
+			'class' => 'TengallonhatCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isUnderAttack',
+				'ActualPlayerHasCardsChecker' => 'getHasTengallonhatOnTheTable',
+			),
+		),
 		'diligenza' => array(
 			'class' => 'DiligenzaCommand',
 			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
@@ -259,7 +268,7 @@ abstract class Command {
 			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
 			'precheckParams' => array(
 				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',	// TODO zatial sa tu jedna o pivo ked si na tahu, treba doplnit pivo ako zachranu zivota
+				'PlayerPhaseChecker' => 'isInPlayPhase',
 				'ActualPlayerHasCardsChecker' => 'getHasBeerOnHand',
 			),
 		),
@@ -305,6 +314,87 @@ abstract class Command {
 				'GameChecker' => 'gameStarted',
 				'PlayerPhaseChecker' => 'isInPlayPhase',
 				'ActualPlayerHasCardsChecker' => 'getHasGatlingOnHand',
+			),
+		),
+		'pepperbox' => array(
+			'class' => 'PepperboxCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasPepperboxOnTheTable',
+			),
+		),
+		'knife' => array(
+			'class' => 'KnifeCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasKnifeOnTheTable',
+			),
+		),
+		'derringer' => array(
+			'class' => 'DerringerCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasDerringerOnTheTable',
+			),
+		),
+		'canteen' => array(
+			'class' => 'CanteenCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasCanteenOnTheTable',
+			),
+		),
+		'cancan' => array(
+			'class' => 'CancanCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasCancanOnTheTable',
+			),
+		),
+		'conestoga' => array(
+			'class' => 'ConestogaCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasConestogaOnTheTable',
+			),
+		),
+		'bible' => array(
+			'class' => 'BibleCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isUnderAttack',
+				'ActualPlayerHasCardsChecker' => 'getHasBibleOnTheTable',
+			),
+		),
+		'buffalorifle' => array(
+			'class' => 'BuffalorifleCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasBuffalorifleOnTheTable',
+			),
+		),
+		'punch' => array(
+			'class' => 'PunchCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasPunchOnHand',
 			),
 		),
 	);

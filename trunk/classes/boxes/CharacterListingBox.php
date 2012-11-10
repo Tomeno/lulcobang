@@ -10,7 +10,7 @@ class CharacterListingBox extends AbstractBox {
 	protected $template = 'character-listing.tpl';
 
 	protected function setup() {
-		$characterRepository = new CharacterRepository();
+		$characterRepository = new CharacterRepository(TRUE);
 		$characterRepository->addOrderBy(array('name' => 'ASC'));
 		$characters = $characterRepository->getAll();
 

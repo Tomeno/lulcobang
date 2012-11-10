@@ -61,7 +61,16 @@ class PutCommand extends Command {
 
 	protected function generateMessages() {
 		if ($this->check == self::OK) {
-			echo 'OK';
+			$message = array(
+				'text' => $this->loggedUser['username'] . ' vylozil na stol ' . $this->putCards[0]['title'],
+				'notToUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+			$message = array(
+				'text' => 'Vylozil si na stol ' . $this->putCards[0]['title'],
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
 		} elseif ($this->check == self::HAS_ANOTHER_WEAPON) {
 			$message = array(
 				'text' => 'momentalne pouzivas inu zbran, nemozes vylozit dalsiu, kym ju neodhodis',

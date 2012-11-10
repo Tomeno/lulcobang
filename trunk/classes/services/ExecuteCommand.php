@@ -11,7 +11,7 @@ class ExecuteCommand {
 
 		$gameRepository = new GameRepository();
 		$game = $gameRepository->getOneById($gameId);
-
+		
 		$commandString = '';
 		if ($useCharacter == 1) {
 			$commandString .= 'char ';
@@ -30,7 +30,7 @@ class ExecuteCommand {
 		}
 
 		if ($cardId) {
-			$cardRepository = new CardRepository();
+			$cardRepository = new CardRepository(TRUE);
 			$card = $cardRepository->getOneById($cardId);
 			$commandString .= ' ' . str_replace('-', '', $card->getItemAlias());
 		}

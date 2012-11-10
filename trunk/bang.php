@@ -15,10 +15,11 @@ try {
 		Utils::redirect($url);
 	}
 
-	$pageRepository = new PageRepository();
-	$page = $pageRepository->getOneByAlias(Utils::get('action'));
+	$actionAlias = Utils::get('action');
+	$pageRepository = new PageRepository(TRUE);
+	$page = $pageRepository->getOneByAlias($actionAlias);
 
-	$pageTypeRepository = new PageTypeRepository();
+	$pageTypeRepository = new PageTypeRepository(TRUE);
 	$pageType = $pageTypeRepository->getOneById($page['page_type']);
 
 	$action = PageActionMap::getActionByPageAndLanguage(Utils::get('action'));
@@ -49,9 +50,18 @@ try {
 $upperPartBox = new UpperPartBox();
 MySmarty::assign('upperPart', $upperPartBox->render());
 
-$menuBox = new MenuBox();
-$menuBox->setActualAction($action);
-MySmarty::assign('menu', $menuBox->render());
+// nacachujeme si menu
+$memcache = BangMemcache::instance();
+$key = 'main_menu_' . $language . '_' . $actionAlias;
+$menu = $memcache->get($key);
+
+if (!$menu) {
+	$menuBox = new MenuBox();
+	$menuBox->setActualAction($action);
+	$menu = $menuBox->render();
+	$memcache->set($key, $menu, NULL, '+2 hours');
+}
+MySmarty::assign('menu', $menu);
 
 MySmarty::assign('title', BangSeo::getTitle());
 MySmarty::assign('description', BangSeo::getDescription());

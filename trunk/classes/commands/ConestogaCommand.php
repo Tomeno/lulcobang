@@ -1,6 +1,6 @@
 <?php
 
-class PanicCommand extends Command {
+class ConestogaCommand extends Command {
 
 	protected $place = 'hand';
 	
@@ -11,8 +11,6 @@ class PanicCommand extends Command {
 	const NO_CARDS_ON_THE_TABLE = 3;
 	
 	const PLAYER_NOT_SELECTED = 4;
-	
-	const PLAYER_IS_TOO_FAR = 5;
 	
 	protected function check() {
 		// TODO spravit prechecker
@@ -26,34 +24,27 @@ class PanicCommand extends Command {
 		}
 
 		if ($this->enemyPlayer) {
-			$attackedUser = $this->enemyPlayer->getUser();
-			$distance = $this->game->getDistance($this->loggedUser['username'], $attackedUser['username']);
-			if ($distance <= 1) {
-				if (isset($this->params[1]) && $this->params[1] != 'hand') {
-					$methods = array('hasAllCardsOnTheTableOrOnWait');
-					$enemyPlayerHasCardsChecker = new EnemyPlayerHasCardsChecker($this, $methods);
-					$enemyPlayerHasCardsChecker->setCards(array($this->params[1]));
-					if ($enemyPlayerHasCardsChecker->check()) {
-						$this->check = self::OK;
-						$this->place = $enemyPlayerHasCardsChecker->getPlace();
-					} else {
-						$this->check = self::NO_CARDS_ON_THE_TABLE;
-					}
+			if (isset($this->params[1]) && $this->params[1] != 'hand') {
+				$methods = array('hasAllCardsOnTheTableOrOnWait');
+				$enemyPlayerHasCardsChecker = new EnemyPlayerHasCardsChecker($this, $methods);
+				$enemyPlayerHasCardsChecker->setCards(array($this->params[1]));
+				if ($enemyPlayerHasCardsChecker->check()) {
+					$this->check = self::OK;
+					$this->place = $enemyPlayerHasCardsChecker->getPlace();
 				} else {
-					$handCards = $this->enemyPlayer->getHandCards();
-					$card = $handCards[array_rand($handCards)];
-					if ($card) {
-						$this->addEnemyPlayerCard($this->enemyPlayer, $card);
-						$this->check = self::OK;
-						$this->place = 'hand';
-					} else {
-						$this->check = self::NO_CARDS_ON_HAND;
-					}
+					$this->check = self::NO_CARDS_ON_THE_TABLE;
 				}
 			} else {
-				$this->check = self::PLAYER_IS_TOO_FAR;
-			}
-			
+				$handCards = $this->enemyPlayer->getHandCards();
+				$card = $handCards[array_rand($handCards)];
+				if ($card) {
+					$this->addEnemyPlayerCard($this->enemyPlayer, $card);
+					$this->check = self::OK;
+					$this->place = 'hand';
+				} else {
+					$this->check = self::NO_CARDS_ON_HAND;
+				}
+			}		
 		} else {
 			$this->check = self::PLAYER_NOT_SELECTED;
 		}
@@ -61,7 +52,7 @@ class PanicCommand extends Command {
 
 	protected function run() {
 		if ($this->check == 1) {
-			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
+			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards, 'table');
 			GameUtils::moveCards($this->game, $this->enemyPlayersCards[$this->enemyPlayer['id']], $this->enemyPlayer, 'hand', $this->actualPlayer, $this->place);
 			
 			if ($this->place == 'table') {
@@ -82,13 +73,13 @@ class PanicCommand extends Command {
 			// TODO doplnit v hlaske aj miesto odkial bola karta zobrata
 			
 			$message = array(
-				'text' => $this->loggedUser['username'] . ' pouzil paniku na odobratie karty ' . $enemyUser['username'],
+				'text' => $this->loggedUser['username'] . ' pouzil Conestoga na odobratie karty ' . $enemyUser['username'],
 				'notToUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);
 
 			$message = array(
-				'text' => 'pouzil si paniku na odobratie karty ' . $enemyUser['username'],
+				'text' => 'pouzil si Conestoga na odobratie karty ' . $enemyUser['username'],
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);
@@ -107,12 +98,6 @@ class PanicCommand extends Command {
 		} elseif ($this->check == self::PLAYER_NOT_SELECTED) {
 			$message = array(
 				'text' => 'nevybral si ziadneho hraca',
-				'toUser' => $this->loggedUser['id'],
-			);
-			$this->addMessage($message);
-		} elseif ($this->check == self::PLAYER_IS_TOO_FAR) {
-			$message = array(
-				'text' => 'Nemozes pouzit paniku, ' .  $enemyUser['username'] . ' je prilis daleko',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);
