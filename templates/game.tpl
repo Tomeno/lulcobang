@@ -66,7 +66,7 @@
 							</div>
 						{/if}
 						<div class="char{* popup*}">
-							<a href="{$player.character.url}" onclick="{if $player.user.id == $me.user.id}useCharacter();{else}window.open(this.href, '_blank');{/if} return false;" title="{$player.character.name}: {$player.character.localizedDescription|escape}" class="popup-source">
+							<a href="{$player.character.url}" onclick="{if $player.user.id == $me.user.id}useCharacter();{else}window.open(this.href, '_blank');{/if} return false;" title="{$player.character.name|escape} ({$player.max_lifes}): {$player.character.localizedDescription|escape}" class="popup-source">
 								{image src=$player.character.imagePath alt=$player.character.name width='44' height='76'}
 							</a>
 							<div class="popup-target" style="display:none;">
@@ -100,7 +100,7 @@
 							{if $smarty.foreach.handCards.index mod 6 == 0}<div class="row">{/if}
 								<div class="card{if $player.user.id == $me.user.id}{* popup*}{/if}">
 									{if $player.user.id == $me.user.id}
-										<a href="{$handCard.url}" onclick="selectCard('{$handCard.id}', '{$handCard.itemAlias}'); return false;" class="popup-source">
+										<a href="{$handCard.url}" onclick="selectCard('{$handCard.id}', '{$handCard.itemAlias}'); return false;" title="{$handCard.title|escape}: {$handCard.description|escape}" class="popup-source">
 											{image src=$handCard.imagePath alt=$handCard.title width='44' height='76'}
 										</a>
 										<div class="popup-target" style="display:none;">
@@ -121,7 +121,7 @@
 						{foreach from=$player.tableCards item='tableCard' name='tableCards'}
 							{if $smarty.foreach.tableCards.index mod 6 == 0}<div class="row">{/if}
 								<div class="card{* popup*}">
-									<a href="{$tableCard.url}" onclick="{if $player.id == $me.id}selectCard('{$tableCard.id}', '{$tableCard.itemAlias}', 0, 'table');{else}selectCard('{$tableCard.id}', '', '{$player.id}');{/if} return false;" class="popup-source">
+									<a href="{$tableCard.url}" onclick="{if $player.id == $me.id}selectCard('{$tableCard.id}', '{$tableCard.itemAlias}', 0, 'table');{else}selectCard('{$tableCard.id}', '', '{$player.id}');{/if} return false;" title="{$tableCard.title|escape}: {$tableCard.description|escape}" class="popup-source">
 										{image src=$tableCard.imagePath alt="card" width='44' height='76'}
 									</a>
 									<div class="popup-target" style="display:none;">
@@ -139,7 +139,7 @@
 						{foreach from=$player.waitCards item='waitCard' name='waitCards'}
 							{if $smarty.foreach.waitCards.index mod 6 == 0}<div class="row">{/if}
 								<div class="card{* popup*}">
-									<a href="{$waitCard.url}" onclick="{if $player.id == $me.id}selectCard('{$waitCard.id}', '{$waitCard.itemAlias}', 0, 'wait');{else}selectCard('{$waitCard.id}', '', '{$player.id}');{/if} return false;" class="popup-source">
+									<a href="{$waitCard.url}" onclick="{if $player.id == $me.id}selectCard('{$waitCard.id}', '{$waitCard.itemAlias}', 0, 'wait');{else}selectCard('{$waitCard.id}', '', '{$player.id}');{/if} return false;" title="{$waitCard.title|escape}: {$waitCard.description|escape}" class="popup-source">
 										{image src=$waitCard.imagePath alt="card" width='44' height='76'}
 									</a>
 									<div class="popup-target" style="display:none;">

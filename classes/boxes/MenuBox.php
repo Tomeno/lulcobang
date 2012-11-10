@@ -10,7 +10,7 @@ class MenuBox extends AbstractBox {
 
 	protected function setup() {
 		$pages = array();
-		$pageTypeRepository = new PageTypeRepository();
+		$pageTypeRepository = new PageTypeRepository(TRUE);
 		$hasSelected = FALSE;
 		foreach ($this->pageTypes as $pageTypeAlias) {
 			$page = PageActionMap::getPageByTypeAndLanguage($pageTypeAlias);

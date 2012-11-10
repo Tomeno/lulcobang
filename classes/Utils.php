@@ -51,7 +51,7 @@ class Utils {
 	 * @return	Language
 	 */
 	public static function getLanguage($lang = NULL) {
-		$languageRepository = new LanguageRepository();
+		$languageRepository = new LanguageRepository(TRUE);
 
 		$language = NULL;
 		// ak nemame zadany lang
@@ -64,6 +64,7 @@ class Utils {
 					$language = $languageRepository->getOneById($lang);
 				}
 			}
+			
 
 			// TODO nejaka lokalizacia podla goeip
 
@@ -77,7 +78,7 @@ class Utils {
 					$language = $languageRepository->getOneByShortcut('en');
 				}
 			}
-			
+
 			if (!$language) {
 				throw new Exception('Language "' . $lang . '" doesn\'t exist.');
 			}

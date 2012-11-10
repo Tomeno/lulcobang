@@ -15,7 +15,7 @@ class Game extends Item {
 	public function __construct($game) {
 		parent::__construct($game);
 		
-		$cardRepository = new CardRepository();
+		$cardRepository = new CardRepository(TRUE);
 		
 		$drawPile = unserialize($game['draw_pile']);
 		$drawPileCards = array();

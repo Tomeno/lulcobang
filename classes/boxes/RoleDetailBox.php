@@ -7,7 +7,7 @@ class RoleDetailBox extends AbstractBox {
 	protected function setup() {
 		$roleAlias = Utils::get('identifier');
 
-		$roleRepository = new RoleRepository();
+		$roleRepository = new RoleRepository(TRUE);
 		$role = $roleRepository->getOneByAlias($roleAlias);
 
 		MySmarty::assign('role', $role);

@@ -14,7 +14,7 @@ abstract class AbstractBox {
 
 	protected function addSeo() {
 		$action = Utils::get('action');
-		$pageRepository = new PageRepository();
+		$pageRepository = new PageRepository(TRUE);
 		$page = $pageRepository->getOneByAlias($action);
 
 		if (self::$seoAdded === FALSE) {

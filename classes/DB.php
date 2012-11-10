@@ -21,7 +21,7 @@ class DB {
 		self::$link = mysql_connect($server, $username, $password, TRUE) or die("Cannot connect to '$server'\n");
 		mysql_select_db($database, self::$link);
 		self::$dbName = $database;
-		mysql_query('SET names UTF8', self::$link);
+		self::query('SET names UTF8');
 	}
 
 	/**
@@ -43,6 +43,7 @@ class DB {
 	 */
 	protected static function query($query) {
 		self::init();
+	//	Log::logQuery($query);
 		$res = mysql_query($query, self::$link);
 		if (mysql_error(self::$link)) {
 			echo $query;
@@ -58,13 +59,29 @@ class DB {
 	 * @param	string	$repository
 	 * @return	array<Item>
 	 */
-	public static function fetchAll($query, $repository = NULL) {
+	public static function fetchAll($query, $repository = NULL, $useCache = FALSE) {
+		$result = self::getFromCache($query, $useCache);
+		
+		if ($result !== NULL && $result !== FALSE) {
+			return $result;
+		}
+
 		$res = self::query($query);
 		$result = array();
 		while ($row = mysql_fetch_assoc($res)) {
 			$class = $repository ? str_replace('Repository', '', $repository) : '';
-			$result[] = $class ? new $class($row) : $row;
+			$item = $class ? new $class($row) : $row;
+			
+			if (isset($row['id'])) {
+				// dame result do pola podla ideciek
+				$result[$row['id']] = $item;
+			} else {
+				$result[] = $item;
+			}
 		}
+		
+		self::saveToCache($query, $result, $useCache);
+		
 		return $result;
 	}
 
@@ -75,17 +92,16 @@ class DB {
 	 * @param	string	$repository
 	 * @return	Item|NULL
 	 */
-	public static function fetchFirst($query, $repository = NULL) {
+	public static function fetchFirst($query, $repository = NULL, $useCache = FALSE) {
 		$foundString = 'limit 1';
 		$queryClon = mb_strtolower($query);
 
 		if ((strpos('limit', $queryClon) !== FALSE) && (strlen($queryClon) != (strlen($foundString) + strpos($queryClon, $foundString)))) {
 			$query .= ' LIMIT 1';
 		}
-
-		$rows = self::fetchAll($query, $repository);
+		$rows = self::fetchAll($query, $repository, $useCache);
 		if (count($rows)) {
-			return $rows[0];
+			return current($rows);
 		}
 		return NULL;
 	}
@@ -137,6 +153,32 @@ class DB {
 	public static function delete($table, $where = '') {
 		$query = 'DELETE FROM ' . $table . ($where ? ' WHERE ' . $where : '');
 		return self::query($query);
+	}
+	
+	public static function getFromCache($query, $useCache) {
+		$result = NULL;
+		if ($useCache === TRUE && defined('QUERY_CACHE_CLASS')) {
+			$queryCacheClass = QUERY_CACHE_CLASS;
+			$queryCacheInstance = $queryCacheClass::instance();
+			
+			$cacheKey = self::getCacheKey($query);
+			$result = $queryCacheInstance->get($cacheKey);
+		}
+		return $result;
+	}
+	
+	public static function saveToCache($query, $data, $useCache) {
+		if ($useCache === TRUE && defined('QUERY_CACHE_CLASS')) {
+			$queryCacheClass = QUERY_CACHE_CLASS;
+			$queryCacheInstance = $queryCacheClass::instance();
+			
+			$cacheKey = self::getCacheKey($query);
+			$queryCacheInstance->set($cacheKey, $data, NULL, '+2 hours');
+		}
+	}
+	
+	public static function getCacheKey($query) {
+		return 'query_' . md5($query);
 	}
 }
 
