@@ -17,6 +17,14 @@ class MissedCommand extends Command {
 	protected function run() {
 		if ($this->check == self::OK) {
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
+			$notices = $this->actualPlayer->getNoticeList();
+			if (isset($notices['barrel_used'])) {
+				unset($notices['barrel_used']);
+			}
+			if (isset($notices['character_jourdonnais_used'])) {
+				unset($notices['character_jourdonnais_used']);
+			}
+			$this->actualPlayer->setNoticeList($notices);
 			$this->actualPlayer['phase'] = Player::PHASE_NONE;
 			$this->actualPlayer['command_response'] = '';
 			$this->actualPlayer->save();

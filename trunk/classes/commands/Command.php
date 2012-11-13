@@ -134,11 +134,25 @@ abstract class Command {
 			'class' => 'JoinGameCommand',
 			//'precheckers' => array(),
 		),
-		'init' => array('class' => 'InitGameCommand'),
-		'choose_character' => array('class' => 'ChooseCharacterCommand'),
-		'start' => array('class' => 'StartGameCommand'),
-		'draw' => array('class' => 'DrawCommand'),
-		'choose_cards' => array('class' => 'ChooseCardsCommand'),
+		'init' => array(
+			'class' => 'InitGameCommand'
+		),
+		'choose_character' => array(
+			'class' => 'ChooseCharacterCommand'
+		),
+		'start' => array(
+			'class' => 'StartGameCommand'
+		),
+		'draw' => array(
+			'class' => 'DrawCommand',
+			'precheckers' => array('GameChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+			),
+		),
+		'choose_cards' => array(
+			'class' => 'ChooseCardsCommand'
+		),
 		'throw' => array(
 			'class' => 'ThrowCommand',
 			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),

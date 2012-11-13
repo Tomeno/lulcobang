@@ -53,6 +53,13 @@ class Player extends LinkableItem {
 			$waitCards = $cardRepository->getById($waitCardsId);
 		}
 		$this->setAdditionalField('wait_cards', $waitCards);
+		
+		if ($player['notices']) {
+			$notices = unserialize($player['notices']);
+		} else {
+			$notices = array();
+		}
+		$this->setAdditionalField('notice_list', $notices);
 	}
 	
 	public function __call($methodName, $arguments) {
@@ -179,19 +186,15 @@ class Player extends LinkableItem {
 		}
 		return FALSE;
 	}
+
+	public function getNoticeList() {
+		return $this->getAdditionalField('notice_list');
+	}
 	
-//	public function addLife() {
-//		if ($this['actual_lifes'] < $this['max_lifes']) {
-//			$newLifes = $this['actual_lifes'] + 1;
-//			$GLOBALS['db']->update('player', array('actual_lifes' => $newLifes), 'id = ' . intval($this['id']));
-//			return $newLifes;
-//		}
-//		return false;
-//	}
-	
-//	public function setUseBang($useBang) {
-//		$GLOBALS['db']->update('player', array('use_bang' => intval($useBang)), 'id = ' . intval($this['id']));
-//	}
+	public function setNoticeList($noticeList) {
+		$this->setAdditionalField('notice_list', $noticeList);
+		$this['notices'] = serialize($noticeList);
+	}
 }
 
 ?>

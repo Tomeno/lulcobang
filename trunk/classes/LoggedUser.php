@@ -60,6 +60,10 @@ class LoggedUser {
 		}
 		
 		if ($user) {
+			// TODO po prihlaseni treba nejako zmazat v memcachi query, ktora vybera usera podla cookie_value
+			// lebo teraz to stale vracia vysledok z memcache -> ked sa prihlasim v dvoch browsroch, v obidvoch to funguje
+			// neodhlasi ma z toho prveho
+			
 			$cookieValue = md5(time() . $user['id'] . $user['username']);
 			DB::update('user', array('cookie_value' => $cookieValue), 'id = ' . $user['id']);
 			setcookie(self::$cookieName, $cookieValue, NULL, '/');

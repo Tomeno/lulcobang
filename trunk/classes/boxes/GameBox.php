@@ -21,8 +21,11 @@ class GameBox extends AbstractBox {
 			if (in_array($actualPlayer['phase'], array(Player::PHASE_NONE, Player::PHASE_WAITING))) {
 				MySmarty::assign('refreshGameBox', TRUE);
 			}
-
-			MySmarty::assign('response', $actualPlayer['command_response']);
+			// zobrazime len hracovi ktory je na tahu resp. v medzitahu
+			$playerOnMove = $this->game->getPlayerOnMove();
+			if ($playerOnMove['id'] == $actualPlayer['id']) {
+				MySmarty::assign('response', $actualPlayer['command_response']);
+			}
 
 			if ($this->game['status'] == Game::GAME_STATUS_CREATED) {
 				if (!GameUtils::checkUserInGame($loggedUser, $this->game)) {
