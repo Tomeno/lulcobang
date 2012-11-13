@@ -30,7 +30,7 @@
 							{image src="static/images/photo.jpg" alt="foto" width='50' height='50'}
 						</a>
 						{if $me.user.need_help}
-							{if $me.phase == 5 && $me.id != $player.id}
+							{if $me.phase == 5 && $me.id != $player.id && $player.actual_lifes > 0}
 								<div class="help">
 									Klikni sem a vyber hraca
 								</div>
@@ -198,7 +198,7 @@
 				</div>
 			</div>
 		{/if}
-		<a href="#" onclick="throwCard(); return false;" title="Click here to throw selected card"><span class="card throw"><img src="static/images/odpad.jpg" /></span></a>
+		<a href="#" onclick="throwCard(); return false;" title="Click here to throw selected card"><span class="card throw"><img src="static/images/odpad.jpg" alt="" /></span></a>
 		<a href="#" onclick="playCard(); return false;" title="Click here to play selected card"><span class="card play"></span></a>
 		<div id="overlay-response"{if not $response} style="display: none;"{/if}>
 			{$response}

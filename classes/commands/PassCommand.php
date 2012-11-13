@@ -44,6 +44,15 @@ class PassCommand extends Command {
 			$waitCards = unserialize($this->actualPlayer['wait_cards']);
 			$this->actualPlayer['table_cards'] = serialize(array_merge($tableCards, $waitCards));
 			$this->actualPlayer['wait_cards'] = serialize(array());
+			// znulujeme notices
+			$notices = $this->actualPlayer->getNoticeList();
+			if (isset($notices['barrel_used'])) {
+				unset($notices['barrel_used']);
+			}
+			if (isset($notices['character_jourdonnais_used'])) {
+				unset($notices['character_jourdonnais_used']);
+			}
+			$this->actualPlayer->setNoticeList($notices);
 			$this->actualPlayer->save();
 
 			// TODO dat to priamo do triedy Game

@@ -19,11 +19,50 @@ class DrawCommand extends Command {
 	const MISSING_JAIL_CARD = 8;
 	
 	const WAIT = 9;
+	
+	const YOU_ARE_UNDER_ATTACK = 10;
 
+	const DO_NOT_HAVE_BARREL = 11;
+	
+	const BARREL_ALREADY_USED = 12;
+	
+	const KO = 13;
+	
+	const CHARACTER_ALREADY_USED = 14;
+	
 	protected $template = 'cards-choice.tpl';
 
+	protected $drawType = '';
+	
+	protected $drawResult = NULL;
+
 	protected function check() {
-		if ($this->game && $this->game['status'] == Game::GAME_STATUS_STARTED) {
+		if ($this->actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
+			$notices = $this->actualPlayer->getNoticeList();
+			if ($this->params[0] == 'barrel') {
+				$barrel = $this->actualPlayer->getHasBarrelOnTheTable();
+				if ($barrel !== NULL) {
+					if ($notices['barrel_used']) {
+						$this->check = self::BARREL_ALREADY_USED;
+					} else {
+						$this->check = self::OK;
+						$this->drawType = 'barrel';
+					}
+				} else {
+					$this->check = self::DO_NOT_HAVE_BARREL;
+				}
+			} elseif ($this->useCharacter && $this->actualPlayer->getCharacter()->getIsJourdonnais()) {
+				$this->params[0] = 'barrel';	// nastavime parameter ako keby chcel pouzit barel
+				if ($notices['character_jourdonnais_used']) {
+					$this->check = self::CHARACTER_ALREADY_USED;
+				} else {
+					$this->check = self::OK;
+					$this->drawType = 'character';
+				}
+			} else {
+				$this->check = self::YOU_ARE_UNDER_ATTACK;
+			}
+		} else {
 			$playerOnTurn = $this->game->getPlayerOnTurn();
 			if ($playerOnTurn['id'] == $this->actualPlayer['id']) {
 				if ($this->actualPlayer['phase'] == Player::PHASE_DRAW) {
@@ -54,10 +93,7 @@ class DrawCommand extends Command {
 			} else {
 				$this->check = self::NOT_YOUR_TURN;
 			}
-		} else {
-			$this->check = self::NO_GAME;
 		}
-	//	var_dump($this->check);
 	}
 
 	protected function run() {
@@ -81,6 +117,7 @@ class DrawCommand extends Command {
 				}
 				
 				if ($isHeart) {
+					$this->drawResult = self::OK;
 					$this->actualPlayer['phase'] = Player::PHASE_DRAW;
 					$this->actualPlayer->save();
 
@@ -89,6 +126,7 @@ class DrawCommand extends Command {
 					// TODO pridat spravu o tom ze hrac usiel z vazenia
 					
 				} else {
+					$this->drawResult = self::KO;
 					$this->actualPlayer['phase'] = Player::PHASE_NONE;
 					$this->actualPlayer->save();
 
@@ -125,6 +163,58 @@ class DrawCommand extends Command {
 				GameUtils::throwCards($this->game, NULL, $thrownCards);
 			} elseif ($this->params[0] == 'dynamite') {
 
+			} elseif ($this->params[0] == 'barrel') {
+				$drawnCards = GameUtils::drawCards($this->game, 1);	// TODO pocet zavisi aj od charakteru
+				$isHeart = FALSE;
+				$cardRepository = new CardRepository();
+				$thrownCards = array();
+				foreach ($drawnCards as $drawnCardId) {
+					$drawnCard = $cardRepository->getOneById($drawnCardId);
+					$thrownCards[] = $drawnCard;
+					if ($drawnCard->getIsHeart()) {
+						$isHeart = TRUE;
+						// break tu nie je lebo musime prejst cez vsetky karty
+						// aby sme vyrobili pole kariet ktore treba vyhodit
+					}
+				}
+				
+				$notices = $this->actualPlayer->getNoticeList();
+				if ($this->drawType == 'barrel') {
+					$notices['barrel_used'] = 1;
+				} elseif ($this->drawType == 'character') {
+					$notices['character_jourdonnais_used'] = 1;
+				}
+				$this->actualPlayer->setNoticeList($notices);
+				$this->actualPlayer = $this->actualPlayer->save(TRUE);
+				
+				if ($isHeart) {
+					$this->drawResult = self::OK;
+					
+					// zrusime v poznamkach pouzitie barelu resp charakteru
+					$notices = $this->actualPlayer->getNoticeList();
+					if (isset($notices['barrel_used'])) {
+						unset($notices['barrel_used']);
+					}
+					if (isset($notices['character_jourdonnais_used'])) {
+						unset($notices['character_jourdonnais_used']);
+					}
+					$this->actualPlayer->setNoticeList($notices);
+					$this->actualPlayer['phase'] = Player::PHASE_NONE;
+					$this->actualPlayer['command_response'] = '';
+					$this->actualPlayer->save();
+
+					// TODO toto asi nebudeme moct nastavovat hned ako jeden hrac da missed - pretoze tu mozu byt aj multiutoky (gulomet, indiani)
+					$this->attackingPlayer['phase'] = Player::PHASE_PLAY;
+					$this->attackingPlayer->save();
+
+					// TODO toto takisto nebudeme moct nastavovat hned kvoli multiutokom
+					$this->game['inter_turn'] = 0;
+					$this->game['inter_turn_reason'] = '';
+					$this->game = $this->game->save(TRUE);
+				} else {
+					$this->drawResult = self::KO;
+				}
+				GameUtils::throwCards($this->game, NULL, $thrownCards);
 			} else {
 				$counts = $this->getCountCards();
 
@@ -199,9 +289,63 @@ class DrawCommand extends Command {
 	protected function generateMessages() {
 		if ($this->check == self::OK) {
 			if ($this->params[0] == 'jail') {
-
+				if ($this->drawResult == self::OK) {
+					$message = array(
+						'text' => 'usiel si z vazenia',
+						'toUser' => $this->loggedUser['id'],
+					);
+					$this->addMessage($message);
+					
+					$message = array(
+						'text' => $this->loggedUser['username'] . ' usiel z vazenia',
+						'notToUser' => $this->loggedUser['id'],
+					);
+					$this->addMessage($message);
+				} else {
+					$message = array(
+						'text' => 'nepodarilo sa ti ujst z vazenia',
+						'toUser' => $this->loggedUser['id'],
+					);
+					$this->addMessage($message);
+					
+					$message = array(
+						'text' => $this->loggedUser['username'] . ' ostava vo vazeni',
+						'notToUser' => $this->loggedUser['id'],
+					);
+					$this->addMessage($message);
+				}
 			} elseif ($this->params[0] == 'dynamite') {
-
+				
+			} elseif ($this->params[0] == 'barrel') {
+				
+				// TODO lokalizovane hlasky nech beru do uvahy aj to ze ci bol pouzity barel alebo charakter
+				// mame to v drawType
+				
+				if ($this->drawResult == self::OK) {
+					$message = array(
+						'text' => 'zachranil ta barel',
+						'toUser' => $this->loggedUser['id'],
+					);
+					$this->addMessage($message);
+					
+					$message = array(
+						'text' => $this->loggedUser['username'] . ' bol zachraneny barelom',
+						'notToUser' => $this->loggedUser['id'],
+					);
+					$this->addMessage($message);
+				} else {
+					$message = array(
+						'text' => 'barel ta nezachranil, musis pouzit kartu vedla alebo si stiahnut zivot',
+						'toUser' => $this->loggedUser['id'],
+					);
+					$this->addMessage($message);
+					
+					$message = array(
+						'text' => $this->loggedUser['username'] . ' nebol zachraneny barelom, musi pouzit kartu vedla alebo si stiahnut zivot',
+						'notToUser' => $this->loggedUser['id'],
+					);
+					$this->addMessage($message);
+				}
 			} else {
 				$message = array(
 					'notToUser' => $this->loggedUser['id'],
@@ -258,6 +402,30 @@ class DrawCommand extends Command {
 				'localizeKey' => 'you_have_to_wait',
 			);
 			$this->addMessage($message);
+		} elseif ($this->check == self::YOU_ARE_UNDER_ATTACK) {
+			$message = array(
+				'toUser' => $this->loggedUser['id'],
+				'localizeKey' => 'you_are_under_attack_use_defensive_cards',
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::DO_NOT_HAVE_BARREL) {
+			$message = array(
+				'text' => 'nemas barel',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::BARREL_ALREADY_USED) {
+			$message = array(
+				'text' => 'na tento utok si uz pouzil barel',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::CHARACTER_ALREADY_USED) {
+			$message = array(
+				'text' => 'na tento utok si uz pouzil svoj charakter',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
 		}
 	}
 
@@ -266,6 +434,8 @@ class DrawCommand extends Command {
 			if ($this->params[0] == 'jail') {
 
 			} elseif ($this->params[0] == 'dynamite') {
+			
+			} elseif ($this->params[0] == 'barrel') {
 
 			} else {
 				$possibleChoices = unserialize($this->actualPlayer['possible_choices']);
