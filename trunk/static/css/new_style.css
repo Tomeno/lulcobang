@@ -181,7 +181,7 @@ body
 .play
 {
 	left:600px;
-	top:375px;
+	top:425px;
 }
 
 #chat {
@@ -311,4 +311,12 @@ p.copy {
 	position:relative;
 	top:-50px;
 	width:26px;
+}
+
+#overlay-response {
+	top: 180px;
+	left: 270px;
+	position: relative;
+	z-index: 5000;
+	width: auto;
 }

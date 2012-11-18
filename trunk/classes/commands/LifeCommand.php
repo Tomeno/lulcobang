@@ -44,6 +44,9 @@ class LifeCommand extends Command {
 	}
 
 	protected function run() {
+		// pri strate posledneho zivota su karty sice odhodene ale zaroven ostavaju na ruke hraca
+		// predpokladam ze je bug niekde pri savovani a loadovani actual playera
+		
 		if ($this->check == self::SAVE_LAST_LIFE) {
 			GameUtils::throwCards($this->game, $this->actualPlayer, array($this->beerCard));
 			
@@ -147,13 +150,15 @@ class LifeCommand extends Command {
 				$this->game['distance_matrix'] = serialize($matrix);
 				$this->game = $this->game->save(TRUE);
 				
+				// najst hraca ktory ma fazu != 0 a nastavit ho v hre ako hraca ktory je na tahu 
+				
 				// znovu nacitame z databazy utociaceho aj braniaceho hraca ( pre istotu )
 				$attackingPlayerId = $this->interTurnReason['from'];
 				$playerRepository = new PlayerRepository();
 				$this->attackingPlayer = $playerRepository->getOneById($attackingPlayerId);
 				
-				$actualPlayerId = $this->interTurnReason['to'];
-				$this->actualPlayer = $playerRepository->getOneById($actualPlayerId);
+//				$actualPlayerId = $this->interTurnReason['to'];
+//				$this->actualPlayer = $playerRepository->getOneById($actualPlayerId);
 				
 				$playerRepository = new PlayerRepository();
 				$role = $this->actualPlayer->getRoleObject();
@@ -232,17 +237,6 @@ class LifeCommand extends Command {
 			// TODO pocitat skore - pocet zabitych hracov
 			if (in_array($this->interTurnReason['action'], array('indians', 'gatling', 'howitzer'))) {
 				$nextPosition = GameUtils::getNextPosition($this->game, $this->actualPlayer['position']);
-				
-				foreach ($this->players as $player) {
-					// najdeme hraca na nasledujucej pozicii
-					if ($player['position'] == $nextPosition) {
-						$nextPositionPlayer = $player;
-						$player['phase'] = Player::PHASE_UNDER_ATTACK;
-						$player->save();
-						break;
-					}
-				}
-
 				// ak je hrac na nasledujucej pozicii ten ktory utocil, ukoncime inter turn
 				if ($nextPosition == $this->attackingPlayer['position']) {
 					$this->game['inter_turn_reason'] = '';
@@ -251,6 +245,16 @@ class LifeCommand extends Command {
 					$this->attackingPlayer['phase'] = Player::PHASE_PLAY;
 					$this->attackingPlayer->save();
 				} else {
+					foreach ($this->players as $player) {
+						// najdeme hraca na nasledujucej pozicii
+						if ($player['position'] == $nextPosition) {
+							$nextPositionPlayer = $player;
+							$player['phase'] = Player::PHASE_UNDER_ATTACK;
+							$player->save();
+							break;
+						}
+					}
+
 					// inak nastavime pokracovanie interturnu
 					$this->game['inter_turn_reason'] = serialize(array('action' => $this->interTurnReason['action'], 'from' => $this->attackingPlayer['id'], 'to' => $nextPositionPlayer['id']));
 					$this->game['inter_turn'] = $nextPosition;

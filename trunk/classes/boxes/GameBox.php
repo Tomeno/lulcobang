@@ -23,7 +23,7 @@ class GameBox extends AbstractBox {
 			}
 			// zobrazime len hracovi ktory je na tahu resp. v medzitahu
 			$playerOnMove = $this->game->getPlayerOnMove();
-			if ($playerOnMove['id'] == $actualPlayer['id']) {
+			if ($playerOnMove['id'] == $actualPlayer['id'] || $this->game['status'] == Game::GAME_STATUS_INITIALIZED) {
 				MySmarty::assign('response', $actualPlayer['command_response']);
 			}
 

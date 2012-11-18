@@ -7,6 +7,7 @@ class MissedCommand extends Command {
 	const CANNOT_PLAY_CARD = 2;
 	
 	protected function check() {
+		// TODO ked je pod utokom indianov, nemoze pouzit vedla
 		if ($this->actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
 			$this->check = self::OK;
 		} else {

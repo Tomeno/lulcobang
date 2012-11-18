@@ -78,7 +78,8 @@ class BangCommand extends Command {
 			}
 		} elseif ($this->actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
 			if ($this->interTurnReason['action'] == 'indians') {
-				// TODO check player is under attack and this is his interturn
+				$this->check = self::OK;
+			} elseif ($this->interTurnReason['action'] == 'duel') {
 				$this->check = self::OK;
 			} else {
 				$this->check = self::CANNOT_PLAY_BANG;
@@ -105,24 +106,33 @@ class BangCommand extends Command {
 		if ($this->check == self::OK) {
 			if ($this->interTurnReason['action'] == 'indians') {
 				$nextPosition = GameUtils::getNextPosition($this->game, $this->actualPlayer['position']);
-				foreach ($this->players as $player) {
-					if ($player['id'] == $this->actualPlayer['id']) {
-						$this->actualPlayer['command_response'] = '';
-						$this->actualPlayer['phase'] = Player::PHASE_NONE;
-						$this->actualPlayer->save();
-					} else {
-						if ($player['position'] == $nextPosition) {
-							$nextPositionPlayer = $player;
-							$player['phase'] = Player::PHASE_UNDER_ATTACK;
-							$player->save();
+				// ak je hrac na nasledujucej pozicii ten ktory utocil, ukoncime inter turn
+				if ($nextPosition == $this->attackingPlayer['position']) {
+					$this->game['inter_turn_reason'] = '';
+					$this->game['inter_turn'] = 0;
+
+					$this->attackingPlayer['phase'] = Player::PHASE_PLAY;
+					$this->attackingPlayer->save();
+				} else {
+					foreach ($this->players as $player) {
+						if ($player['id'] == $this->actualPlayer['id']) {
+							$this->actualPlayer['command_response'] = '';
+							$this->actualPlayer['phase'] = Player::PHASE_NONE;
+							$this->actualPlayer->save();
+						} else {
+							if ($player['position'] == $nextPosition) {
+								$nextPositionPlayer = $player;
+								$player['phase'] = Player::PHASE_UNDER_ATTACK;
+								$player->save();
+							}
 						}
 					}
-				}
 
-				// nastavime interturn
-				$this->game['inter_turn_reason'] = serialize(array('action' => 'indians', 'from' => $this->attackingPlayer['id'], 'to' => $nextPositionPlayer['id']));
-				$this->game['inter_turn'] = $nextPosition;
-				$this->game->save();
+					// nastavime interturn
+					$this->game['inter_turn_reason'] = serialize(array('action' => 'indians', 'from' => $this->attackingPlayer['id'], 'to' => $nextPositionPlayer['id']));
+					$this->game['inter_turn'] = $nextPosition;
+					$this->game->save();
+				}
 
 				// vyhodime kartu bang
 				GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
