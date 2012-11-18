@@ -411,6 +411,15 @@ abstract class Command {
 				'ActualPlayerHasCardsChecker' => 'getHasPunchOnHand',
 			),
 		),
+		'duel' => array(
+			'class' => 'DuelCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasDuelOnHand',
+			),
+		),
 	);
 
 	private function  __construct($params, $localizedParams, $game) {
