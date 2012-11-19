@@ -44,8 +44,10 @@ class LifeCommand extends Command {
 	}
 
 	protected function run() {
-		// pri strate posledneho zivota su karty sice odhodene ale zaroven ostavaju na ruke hraca
-		// predpokladam ze je bug niekde pri savovani a loadovani actual playera
+		
+		// TODO ked behom indianov zomrie posledny hrac pred tym kto pouzil indianov, tak je to nejako naprd
+		// pravdepodobne to cele suvisi s tym ze sa pooposuvali pozicie a teraz uz nikto nevie kde sedel
+		// actual player uz ma medzicasom inu poziciu ako je v pamati
 		
 		if ($this->check == self::SAVE_LAST_LIFE) {
 			GameUtils::throwCards($this->game, $this->actualPlayer, array($this->beerCard));
@@ -53,19 +55,6 @@ class LifeCommand extends Command {
 			if ($this->actualPlayer->getCharacter()->getIsTequilaJoe()) {
 				$this->actualPlayer['actual_lifes'] + 1;	// tequila joe si posledny zivot zachrani a 1 si este prida
 			}
-			$this->actualPlayer['phase'] = Player::PHASE_NONE;
-			$this->actualPlayer['command_response'] = '';
-			$this->actualPlayer->save();
-
-			// TODO toto asi nebudeme moct nastavovat hned ako jeden hrac da missed - pretoze tu mozu byt aj multiutoky (gulomet, indiani)
-			$this->attackingPlayer['phase'] = Player::PHASE_PLAY;
-			$this->attackingPlayer->save();
-
-			// TODO toto takisto nebudeme moct nastavovat hned kvoli multiutokom
-			$this->game['inter_turn'] = 0;
-			$this->game['inter_turn_reason'] = '';
-			$this->game->save();
-			
 		} elseif ($this->check == self::OK) {
 			$newLifes = $this->actualPlayer['actual_lifes'] - 1;
 			$notices = $this->actualPlayer->getNoticeList();
@@ -233,9 +222,8 @@ class LifeCommand extends Command {
 			}
 
 			// TODO pocitat skore - pocet zabitych hracov
-			
-			$this->changeInterturn();
 		}
+		$this->changeInterturn();
 	}
 
 	private function endGame($roles) {

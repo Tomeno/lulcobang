@@ -774,7 +774,13 @@ abstract class Command {
 		}
 		$this->actualPlayer->setNoticeList($notices);
 		// aktualnemu hracovi nastavime fazu na none a response na nic vzdy
-		$this->actualPlayer['phase'] = Player::PHASE_NONE;
+		if ($this->actualPlayer['id'] == $this->interTurnReason['to']) {
+			$this->actualPlayer['phase'] = Player::PHASE_NONE;
+		} elseif ($this->actualPlayer['id'] == $this->interTurnReason['from']) {
+			$this->actualPlayer['phase'] = Player::PHASE_PLAY;
+		} else {
+			throw new Exception('Moze byt aktualny hrac niekto iny?', 1353360969);
+		}
 		$this->actualPlayer['command_response'] = '';
 		$this->actualPlayer->save();
 
