@@ -98,9 +98,9 @@
 					{if $player.handCards}
 						{foreach from=$player.handCards item='handCard' name='handCards'}
 							{if $smarty.foreach.handCards.index mod 6 == 0}<div class="row">{/if}
-								<div class="card{if $player.user.id == $me.user.id}{* popup*}{/if}">
+								<div id="card-{$handCard.id}" class="card{if $player.user.id == $me.user.id}{* popup*}{/if}">
 									{if $player.user.id == $me.user.id}
-										<a href="{$handCard.url}" onclick="selectCard('{$handCard.id}', '{$handCard.itemAlias}'); return false;" title="{$handCard.title|escape}: {$handCard.description|escape}" class="popup-source">
+										<a href="{$handCard.url}" onclick="selectCardToPlay('{$handCard.id}', '{$handCard.itemAlias}'); return false;" title="{$handCard.title|escape}: {$handCard.description|escape}" class="popup-source">
 											{image src=$handCard.imagePath alt=$handCard.title width='44' height='76'}
 										</a>
 										<div class="popup-target" style="display:none;">
@@ -120,8 +120,8 @@
 					{if $player.tableCards}
 						{foreach from=$player.tableCards item='tableCard' name='tableCards'}
 							{if $smarty.foreach.tableCards.index mod 6 == 0}<div class="row">{/if}
-								<div class="card{* popup*}">
-									<a href="{$tableCard.url}" onclick="{if $player.id == $me.id}selectCard('{$tableCard.id}', '{$tableCard.itemAlias}', 0, 'table');{else}selectCard('{$tableCard.id}', '', '{$player.id}', 'table');{/if} return false;" title="{$tableCard.title|escape}: {$tableCard.description|escape}" class="popup-source">
+								<div id="card-{$tableCard.id}" class="card{* popup*}">
+									<a href="{$tableCard.url}" onclick="{if $player.id == $me.id}selectCardToPlay('{$tableCard.id}', '{$tableCard.itemAlias}', 'table');{else}selectCard('{$tableCard.id}', '{$player.id}', 'table');{/if} return false;" title="{$tableCard.title|escape}: {$tableCard.description|escape}" class="popup-source">
 										{image src=$tableCard.imagePath alt="card" width='44' height='76'}
 									</a>
 									<div class="popup-target" style="display:none;">
@@ -138,8 +138,8 @@
 					{if $player.waitCards}
 						{foreach from=$player.waitCards item='waitCard' name='waitCards'}
 							{if $smarty.foreach.waitCards.index mod 6 == 0}<div class="row">{/if}
-								<div class="card{* popup*}">
-									<a href="{$waitCard.url}" onclick="{if $player.id == $me.id}selectCard('{$waitCard.id}', '{$waitCard.itemAlias}', 0, 'wait');{else}selectCard('{$waitCard.id}', '', '{$player.id}', 'wait');{/if} return false;" title="{$waitCard.title|escape}: {$waitCard.description|escape}" class="popup-source">
+								<div id="card-{$waitCard.id}" class="card{* popup*}">
+									<a href="{$waitCard.url}" onclick="{if $player.id == $me.id}selectCardToPlay('{$waitCard.id}', '{$waitCard.itemAlias}', 'wait');{else}selectCard('{$waitCard.id}', '{$player.id}', 'wait');{/if} return false;" title="{$waitCard.title|escape}: {$waitCard.description|escape}" class="popup-source">
 										{image src=$waitCard.imagePath alt="card" width='44' height='76'}
 									</a>
 									<div class="popup-target" style="display:none;">
@@ -207,6 +207,8 @@
 			<fieldset>
 				<input type="hidden" name="game" id="game" value="{$game.id}" />
 				<input type="hidden" name="room" id="room" value="{$game.room}" />
+				<input type="hidden" name="card" id="selected-play-card" value="" />
+				<input type="hidden" name="card" id="selected-additional-card" value="" />
 				<input type="hidden" name="card" id="selected-card" value="" />
 				<input type="hidden" name="player" id="selected-player" value="" />
 				<input type="hidden" name="command" id="command" value="" />
@@ -236,11 +238,10 @@
 		</form>
 	{/if}
 
-
 	<script type="text/javascript">
 		clearInterval(gameBoxTimeInterval);
 		{if $refreshGameBox}
-			gameBoxTimeInterval = setInterval('refreshGameBox({$game.id})', 5000);
+			gameBoxTimeInterval = setInterval('refreshGameBox({$game.id}, {$room.id})', 5000);
 		{/if}
 	</script>
 </div>

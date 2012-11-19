@@ -70,7 +70,7 @@ class ChooseCardsCommand extends Command {
 	}
 
 	protected function generateMessages() {
-	 ;
+		
 	}
 	protected function createResponse() {
 	 

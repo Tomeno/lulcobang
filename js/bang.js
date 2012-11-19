@@ -45,12 +45,12 @@ function refreshUsersBox(room) {
 	return false;
 }
 
-function refreshGameBox(game) {
+function refreshGameBox(game, room) {
 	gamebox = document.getElementById('table');
 	
 	new Ajax.Request('services/RefreshGame.php', {
 		method: 'post',
-		parameters: {game: game},
+		parameters: {game: game, room: room},
 		
 		onSuccess: function(transport) {
 			newtext = transport.responseText;
@@ -114,6 +114,8 @@ function getLocalizedMessage(key) {
 function executeCommand() {
 	var game = $('game').value;
 	var room = $('room').value;
+	var playCard = $('selected-play-card').value;
+	var additionalCard = $('selected-additional-card').value;
 	var card = $('selected-card').value;
 	var player = $('selected-player').value;
 	var command = $('command').value;
@@ -122,11 +124,11 @@ function executeCommand() {
 
 	new Ajax.Request('services/ExecuteCommand.php', {
 		method: 'post',
-		parameters: {game: game, card: card, player: player, command: command, place: place, useCharacter: useCharacter},
+		parameters: {game: game, command: command, playCard: playCard, additionalCard: additionalCard, card: card, player: player, place: place, useCharacter: useCharacter},
 
 		onSuccess: function(transport) {
 			// temporary reload page after execute command
-			refreshGameBox(game);
+			refreshGameBox(game, room);
 			refreshChat(room);
 			// alert(transport.responseText);
 		}

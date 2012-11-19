@@ -5,10 +5,13 @@ class GameBox extends AbstractBox {
 	protected $template = 'game.tpl';
 	
 	protected $game = NULL;
+	
+	protected $room = NULL;
 
 	protected function setup() {
 		$loggedUser = LoggedUser::whoIsLogged();
 		MySmarty::assign('loggedUser', $loggedUser);
+		MySmarty::assign('room', $this->room);
 		
 		if ($this->game) {
 			MySmarty::assign('game', $this->game);
@@ -18,9 +21,18 @@ class GameBox extends AbstractBox {
 			$actualPlayer = $playerRepository->getOneByGameAndUser($this->game['id'], $loggedUser['id']);
 
 			// phases when we want to make autoreload
+			
+			$refreshGameBox = FALSE;
 			if (in_array($actualPlayer['phase'], array(Player::PHASE_NONE, Player::PHASE_WAITING))) {
-				MySmarty::assign('refreshGameBox', TRUE);
+				if ($this->game['status'] == Game::GAME_STATUS_INITIALIZED && $actualPlayer['possible_choices'] != '') {
+					$refreshGameBox = FALSE;
+				} else {
+					$refreshGameBox = TRUE;
+				}
+				
 			}
+			MySmarty::assign('refreshGameBox', $refreshGameBox);
+			
 			// zobrazime len hracovi ktory je na tahu resp. v medzitahu
 			$playerOnMove = $this->game->getPlayerOnMove();
 			if ($playerOnMove['id'] == $actualPlayer['id'] || $this->game['status'] == Game::GAME_STATUS_INITIALIZED) {
@@ -36,11 +48,16 @@ class GameBox extends AbstractBox {
 			}
 		} else {
 			MySmarty::assign('createGameAvailable', Localize::getMessage('create_game'));
+			MySmarty::assign('refreshGameBox', TRUE);
 		}
 	}
 
 	public function setGame(Game $game) {
 		$this->game = $game;
+	}
+	
+	public function setRoom(Room $room) {
+		$this->room = $room;
 	}
 }
 
