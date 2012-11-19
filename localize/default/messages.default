@@ -1,22 +1,23 @@
-create_game###Create game
-join_game###Join game
-start_game###Start game
-game_created###Game was created
-wait_for_game###Wait for game
-you_joined_game###You have joined the game
-player_joined_game###%s joined the game
-already_joined###You are already joined
-cannot_join_no_game_in_room###No game in room, you cannot join
-cannot_join_game_already_started###Game is already started, you cannot join
-player_draw_cards###%s draw cards
-you_draw_cards###You draw cards
+create_game###Vytvor hru
+join_game###Pripoj sa
+start_game###Začni hru
+game_created###Hra bola vytvorená
+game_already_created###Hra už bola vytvorená
+wait_for_game###Čakaj kým začne hra
+you_joined_game###Pripojil si sa ku hre
+player_joined_game###%s sa pripojil ku hre
+already_joined###Už si pripojený k hre
+cannot_join_no_game_in_room###V miestnosti nie je vytvorená žiadna hra, nemožes sa pripojiť
+cannot_join_game_already_started###Hra už začala, nemožeš sa pripojiť
+player_draw_cards###%s potiahol karty
+you_draw_cards###Potiahol si karty
 draw_extension_card_first###Draw extension card first
-draw_dynamite_first###Draw dynamite first
-draw_jail_first###Draw jail first
+draw_dynamite_first###Najprv potiahni kartu pre dynamit
+draw_jail_first###Najprv potiahni kartu pre vazenie
 cannot_draw_no_game_in_room###No game in room, you cannot draw
 you_have_already_draw###You have already draw
 you_draw_these_cards###You draw these cards
-pick_x_of_cards###Pick %s of these cards
-player_pass_turn###%s passed the turn
-you_pass_turn###You passed the turn
-cannot_pass_too_many_cards_on_hand###You cannot pass the turn, you have too many cards on hand
+pick_x_of_cards###Vyber %s z týchto kariet
+player_pass_turn###%s posunul ťah
+you_pass_turn###Posunul si ťah
+cannot_pass_too_many_cards_on_hand###Nemôžeš posunúť ťah, máš na ruke priveľa kariet

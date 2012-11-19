@@ -132,9 +132,6 @@ class DrawCommand extends Command {
 					$this->actualPlayer->save();
 
 					GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards, 'table');
-					
-					// TODO pridat spravu o tom ze hrac usiel z vazenia
-					
 				} else {
 					$this->drawResult = self::KO;
 					$this->actualPlayer['phase'] = Player::PHASE_NONE;
@@ -142,8 +139,6 @@ class DrawCommand extends Command {
 
 					GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards, 'table');
 
-					// TODO pridat spravu o tom ze hrac neusiel z vazenia
-					
 					// TODO dat to priamo do triedy Game
 					$nextPosition = GameUtils::getNextPosition($this->game);
 					$this->game['turn'] = $nextPosition;
@@ -200,27 +195,7 @@ class DrawCommand extends Command {
 				if ($isHeart) {
 					$this->drawResult = self::OK;
 					
-					// zrusime v poznamkach pouzitie barelu resp charakteru
-					$notices = $this->actualPlayer->getNoticeList();
-					if (isset($notices['barrel_used'])) {
-						unset($notices['barrel_used']);
-					}
-					if (isset($notices['character_jourdonnais_used'])) {
-						unset($notices['character_jourdonnais_used']);
-					}
-					$this->actualPlayer->setNoticeList($notices);
-					$this->actualPlayer['phase'] = Player::PHASE_NONE;
-					$this->actualPlayer['command_response'] = '';
-					$this->actualPlayer->save();
-
-					// TODO toto asi nebudeme moct nastavovat hned ako jeden hrac da missed - pretoze tu mozu byt aj multiutoky (gulomet, indiani)
-					$this->attackingPlayer['phase'] = Player::PHASE_PLAY;
-					$this->attackingPlayer->save();
-
-					// TODO toto takisto nebudeme moct nastavovat hned kvoli multiutokom
-					$this->game['inter_turn'] = 0;
-					$this->game['inter_turn_reason'] = '';
-					$this->game = $this->game->save(TRUE);
+					$this->changeInterturn();
 				} else {
 					$this->drawResult = self::KO;
 				}

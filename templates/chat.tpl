@@ -4,13 +4,8 @@
 	</div>
 	<form method="post" action="{actualurl}">
 		<fieldset>
-			{*
-			{foreach from=$emoticons item=emoticon}
-				<a onclick="insertEmoticon('{$emoticon.default}'); return false;" title="{$emoticon.title}"><img src="{$emoticonDir}{$emoticon.image}" alt="" /></a>
-			{/foreach}
-			*}
 			<input name="message" type="text" id="message" class="message" />
-			<input name="submit" type="submit" id="submitmsg" class="submit" value="Send" />
+			<input name="submit" type="submit" id="submitmsg" class="submit" value="{localize key='send'}" />
 		</fieldset>
 	</form>
 </div>
