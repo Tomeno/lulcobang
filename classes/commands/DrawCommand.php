@@ -32,6 +32,8 @@ class DrawCommand extends Command {
 	
 	const YOU_ARE_UNDER_INDIANS_ATTACK = 15;
 	
+	const YOU_ARE_UNDER_DUEL_ATTACK = 16;
+	
 	protected $template = 'cards-choice.tpl';
 
 	protected $drawType = '';
@@ -42,7 +44,11 @@ class DrawCommand extends Command {
 		if ($this->actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
 			$notices = $this->actualPlayer->getNoticeList();
 			if ($this->params[0] == 'barrel') {
-				if ($this->interTurnReason['action'] !== 'indians') {
+				if ($this->interTurnReason['action'] == 'indians') {
+					$this->check = self::YOU_ARE_UNDER_INDIANS_ATTACK;
+				} elseif ($this->interTurnReason['action'] == 'duel') {
+					$this->check = self::YOU_ARE_UNDER_DUEL_ATTACK;
+				} else {
 					$barrel = $this->actualPlayer->getHasBarrelOnTheTable();
 					if ($barrel !== NULL) {
 						if ($notices['barrel_used']) {
@@ -54,8 +60,6 @@ class DrawCommand extends Command {
 					} else {
 						$this->check = self::DO_NOT_HAVE_BARREL;
 					}
-				} else {
-					$this->check = self::YOU_ARE_UNDER_INDIANS_ATTACK;
 				}
 			} elseif ($this->useCharacter && $this->actualPlayer->getCharacter()->getIsJourdonnais()) {
 				if ($this->interTurnReason['action'] !== 'indians') {
@@ -417,7 +421,14 @@ class DrawCommand extends Command {
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);
+		} elseif ($this->check == self::YOU_ARE_UNDER_DUEL_ATTACK) {
+			$message = array(
+				'text' => 'Pri duele nemozes pouzit barel',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
 		}
+		
 	}
 
 	protected function createResponse() {

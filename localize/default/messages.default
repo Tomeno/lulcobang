@@ -21,3 +21,5 @@ pick_x_of_cards###Vyber %s z týchto kariet
 player_pass_turn###%s posunul ťah
 you_pass_turn###Posunul si ťah
 cannot_pass_too_many_cards_on_hand###Nemôžeš posunúť ťah, máš na ruke priveľa kariet
+you_are_attacked_by_card###Bola proti tebe použitá karta
+duel_continues###Tvoj súper zahral bang,<br /> musíš pokračovať v súboji

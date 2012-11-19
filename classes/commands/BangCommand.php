@@ -24,6 +24,10 @@ class BangCommand extends Command {
 	protected $attackedPlayer = NULL;
 
 	protected $template = 'you-are-attacked.tpl';
+	
+	protected $duelBangTemplate = 'player-plays-bang.tpl';
+	
+	protected $duelAttackedUser = NULL;
 
 	protected function check() {
 		if ($this->actualPlayer['phase'] == Player::PHASE_PLAY) {
@@ -110,21 +114,32 @@ class BangCommand extends Command {
 				$attackedPlayerId = intval($this->interTurnReason['to']);
 				$playerRepository = new PlayerRepository();
 				$this->attackedPlayer = $playerRepository->getOneById($attackedPlayerId);
+				
+				MySmarty::assign('card', $this->cards[0]);
+				$response = MySmarty::fetch($this->duelBangTemplate);
+				
 				if ($this->attackingPlayer['id'] == $this->actualPlayer['id']) {
 					$this->attackedPlayer['phase'] = Player::PHASE_UNDER_ATTACK;
+					$this->attackedPlayer['command_response'] = $response;
 					$this->attackedPlayer->save();
 					
-					$this->game['inter_turn'] = $this->attackingPlayer['position'];
+					$this->duelAttackedUser = $this->attackedPlayer->getUser();
+					
+					$this->game['inter_turn'] = $this->attackedPlayer['position'];
 					$this->game->save();
 				} elseif ($this->attackedPlayer['id'] == $this->actualPlayer['id']) {
 					$this->attackingPlayer['phase'] = Player::PHASE_UNDER_ATTACK;
+					$this->attackingPlayer['command_response'] = $response;
 					$this->attackingPlayer->save();
 					
-					$this->game['inter_turn'] = $this->attackedPlayer['position'];
+					$this->duelAttackedUser = $this->attackingPlayer->getUser();
+					
+					$this->game['inter_turn'] = $this->attackingPlayer['position'];
 					$this->game->save();
 				} else {
 					// pcha sa sem niekto kto tu vobec nema co robit
 				}
+				$this->actualPlayer['command_response'] = '';
 				$this->actualPlayer['phase'] = Player::PHASE_NONE;
 				$this->actualPlayer->save();
 			} else {
@@ -151,9 +166,29 @@ class BangCommand extends Command {
 		
 		if ($this->check == self::OK) {
 			if ($this->interTurnReason['action'] == 'duel') {
-				// TODO
+				$message = array(
+					'text' => $this->loggedUser['username'] . ' pouzil Bang a teraz sa musí branit ' . $this->duelAttackedUser['username'],
+					'notToUser' => $this->duelAttackedUser['id'],
+				);
+				$this->addMessage($message);
+
+				$message = array(
+					'text' => $this->loggedUser['username'] . ' pouzil Bang a teraz sa musis branit ty',
+					'toUser' => $this->duelAttackedUser['id'],
+				);
+				$this->addMessage($message);
 			} elseif ($this->interTurnReason['action'] == 'indians') {
-				// TODO
+				$message = array(
+					'text' => $this->loggedUser['username'] . ' zabil svojho indiana',
+					'notToUser' => $this->loggedUser['id'],
+				);
+				$this->addMessage($message);
+
+				$message = array(
+					'text' => 'zabil si svojho indiana',
+					'toUser' => $this->loggedUser['id'],
+				);
+				$this->addMessage($message);
 			} else {
 				$message = array(
 					'text' => $this->loggedUser['username'] . ' zautocil Bangom na ' . $attackedUser['username'],
