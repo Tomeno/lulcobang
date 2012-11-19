@@ -75,7 +75,7 @@ class Utils {
 					$language = $languageRepository->getOneByShortcut($lang);
 				} else {
 					// ak nemame zadane nic, vratime anglictinu
-					$language = $languageRepository->getOneByShortcut('en');
+					$language = $languageRepository->getOneByShortcut('sk');
 				}
 			}
 

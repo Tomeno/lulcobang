@@ -16,38 +16,16 @@ class DodgeCommand extends Command {
 
 	protected function run() {
 		if ($this->check == self::OK) {
-			// TODO moved to Command constructor
-			$interTurnReason = unserialize($this->game['inter_turn_reason']);
-			$attackingPlayerId = $interTurnReason['from'];
-			$playerRepository = new PlayerRepository();
-			$attackingPlayer = $playerRepository->getOneById($attackingPlayerId);
-
+			// odhodime kartu dodge
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
 
+			// potiahneme kartu
 			$drawnCards = GameUtils::drawCards($this->game, 1);
 			$handCards = unserialize($this->actualPlayer['hand_cards']);
 			$handCards = array_merge($handCards, $drawnCards);
 			$this->actualPlayer['hand_cards'] = serialize($handCards);
-			$notices = $this->actualPlayer->getNoticeList();
-			if (isset($notices['barrel_used'])) {
-				unset($notices['barrel_used']);
-			}
-			if (isset($notices['character_jourdonnais_used'])) {
-				unset($notices['character_jourdonnais_used']);
-			}
-			$this->actualPlayer->setNoticeList($notices);
-			$this->actualPlayer['phase'] = Player::PHASE_NONE;
-			$this->actualPlayer['command_response'] = '';
-			$this->actualPlayer->save();
-
-			// TODO toto asi nebudeme moct nastavovat hned ako jeden hrac da missed - pretoze tu mozu byt aj multiutoky (gulomet, indiani)
-			$attackingPlayer['phase'] = Player::PHASE_PLAY;
-			$attackingPlayer->save();
-
-			// TODO toto takisto nebudeme moct nastavovat hned kvoli multiutokom
-			$this->game['inter_turn'] = 0;
-			$this->game['inter_turn_reason'] = '';
-			$this->game->save();
+			
+			$this->changeInterturn();
 		}
 	}
 

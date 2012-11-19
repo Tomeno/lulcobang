@@ -3,6 +3,8 @@
 class ExecuteCommand {
 	public function main() {
 		$gameId = intval(Utils::post('game'));
+		$playCardId = intval(Utils::post('playCard'));
+		$additionalCardId = intval(Utils::post('additionalCard'));
 		$cardId = intval(Utils::post('card'));
 		$playerId = intval(Utils::post('player'));
 		$command = addslashes(Utils::post('command'));
@@ -29,6 +31,22 @@ class ExecuteCommand {
 			}
 		}
 
+		if ($playCardId) {
+			if (!$cardId && !$playerId) {
+				$cardRepository = new CardRepository(TRUE);
+				$card = $cardRepository->getOneById($playCardId);
+				$commandString .= ' ' . str_replace('-', '', $card->getItemAlias());
+			}
+		}
+		
+		if ($additionalCardId) {
+			if (!$cardId && !$playerId) {
+				$cardRepository = new CardRepository(TRUE);
+				$card = $cardRepository->getOneById($additionalCardId);
+				$commandString .= ' ' . str_replace('-', '', $card->getItemAlias());
+			}
+		}
+		
 		if ($cardId) {
 			$cardRepository = new CardRepository(TRUE);
 			$card = $cardRepository->getOneById($cardId);

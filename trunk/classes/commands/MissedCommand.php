@@ -6,10 +6,16 @@ class MissedCommand extends Command {
 	
 	const CANNOT_PLAY_CARD = 2;
 	
+	const YOU_ARE_UNDER_INDIANS_ATTACK = 3;
+	
 	protected function check() {
 		// TODO ked je pod utokom indianov, nemoze pouzit vedla
 		if ($this->actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
-			$this->check = self::OK;
+			if ($this->interTurnReason['action'] !== 'indians') {
+				$this->check = self::OK;
+			} else {
+				$this->check = self::YOU_ARE_UNDER_INDIANS_ATTACK;
+			}
 		} else {
 			$this->check = self::CANNOT_PLAY_CARD;
 		}
@@ -18,26 +24,7 @@ class MissedCommand extends Command {
 	protected function run() {
 		if ($this->check == self::OK) {
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
-			$notices = $this->actualPlayer->getNoticeList();
-			if (isset($notices['barrel_used'])) {
-				unset($notices['barrel_used']);
-			}
-			if (isset($notices['character_jourdonnais_used'])) {
-				unset($notices['character_jourdonnais_used']);
-			}
-			$this->actualPlayer->setNoticeList($notices);
-			$this->actualPlayer['phase'] = Player::PHASE_NONE;
-			$this->actualPlayer['command_response'] = '';
-			$this->actualPlayer->save();
-
-			// TODO toto asi nebudeme moct nastavovat hned ako jeden hrac da missed - pretoze tu mozu byt aj multiutoky (gulomet, indiani)
-			$this->attackingPlayer['phase'] = Player::PHASE_PLAY;
-			$this->attackingPlayer->save();
-
-			// TODO toto takisto nebudeme moct nastavovat hned kvoli multiutokom
-			$this->game['inter_turn'] = 0;
-			$this->game['inter_turn_reason'] = '';
-			$this->game->save();
+			$this->changeInterturn();
 		}
 	}
 
@@ -57,6 +44,12 @@ class MissedCommand extends Command {
 		} elseif ($this->check == self::CANNOT_PLAY_CARD) {
 			$message = array(
 				'text' => 'nemozes pouzit kartu vedla',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::YOU_ARE_UNDER_INDIANS_ATTACK) {
+			$message = array(
+				'text' => 'Proti utoku indianov nemozes pouzit vedla',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);

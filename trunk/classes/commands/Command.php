@@ -196,6 +196,15 @@ abstract class Command {
 				'ActualPlayerHasCardsChecker' => 'getHasMissedOnHand',
 			),
 		),
+		'generalstore' => array(
+			'class' => 'GeneralStoreCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasGeneralstoreOnHand',
+			),
+		),
 		'dodge' => array(
 			'class' => 'DodgeCommand',
 			'precheckers' => array('GameChecker', 'ActualPlayerHasCardsChecker'),
@@ -720,6 +729,56 @@ abstract class Command {
 	
 	public function getUseCharacter() {
 		return $this->useCharacter;
+	}
+	
+	protected function changeInterturn() {
+		if (in_array($this->interTurnReason['action'], array('indians', 'gatling', 'howitzer'))) {
+			$nextPosition = GameUtils::getNextPosition($this->game, $this->actualPlayer['position']);
+			// ak je hrac na nasledujucej pozicii ten ktory utocil, ukoncime inter turn
+			if ($nextPosition == $this->attackingPlayer['position']) {
+				$this->game['inter_turn_reason'] = '';
+				$this->game['inter_turn'] = 0;
+
+				$this->attackingPlayer['phase'] = Player::PHASE_PLAY;
+				$this->attackingPlayer->save();
+			} else {
+				foreach ($this->players as $player) {
+					// najdeme hraca na nasledujucej pozicii
+					if ($player['position'] == $nextPosition) {
+						$nextPositionPlayer = $player;
+						$player['phase'] = Player::PHASE_UNDER_ATTACK;
+						$player->save();
+						break;
+					}
+				}
+
+				// inak nastavime pokracovanie interturnu
+				$this->game['inter_turn_reason'] = serialize(array('action' => $this->interTurnReason['action'], 'from' => $this->attackingPlayer['id'], 'to' => $nextPositionPlayer['id']));
+				$this->game['inter_turn'] = $nextPosition;
+			}
+		} else {
+			// ukoncime interturn
+			$this->game['inter_turn_reason'] = '';
+			$this->game['inter_turn'] = 0;
+
+			$this->attackingPlayer['phase'] = Player::PHASE_PLAY;
+			$this->attackingPlayer->save();
+		}
+		// premazeme notices
+		$notices = $this->actualPlayer->getNoticeList();
+		if (isset($notices['barrel_used'])) {
+			unset($notices['barrel_used']);
+		}
+		if (isset($notices['character_jourdonnais_used'])) {
+			unset($notices['character_jourdonnais_used']);
+		}
+		$this->actualPlayer->setNoticeList($notices);
+		// aktualnemu hracovi nastavime fazu na none a response na nic vzdy
+		$this->actualPlayer['phase'] = Player::PHASE_NONE;
+		$this->actualPlayer['command_response'] = '';
+		$this->actualPlayer->save();
+
+		$this->game->save();
 	}
 }
 

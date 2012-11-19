@@ -144,7 +144,8 @@ class LifeCommand extends Command {
 				}
 				
 				// TODO po zmene positions sa pravdepodobne zmeni aj pozicia hraca ktory
-				// je na tahu, treba to tu na tomto mieste znovu preratat a nastavit game[position] na poziciu hraca s ideckom ktore ma attacking player a rovnako aj inter_turn bude treba preratat
+				// je na tahu, treba to tu na tomto mieste znovu preratat a nastavit game[position]
+				// na poziciu hraca s ideckom ktore ma attacking player a rovnako aj inter_turn bude treba preratat
 				$this->game = GameUtils::changePositions($this->game);
 				$matrix = GameUtils::countMatrix($this->game);
 				$this->game['distance_matrix'] = serialize($matrix);
@@ -152,13 +153,10 @@ class LifeCommand extends Command {
 				
 				// najst hraca ktory ma fazu != 0 a nastavit ho v hre ako hraca ktory je na tahu 
 				
-				// znovu nacitame z databazy utociaceho aj braniaceho hraca ( pre istotu )
+				// znovu nacitame z databazy utociaceho hraca ( pre istotu )
 				$attackingPlayerId = $this->interTurnReason['from'];
 				$playerRepository = new PlayerRepository();
 				$this->attackingPlayer = $playerRepository->getOneById($attackingPlayerId);
-				
-//				$actualPlayerId = $this->interTurnReason['to'];
-//				$this->actualPlayer = $playerRepository->getOneById($actualPlayerId);
 				
 				$playerRepository = new PlayerRepository();
 				$role = $this->actualPlayer->getRoleObject();
@@ -203,6 +201,7 @@ class LifeCommand extends Command {
 						$this->endGame(array(Role::ROLE_SHERIFF, Role::ROLE_VICE_1, Role::ROLE_VICE_2));
 					}
 				} elseif ($role['type'] == Role::VICE) {
+					// TODO skontrolovat ci serif zahodi karty - mozno sa mu v niektorom dalsom kroku znovu nahodia jeho povodne karty
 					$attackingRole = $this->attackingPlayer->getRoleObject();
 					if ($attackingRole['type'] == Role::SHERIFF) {
 						GameUtils::throwCards($this->game, $this->actualPlayer, $this->actualPlayer->getHandCards(), 'hand');
@@ -233,46 +232,9 @@ class LifeCommand extends Command {
 				}
 			}
 
-			// TODO vytvorit nejaku osobitnu metodu na toto
 			// TODO pocitat skore - pocet zabitych hracov
-			if (in_array($this->interTurnReason['action'], array('indians', 'gatling', 'howitzer'))) {
-				$nextPosition = GameUtils::getNextPosition($this->game, $this->actualPlayer['position']);
-				// ak je hrac na nasledujucej pozicii ten ktory utocil, ukoncime inter turn
-				if ($nextPosition == $this->attackingPlayer['position']) {
-					$this->game['inter_turn_reason'] = '';
-					$this->game['inter_turn'] = 0;
-
-					$this->attackingPlayer['phase'] = Player::PHASE_PLAY;
-					$this->attackingPlayer->save();
-				} else {
-					foreach ($this->players as $player) {
-						// najdeme hraca na nasledujucej pozicii
-						if ($player['position'] == $nextPosition) {
-							$nextPositionPlayer = $player;
-							$player['phase'] = Player::PHASE_UNDER_ATTACK;
-							$player->save();
-							break;
-						}
-					}
-
-					// inak nastavime pokracovanie interturnu
-					$this->game['inter_turn_reason'] = serialize(array('action' => $this->interTurnReason['action'], 'from' => $this->attackingPlayer['id'], 'to' => $nextPositionPlayer['id']));
-					$this->game['inter_turn'] = $nextPosition;
-				}
-			} else {
-				// ukoncime interturn
-				$this->game['inter_turn_reason'] = '';
-				$this->game['inter_turn'] = 0;
-
-				$this->attackingPlayer['phase'] = Player::PHASE_PLAY;
-				$this->attackingPlayer->save();
-			}
-			// aktualnemu hracovi nastavime fazu na none a response na nic vzdy
-			$this->actualPlayer['phase'] = Player::PHASE_NONE;
-			$this->actualPlayer['command_response'] = '';
-			$this->actualPlayer->save();
-
-			$this->game->save();
+			
+			$this->changeInterturn();
 		}
 	}
 

@@ -49,6 +49,7 @@ class RoomDetailBox extends AbstractBox {
 			}
 
 			$gameBox = new GameBox();
+			$gameBox->setRoom($room);
 			if ($game !== NULL) {
 				$gameBox->setGame($game);
 			}

@@ -105,39 +105,29 @@ class BangCommand extends Command {
 	protected function run() {
 		if ($this->check == self::OK) {
 			if ($this->interTurnReason['action'] == 'indians') {
-				$nextPosition = GameUtils::getNextPosition($this->game, $this->actualPlayer['position']);
-				// ak je hrac na nasledujucej pozicii ten ktory utocil, ukoncime inter turn
-				if ($nextPosition == $this->attackingPlayer['position']) {
-					$this->game['inter_turn_reason'] = '';
-					$this->game['inter_turn'] = 0;
-
-					$this->attackingPlayer['phase'] = Player::PHASE_PLAY;
-					$this->attackingPlayer->save();
-				} else {
-					foreach ($this->players as $player) {
-						if ($player['id'] == $this->actualPlayer['id']) {
-							$this->actualPlayer['command_response'] = '';
-							$this->actualPlayer['phase'] = Player::PHASE_NONE;
-							$this->actualPlayer->save();
-						} else {
-							if ($player['position'] == $nextPosition) {
-								$nextPositionPlayer = $player;
-								$player['phase'] = Player::PHASE_UNDER_ATTACK;
-								$player->save();
-							}
-						}
-					}
-
-					// nastavime interturn
-					$this->game['inter_turn_reason'] = serialize(array('action' => 'indians', 'from' => $this->attackingPlayer['id'], 'to' => $nextPositionPlayer['id']));
-					$this->game['inter_turn'] = $nextPosition;
+				$this->changeInterturn();
+			} elseif ($this->interTurnReason['action'] == 'duel') {
+				$attackedPlayerId = intval($this->interTurnReason['to']);
+				$playerRepository = new PlayerRepository();
+				$this->attackedPlayer = $playerRepository->getOneById($attackedPlayerId);
+				if ($this->attackingPlayer['id'] == $this->actualPlayer['id']) {
+					$this->attackedPlayer['phase'] = Player::PHASE_UNDER_ATTACK;
+					$this->attackedPlayer->save();
+					
+					$this->game['inter_turn'] = $this->attackingPlayer['position'];
 					$this->game->save();
+				} elseif ($this->attackedPlayer['id'] == $this->actualPlayer['id']) {
+					$this->attackingPlayer['phase'] = Player::PHASE_UNDER_ATTACK;
+					$this->attackingPlayer->save();
+					
+					$this->game['inter_turn'] = $this->attackedPlayer['position'];
+					$this->game->save();
+				} else {
+					// pcha sa sem niekto kto tu vobec nema co robit
 				}
-
-				// vyhodime kartu bang
-				GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
+				$this->actualPlayer['phase'] = Player::PHASE_NONE;
+				$this->actualPlayer->save();
 			} else {
-
 				$this->attackedPlayer['phase'] = Player::PHASE_UNDER_ATTACK;
 				$this->attackedPlayer->save(TRUE);
 
@@ -145,15 +135,12 @@ class BangCommand extends Command {
 				$this->actualPlayer['bang_used'] = $this->actualPlayer['bang_used'] + 1;
 				$this->actualPlayer->save();
 
-				// TODO toto plati len ak je to utok bangom, ale bang sa pouziva na viacerych miestach - premysliet a dorobit aj duel a indianov prip dalsie
 				$this->game['inter_turn'] = $this->attackedPlayer['position'];
 				$this->game['inter_turn_reason'] = serialize(array('action' => 'bang', 'from' => $this->actualPlayer['id'], 'to' => $this->attackedPlayer['id']));
 				$this->game->save();
-
-				// TODO nastavit ze hrac pouzil bang ak sa jedna o jeho utok na niekoho pomocou bangu
-
-				$retval = GameUtils::throwCards($this->game, $this->actualPlayer, array($this->bangCard));
 			}
+			// vyhodime kartu bang
+			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
 		}
 	}
 
@@ -163,18 +150,23 @@ class BangCommand extends Command {
 		}
 		
 		if ($this->check == self::OK) {
-			
-			$message = array(
-				'text' => $this->loggedUser['username'] . ' zautocil Bangom na ' . $attackedUser['username'],
-				'notToUser' => $attackedUser['id'],
-			);
-			$this->addMessage($message);
-			
-			$message = array(
-				'text' => $this->loggedUser['username'] . ' na teba zautocil Bangom',
-				'toUser' => $attackedUser['id'],
-			);
-			$this->addMessage($message);
+			if ($this->interTurnReason['action'] == 'duel') {
+				// TODO
+			} elseif ($this->interTurnReason['action'] == 'indians') {
+				// TODO
+			} else {
+				$message = array(
+					'text' => $this->loggedUser['username'] . ' zautocil Bangom na ' . $attackedUser['username'],
+					'notToUser' => $attackedUser['id'],
+				);
+				$this->addMessage($message);
+
+				$message = array(
+					'text' => $this->loggedUser['username'] . ' na teba zautocil Bangom',
+					'toUser' => $attackedUser['id'],
+				);
+				$this->addMessage($message);
+			}
 		} elseif ($this->check == self::NOT_YOUR_TURN) {
 			$message = array(
 				'text' => 'nemozes strielat nie si na tahu',
@@ -228,12 +220,18 @@ class BangCommand extends Command {
 
 	protected function createResponse() {
 		if ($this->check == self::OK) {
-			// TODO prerobit tak aby to fungovalo aj bez javascriptu, onclick treba nahradit niecim inym, pripadne doplnit tlacitko ktore skryje ten overlay
+			if ($this->interTurnReason['action'] == 'duel') {
+				
+			} elseif ($this->interTurnReason['action'] == 'indians') {
+				
+			} else {
+				// TODO prerobit tak aby to fungovalo aj bez javascriptu, onclick treba nahradit niecim inym, pripadne doplnit tlacitko ktore skryje ten overlay
 
-			MySmarty::assign('card', $this->bangCard);
-			$response = MySmarty::fetch($this->template);
-			$this->attackedPlayer['command_response'] = $response;
-			$this->attackedPlayer->save();
+				MySmarty::assign('card', $this->bangCard);
+				$response = MySmarty::fetch($this->template);
+				$this->attackedPlayer['command_response'] = $response;
+				$this->attackedPlayer->save();
+			}
 		}
 
 		return '';

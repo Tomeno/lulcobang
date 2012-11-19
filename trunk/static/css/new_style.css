@@ -320,3 +320,11 @@ p.copy {
 	z-index: 5000;
 	width: auto;
 }
+
+.card.selected img {
+	margin-top: -10px;
+}
+
+.char.selected img {
+	margin-top: -10px;
+}

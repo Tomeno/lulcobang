@@ -30,6 +30,8 @@ class DrawCommand extends Command {
 	
 	const CHARACTER_ALREADY_USED = 14;
 	
+	const YOU_ARE_UNDER_INDIANS_ATTACK = 15;
+	
 	protected $template = 'cards-choice.tpl';
 
 	protected $drawType = '';
@@ -40,24 +42,32 @@ class DrawCommand extends Command {
 		if ($this->actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
 			$notices = $this->actualPlayer->getNoticeList();
 			if ($this->params[0] == 'barrel') {
-				$barrel = $this->actualPlayer->getHasBarrelOnTheTable();
-				if ($barrel !== NULL) {
-					if ($notices['barrel_used']) {
-						$this->check = self::BARREL_ALREADY_USED;
+				if ($this->interTurnReason['action'] !== 'indians') {
+					$barrel = $this->actualPlayer->getHasBarrelOnTheTable();
+					if ($barrel !== NULL) {
+						if ($notices['barrel_used']) {
+							$this->check = self::BARREL_ALREADY_USED;
+						} else {
+							$this->check = self::OK;
+							$this->drawType = 'barrel';
+						}
 					} else {
-						$this->check = self::OK;
-						$this->drawType = 'barrel';
+						$this->check = self::DO_NOT_HAVE_BARREL;
 					}
 				} else {
-					$this->check = self::DO_NOT_HAVE_BARREL;
+					$this->check = self::YOU_ARE_UNDER_INDIANS_ATTACK;
 				}
 			} elseif ($this->useCharacter && $this->actualPlayer->getCharacter()->getIsJourdonnais()) {
-				$this->params[0] = 'barrel';	// nastavime parameter ako keby chcel pouzit barel
-				if ($notices['character_jourdonnais_used']) {
-					$this->check = self::CHARACTER_ALREADY_USED;
+				if ($this->interTurnReason['action'] !== 'indians') {
+					$this->params[0] = 'barrel';	// nastavime parameter ako keby chcel pouzit barel
+					if ($notices['character_jourdonnais_used']) {
+						$this->check = self::CHARACTER_ALREADY_USED;
+					} else {
+						$this->check = self::OK;
+						$this->drawType = 'character';
+					}
 				} else {
-					$this->check = self::OK;
-					$this->drawType = 'character';
+					$this->check = self::YOU_ARE_UNDER_INDIANS_ATTACK;
 				}
 			} else {
 				$this->check = self::YOU_ARE_UNDER_ATTACK;
@@ -423,6 +433,12 @@ class DrawCommand extends Command {
 		} elseif ($this->check == self::CHARACTER_ALREADY_USED) {
 			$message = array(
 				'text' => 'na tento utok si uz pouzil svoj charakter',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::YOU_ARE_UNDER_INDIANS_ATTACK) {
+			$message = array(
+				'text' => 'Proti utoku indianov nemozes pouzit barel',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);

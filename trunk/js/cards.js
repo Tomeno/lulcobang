@@ -1,11 +1,55 @@
-function selectCard(id, type, playerId, place) {
-	$('selected-card').value = id;
+function selectCardToPlay(id, type, place) {
+	var selectedPlayCard = $('selected-play-card');
+	var selectedAdditionalCard = $('selected-additional-card');
+	var actualCard = $('card-' + id);
+	if (selectedPlayCard.value != 0) {
+		if (selectedPlayCard.value == id) {
+			selectedPlayCard.value = 0;
+			rejectCard(actualCard, 'main');
+			$('command').value = '';
+			$('place').value = '';
+		} else {
+			if (selectedAdditionalCard.value == id) {
+				selectedAdditionalCard.value = 0;
+				rejectCard(actualCard, 'additional');
+			} else {
+				actualSelectedAdditionalCard = $('card-' + selectedAdditionalCard.value);
+				if (actualSelectedAdditionalCard) {
+					rejectCard(actualSelectedAdditionalCard, 'additional');
+				}
+				
+				selectedAdditionalCard.value = id;
+				ejectCard(actualCard, 'additional');
+			}
+		}
+	} else {
+		selectedPlayCard.value = id;
+		ejectCard(actualCard, 'main');
+		if (type) {
+			type = type.replace(/-/g, '');
+			$('command').value = type;
+		}
+		
+		if (place) {
+			$('place').value = place;
+		} else {
+			$('place').value = '';
+		}
+	}	
+}
 
-	// ak vyberame kartu hraca mimo aktualneho, nezada sa typ - neprepise sa tym padom command ktory chce aktualny hrac spravit
-	if (type) {
-		type = type.replace(/-/g, '');
-		$('command').value = type;
-	}
+function ejectCard(card, type) {
+	card.addClassName('selected');
+	card.addClassName(type);
+}
+
+function rejectCard(card, type) {
+	card.removeClassName('selected');
+	card.removeClassName(type);
+}
+
+function selectCard(id, playerId, place) {
+	$('selected-card').value = id;
 
 	if (place) {
 		$('place').value = place;
@@ -17,8 +61,6 @@ function selectCard(id, type, playerId, place) {
 	if (playerId) {
 		selectPlayer(playerId, true);
 	}
-
-	// TODO show help message - vypinatelne aby to furt neotravovalo - v  html to aj tak bude cele predgenerovane cize si moze kliknut na nejaky info kruzok
 
 	// TODO kazdy hrac by mohol mat rozne zony ktore by sa tymto sposobom vyselektovali ako kliknutelne
 	// napr. bang na vzdialenost 1 oznaci len hracov vo vzdialenosti 1 atd
@@ -63,5 +105,10 @@ function lostLife() {
 }
 
 function useCharacter() {
-	$('use-character').value = 1;
+	var useCharacter = $('use-character');
+	if (useCharacter.value == 1) {
+		useCharacter.value = 0;
+	} else {
+		useCharacter.value = 1;
+	}
 }
