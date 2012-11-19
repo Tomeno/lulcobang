@@ -1,10 +1,10 @@
-sheriff_title###Šerif
+sheriff_title###Sheriff
 sheriff_description###He must eliminate all the Outlaws and the Renegade, to protect law and order
-renegade_title###Odpadlík
+renegade_title###Renegade
 renegade_description###He wants to be the new Sheriff; his goal is to be the last character in play.
-outlaw_title###Bandita
+outlaw_title###Outlaw
 outlaw_description###He would like to kill the Sheriff, but he have no scruples about eliminating each other to gain rewards!
-deputy_title###Pomocník
+deputy_title###Deputy
 deputy_description###He helps and protects Sheriff, and shares his same goal, at all costs!
 bart_cassidy_description###Each time he loses a life point, he immediately draws a card from the deck.
 black_jack_description###During the phase 1 of his turn, he must show the second card he draws: if it's Heart or Diamonds (just like a "draw!"), he draws one additional card (without revealing it).

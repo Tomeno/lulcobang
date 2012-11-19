@@ -1,6 +1,6 @@
 bang_title###Bang!
 bang_description###BANG! cards are the main method to reduce other players' life points. If you want to play a BANG! card to hit one of the players, determine: a) what the distance to that player is, and b) if your weapon is capable of reaching that distance.
-missed_title###Vedľa!
+missed_title###Missed!
 missed_description###A player hit by a BANG! card may immediately play a Missed! card - even though it is not his turn! - to cancel the shot. If he does not, he loses a life point.
 beer_title###Beer
 beer_description###This card lets a player regain one life point. Beer cards can be played in two ways: a) as usual, during your turn b) out of turn, but only if you have just received a hit that is lethal (i.e. a hit that takes away your last life point), and not if you are simply hit.

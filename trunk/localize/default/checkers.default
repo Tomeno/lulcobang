@@ -1,13 +1,13 @@
-missing_checker_params###Missing checker params
-no_game_exists###No game in room
-game_already_created###Game was already created, you can join
-game_not_yet_initialized###Game have to be initialized first
-game_not_yet_started###Game have to be started first
-not_your_turn###This is not your turn
-draw_cards_first###Draw cards first
+missing_checker_params###Chýbajú parametre
+no_game_exists###V miestnosti sa nehrá žiadna hra
+game_already_created###Hra už bola vytvorená, možeš sa pripojiť
+game_not_yet_initialized###Hra musí byť najprv inicializovaná
+game_not_yet_started###Hra musí byť najprv spustená
+not_your_turn###Nie si na ťahu
+draw_cards_first###Najprv potiahni karty
 play_and_throw_cards###Play and throw cards
-do_not_have_card###You don't have "%s" card
-you_have_card_on_table###You already have "%s" card on the table
-card_is_not_puttable###Card "%s" is not puttable
-you_have_to_wait###You have to wait while oponent(s) play
-you_are_under_attack_use_defensive_cards###You are under attack, use defensive cards or lose life
+do_not_have_card###Nemáš kartu "%s"
+you_have_card_on_table###Už máš na stole kartu "%s"
+card_is_not_puttable###Karta "%s" sa nedá položiť
+you_have_to_wait###Musíš počkať, kým zahrajú súperi
+you_are_under_attack_use_defensive_cards###Si pod útokom, použi obrannú kartu alebo si stiahni život
