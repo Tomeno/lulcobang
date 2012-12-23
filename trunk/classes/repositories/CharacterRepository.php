@@ -2,7 +2,7 @@
 
 class CharacterRepository extends Repository {
 	
-	protected $table = 'charakter';
+	protected $table = 'character';
 }
 
 ?>

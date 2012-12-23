@@ -34,7 +34,8 @@ class JoinGameCommand extends Command {
 				'user' => $this->loggedUser['id'],
 				'seat' => GameUtils::getSeatOnPosition($playersCount),
 			);
-			DB::insert('player', $params);
+			// TODO use repository
+			DB::insert(DB_PREFIX . 'player', $params);
 		}
 	}
 

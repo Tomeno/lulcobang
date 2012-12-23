@@ -30,6 +30,8 @@ class GameUtils {
 
 
 	public static function save($game) {
+		echo 'GameUtils::save';
+		exit();
 		$drawPile = array();
 		foreach ($game['draw_pile'] as $card) {
 			$drawPile[] = $card['id'];
@@ -150,6 +152,8 @@ class GameUtils {
 	}
 	
 	public static function setTurn($game, $position) {
+		echo 'GameUtils::setTurn';
+		exit();
 		$params = array(
 			'turn' => intval($position),
 		);
@@ -343,6 +347,7 @@ class GameUtils {
 	}
 	
 	public static function setPhase($game, $player, $phase) {
+		echo 'GameUtils::setPhase';exit();
 		$params = array(
 			'phase' => intval($phase),
 		);
