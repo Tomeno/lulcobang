@@ -20,7 +20,8 @@ class CreateGameCommand extends Command {
 				'room' => $this->room['id'],
 				'creator' => $this->loggedUser['id']
 			);
-			DB::insert('game', $params);
+			// TODO use repository
+			DB::insert(DB_PREFIX . 'game', $params);
 		}
 	}
 

@@ -33,7 +33,7 @@ abstract class Repository {
 	 * @return	string
 	 */
 	public function getTable() {
-		return $this->table;
+		return DB_PREFIX . $this->table;
 	}
 
 	/**
@@ -89,7 +89,7 @@ abstract class Repository {
 	 * @return	array<Item>
 	 */
 	public function getAll() {
-		$query = 'SELECT * FROM ' . $this->table . $this->getAdditionalWhere(TRUE) . $this->getGroupBy() . $this->getOrderBy() . $this->getLimit();
+		$query = 'SELECT * FROM ' . $this->getTable() . $this->getAdditionalWhere(TRUE) . $this->getGroupBy() . $this->getOrderBy() . $this->getLimit();
 		return DB::fetchAll($query, get_class($this), $this->useCache);
 	}
 	
@@ -112,7 +112,7 @@ abstract class Repository {
 	 * @return	int
 	 */
 	public function getCountAll() {
-		$query = 'SELECT count(*) AS countAll FROM ' . $this->table . $this->getAdditionalWhere(TRUE);
+		$query = 'SELECT count(*) AS countAll FROM ' . $this->getTable() . $this->getAdditionalWhere(TRUE);
 		$result = DB::fetchFirst($query);
 		return intval($result['countAll']);
 	}
@@ -125,7 +125,7 @@ abstract class Repository {
 	 * @return	string
 	 */
 	protected function getQuery($keyString, $values) {
-		$query = 'SELECT * FROM ' . $this->table . $this->getWhere($keyString, $values) . $this->getGroupBy() . $this->getOrderBy() . $this->getLimit();
+		$query = 'SELECT * FROM ' . $this->getTable() . $this->getWhere($keyString, $values) . $this->getGroupBy() . $this->getOrderBy() . $this->getLimit();
 		return $query;
 	}
 
@@ -137,7 +137,7 @@ abstract class Repository {
 	 * @return	string
 	 */
 	protected function getCountQuery($keyString, $values) {
-		$query = 'SELECT count(*) AS countAll FROM ' . $this->table . $this->getWhere($keyString, $values);
+		$query = 'SELECT count(*) AS countAll FROM ' . $this->getTable() . $this->getWhere($keyString, $values);
 		return $query;
 	}
 

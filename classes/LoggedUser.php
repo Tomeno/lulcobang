@@ -54,7 +54,8 @@ class LoggedUser {
 					'password' => $password,
 					'color' => $rand,
 				);
-				DB::insert('user', $params);
+				// TODO use repository
+				DB::insert(DB_PREFIX . 'user', $params);
 			}
 			$user = $userRepository->getOneByUsernameAndPassword($username, $password);
 		}
@@ -65,7 +66,7 @@ class LoggedUser {
 			// neodhlasi ma z toho prveho
 			
 			$cookieValue = md5(time() . $user['id'] . $user['username']);
-			DB::update('user', array('cookie_value' => $cookieValue), 'id = ' . $user['id']);
+			DB::update(DB_PREFIX . 'user', array('cookie_value' => $cookieValue), 'id = ' . $user['id']);
 			setcookie(self::$cookieName, $cookieValue, NULL, '/');
 
 			Utils::redirect(Utils::getActualUrlWithoutGetParameters(), FALSE);

@@ -1,7 +1,7 @@
 <?php
 
 class CharacterRelatedCardRepository extends Repository {
-	protected $table = 'charakter_related_card';
+	protected $table = 'character_related_card';
 }
 
 ?>

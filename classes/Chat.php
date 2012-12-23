@@ -31,8 +31,8 @@ class Chat {
 			'localize_key' => addslashes($messageParams['localizeKey']),
 			'localize_params' => serialize($messageParams['localizeParams']),
 		);
-		
-		DB::insert(self::$table, $params);
+		// TODO use repository
+		DB::insert(DB_PREFIX . self::$table, $params);
 	}
 	
 	/**
@@ -53,8 +53,8 @@ class Chat {
 		}
 
 		$query = 'SELECT user.*, message.*
-			FROM ' . self::$table . '
-			LEFT JOIN user ON message.user = user.id
+			FROM ' . DB_PREFIX . self::$table . ' AS message
+			LEFT JOIN ' . DB_PREFIX . 'user AS user ON message.user = user.id
 			WHERE room=' . intval($room) . ' AND tstamp > ' . intval($time) . ' AND to_user IN (' . intval($toUser) . ', 0)';
 		if ($toUser) {
 			$query .= ' AND NOT not_to_user IN (' . $toUser . ')';
