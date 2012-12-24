@@ -11,29 +11,30 @@ class IndiansCommand extends Command {
 
 	protected function run() {
 		if ($this->check == self::OK) {
-			$nextPosition = GameUtils::getNextPosition($this->game);
+			$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer);
 
 			// TODO utocime len na zijucich hracov
 			
 			foreach ($this->players as $player) {
-				if ($player['id'] == $this->actualPlayer['id']) {
-					$this->actualPlayer['phase'] = Player::PHASE_WAITING;
-					$this->actualPlayer->save();
-				} else {
-					if ($player['position'] == $nextPosition) {
-						$nextPositionPlayer = $player;
-						$player['phase'] = Player::PHASE_UNDER_ATTACK;
-					}
+				if ($player['actual_lifes'] > 0) {
+					if ($player['id'] == $this->actualPlayer['id']) {
+						$this->actualPlayer['phase'] = Player::PHASE_WAITING;
+						$this->actualPlayer->save();
+					} else {
+						if ($player['id'] == $nextPositionPlayer['id']) {
+							$player['phase'] = Player::PHASE_UNDER_ATTACK;
+						}
 
-					MySmarty::assign('card', $this->cards[0]);
-					$response = MySmarty::fetch($this->template);
-					$player['command_response'] = $response;
-					$player->save();
+						MySmarty::assign('card', $this->cards[0]);
+						$response = MySmarty::fetch($this->template);
+						$player['command_response'] = $response;
+						$player->save();
+					}
 				}
 			}
 
 			$this->game['inter_turn_reason'] = serialize(array('action' => 'indians', 'from' => $this->actualPlayer['id'], 'to' => $nextPositionPlayer['id']));
-			$this->game['inter_turn'] = $nextPosition;
+			$this->game['inter_turn'] = $nextPositionPlayer['id'];
 			$this->game->save();
 
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);

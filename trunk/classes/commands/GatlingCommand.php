@@ -12,16 +12,15 @@ class GatlingCommand extends Command {
 
 	protected function run() {
 		if ($this->check) {
-			$nextPosition = GameUtils::getNextPosition($this->game);
-
+			$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer);
+			
 			foreach ($this->players as $player) {
 				if ($player['actual_lifes'] > 0) {
 					if ($player['id'] == $this->actualPlayer['id']) {
 						$this->actualPlayer['phase'] = Player::PHASE_WAITING;
 						$this->actualPlayer->save();
 					} else {
-						if ($player['position'] == $nextPosition) {
-							$nextPositionPlayer = $player;
+						if ($player['id'] == $nextPositionPlayer['id']) {
 							$player['phase'] = Player::PHASE_UNDER_ATTACK;
 						}
 
@@ -34,7 +33,7 @@ class GatlingCommand extends Command {
 			}
 
 			$this->game['inter_turn_reason'] = serialize(array('action' => 'gatling', 'from' => $this->actualPlayer['id'], 'to' => $nextPositionPlayer['id']));
-			$this->game['inter_turn'] = $nextPosition;
+			$this->game['inter_turn'] = $nextPositionPlayer['id'];
 			$this->game->save();
 
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);

@@ -10,7 +10,6 @@
 		<script type="text/javascript" src="{$baseUrl}js/prototip.js"></script>
 		<script type="text/javascript" src="{$baseUrl}js/bang.js"></script>
 		<script type="text/javascript" src="{$baseUrl}js/cards.js"></script>
-		{* <script type="text/javascript" src="{$baseUrl}js/click.js"></script> *}
 		<link type="text/css" rel="stylesheet" media="all" href="static/css/new_style.css" />
 		<link type="text/css" rel="stylesheet" media="all" href="static/css/prototip.css" />
 	</head>

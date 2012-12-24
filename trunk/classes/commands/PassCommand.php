@@ -55,26 +55,22 @@ class PassCommand extends Command {
 			$this->actualPlayer->setNoticeList($notices);
 			$this->actualPlayer->save();
 
-			// TODO dat to priamo do triedy Game
-			$nextPosition = GameUtils::getNextPosition($this->game);
-			$this->game['turn'] = $nextPosition;
+			$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer);
+			$this->game['turn'] = $nextPositionPlayer['id'];
 			$this->game->save();
 
-			// TODO next player check if is sheriff - phase predraw, if has dynamite and/or jail - phase dynamite / jail, else phase draw
-			foreach ($this->players as $player) {
-				if ($player['position'] == $nextPosition) {
-					if ($player->getHasDynamiteOnTheTable()) {
-						$phase = Player::PHASE_DYNAMITE;
-					} elseif ($player->getHasJailOnTheTable()) {
-						$phase = Player::PHASE_JAIL;
-					} else {
-						$phase = Player::PHASE_DRAW;
-					}
-					$player['phase'] = $phase;
-					$player->save();
-					break;
-				}
+			// TODO next player check if is sheriff - phase predraw, 
+			// if has dynamite and/or jail - phase dynamite / jail, else phase draw
+			if ($nextPositionPlayer->getHasDynamiteOnTheTable()) {
+				$phase = Player::PHASE_DYNAMITE;
+			} elseif ($nextPositionPlayer->getHasJailOnTheTable()) {
+				$phase = Player::PHASE_JAIL;
+			} else {
+				$phase = Player::PHASE_DRAW;
 			}
+			$nextPositionPlayer['phase'] = $phase;
+			$nextPositionPlayer->save();
+		
 		}
 	}
 

@@ -83,10 +83,9 @@ class StartGameCommand extends Command {
 
 			$this->game = GameUtils::changePositions($this->game);
 
-			// TODO daco je tu zle 
 			foreach ($this->game->getPlayers() as $player) {
 				if ($player['role'] == Role::SHERIFF) {
-					$this->game['turn'] = $player['position'];
+					$this->game['turn'] = $player['id'];
 					break;
 				}
 			}

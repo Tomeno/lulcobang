@@ -68,12 +68,8 @@ class Game extends Item {
 	 * @return	Player|NULL
 	 */
 	public function getPlayerOnTurn() {
-		foreach ($this->getPlayers() as $player) {
-			if ($player['position'] == $this['turn']) {
-				return $player;
-			}
-		}
-		return NULL;
+		$playerRepository = new PlayerRepository();
+		return $playerRepository->getOneById($this['turn']);
 	}
 
 	/**
@@ -83,12 +79,9 @@ class Game extends Item {
 	 * @return	Player|NULL
 	 */
 	public function getPlayerOnMove() {
+		$playerRepository = new PlayerRepository();
 		if ($this['inter_turn']) {
-			foreach ($this->getPlayers() as $player) {
-				if ($player['position'] == $this['inter_turn']) {
-					return $player;
-				}
-			}
+			return $playerRepository->getOneById($this['inter_turn']);
 		} else {
 			return $this->getPlayerOnTurn();
 		}

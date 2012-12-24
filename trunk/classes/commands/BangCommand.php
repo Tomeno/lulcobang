@@ -125,7 +125,7 @@ class BangCommand extends Command {
 					
 					$this->duelAttackedUser = $this->attackedPlayer->getUser();
 					
-					$this->game['inter_turn'] = $this->attackedPlayer['position'];
+					$this->game['inter_turn'] = $this->attackedPlayer['id'];
 					$this->game->save();
 				} elseif ($this->attackedPlayer['id'] == $this->actualPlayer['id']) {
 					$this->attackingPlayer['phase'] = Player::PHASE_UNDER_ATTACK;
@@ -134,7 +134,7 @@ class BangCommand extends Command {
 					
 					$this->duelAttackedUser = $this->attackingPlayer->getUser();
 					
-					$this->game['inter_turn'] = $this->attackingPlayer['position'];
+					$this->game['inter_turn'] = $this->attackingPlayer['id'];
 					$this->game->save();
 				} else {
 					// pcha sa sem niekto kto tu vobec nema co robit
@@ -150,7 +150,7 @@ class BangCommand extends Command {
 				$this->actualPlayer['bang_used'] = $this->actualPlayer['bang_used'] + 1;
 				$this->actualPlayer->save();
 
-				$this->game['inter_turn'] = $this->attackedPlayer['position'];
+				$this->game['inter_turn'] = $this->attackedPlayer['id'];
 				$this->game['inter_turn_reason'] = serialize(array('action' => 'bang', 'from' => $this->actualPlayer['id'], 'to' => $this->attackedPlayer['id']));
 				$this->game->save();
 			}
