@@ -47,7 +47,7 @@ class DuelCommand extends Command {
 			$this->actualPlayer['phase'] = Player::PHASE_WAITING;
 			$this->actualPlayer->save();
 
-			$this->game['inter_turn'] = $this->attackedPlayer['position'];
+			$this->game['inter_turn'] = $this->attackedPlayer['id'];
 			$this->game['inter_turn_reason'] = serialize(array('action' => 'duel', 'from' => $this->actualPlayer['id'], 'to' => $this->attackedPlayer['id']));
 			$this->game->save();
 

@@ -160,6 +160,20 @@ class GameUtils {
 		DB::update(self::$table, $params, 'id = ' . intval($game['id']));
 	}
 	
+	public static function getPlayerOnNextPosition($game, $actualPlayer = NULL) {
+		$playerRepository = new PlayerRepository();
+		$players = $playerRepository->getLivePlayersByGame($game['id']);
+		$playersCount = count($players);
+
+		if ($actualPlayer === NULL) {
+			$actualPlayer = $playerRepository->getOneByIdAndGame($game['turn'], $game['id']);
+		}
+		$next = $actualPlayer['position'] + 1;
+		
+		$nextPosition = $next <= $playersCount ? $next : $next - $playersCount;
+		return $playerRepository->getOneByPositionAndGame($nextPosition, $game['id']);
+	}
+	
 	public static function getNextPosition($game, $actualPosition = 0) {
 		$playerRepository = new PlayerRepository();
 		$players = $playerRepository->getLivePlayersByGame($game['id']);
@@ -331,6 +345,7 @@ class GameUtils {
 	}
 
 	public static function checkTurn($game, $player) {
+		echo 'GameUtils:checkTurn';exit();
 		if ($game['status'] == Game::GAME_STATUS_STARTED) {
 			if ($game['inter_turn']) {
 				if ($game['inter_turn'] == $player['position']) {

@@ -23,7 +23,7 @@ class InitGameCommand extends Command {
 				} else {
 					if (is_numeric($this->params[0])) {
 						$characterRepository = new CharacterRepository();
-						$charactersCount = $characterRepository->getCountAll();
+						$charactersCount = $characterRepository->getCountByValid(1);
 						if ($charactersCount < (count($players) * $this->params[0])) {
 							$this->check = self::NOT_ENOUGH_CHARACTERS;
 						} else {

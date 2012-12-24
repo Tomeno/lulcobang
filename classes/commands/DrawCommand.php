@@ -143,30 +143,21 @@ class DrawCommand extends Command {
 
 					GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards, 'table');
 
-					// TODO dat to priamo do triedy Game
-					$nextPosition = GameUtils::getNextPosition($this->game);
-					$this->game['turn'] = $nextPosition;
+					$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer);
+					$this->game['turn'] = $nextPositionPlayer['id'];
 					$this->game->save();
 			
-					// TODO next player check if is sheriff - phase predraw, if has dynamite and/or jail - phase dynamite / jail, else phase draw
-					foreach ($this->players as $player) {
-						if ($player['position'] == $nextPosition) {
-							if ($player->getHasDynamiteOnTheTable()) {
-								$phase = Player::PHASE_DYNAMITE;
-							} elseif ($player->getHasJailOnTheTable()) {
-								$phase = Player::PHASE_JAIL;
-							} else {
-								$phase = Player::PHASE_DRAW;
-							}
-							$player['phase'] = $phase;
-							$tableCards = unserialize($player['table_cards']);
-							$waitCards = unserialize($player['wait_cards']);
-							$player['table_cards'] = serialize(array_merge($tableCards, $waitCards));
-							$player['wait_cards'] = serialize(array());
-							$player->save();
-							break;
-						}
+					// TODO next player check if is sheriff - phase predraw,
+					// if has dynamite and/or jail - phase dynamite / jail, else phase draw
+					if ($nextPositionPlayer->getHasDynamiteOnTheTable()) {
+						$phase = Player::PHASE_DYNAMITE;
+					} elseif ($nextPositionPlayer->getHasJailOnTheTable()) {
+						$phase = Player::PHASE_JAIL;
+					} else {
+						$phase = Player::PHASE_DRAW;
 					}
+					$nextPositionPlayer['phase'] = $phase;
+					$nextPositionPlayer->save();
 				}
 				// ktora karta je v odhadzovacom balicku skor? jail ci ta ktoru som potiahol?
 				GameUtils::throwCards($this->game, NULL, $thrownCards);

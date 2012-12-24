@@ -56,7 +56,7 @@ class PunchCommand extends Command {
 			$this->actualPlayer->save();
 
 			// TODO toto plati len ak je to utok bangom, ale bang sa pouziva na viacerych miestach - premysliet a dorobit aj duel a indianov prip dalsie
-			$this->game['inter_turn'] = $this->attackedPlayer['position'];
+			$this->game['inter_turn'] = $this->attackedPlayer['id'];
 			$this->game['inter_turn_reason'] = serialize(array('action' => 'punch', 'from' => $this->actualPlayer['id'], 'to' => $this->attackedPlayer['id']));
 			$this->game->save();
 
