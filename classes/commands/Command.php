@@ -306,10 +306,10 @@ abstract class Command {
 		),
 		'life' => array(
 			'class' => 'LifeCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker'),
+			'precheckers' => array('GameChecker'/*, 'PlayerPhaseChecker'*/),
 			'precheckParams' => array(
 				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isUnderAttack',
+			//	'PlayerPhaseChecker' => 'isUnderAttack',
 			),
 		),
 		'jail' => array(
@@ -429,6 +429,51 @@ abstract class Command {
 				'ActualPlayerHasCardsChecker' => 'getHasDuelOnHand',
 			),
 		),
+		'howitzer' => array(
+			'class' => 'HowitzerCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasHowitzerOnTheTable',
+			),
+		),
+		'tequila' => array(
+			'class' => 'TequilaCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasTequilaOnHand',
+			),
+		),
+		'whisky' => array(
+			'class' => 'WhiskyCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasWhiskyOnHand',
+			),
+		),
+		'ragtime' => array(
+			'class' => 'RagTimeCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasRagTimeOnHand',
+			),
+		),
+		'springfield' => array(
+			'class' => 'SpringfieldCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasSpringfieldOnHand',
+			),
+		),
 	);
 
 	private function  __construct($params, $localizedParams, $game) {
@@ -491,18 +536,28 @@ abstract class Command {
 			$commandName = $commandAlias;
 		}
 
-		// kvoli calamity janet musime vymenit bang a missed ak pouziva svoj charakter
-		// uprava sa tyka aj metod getHasBang/MissedOnHand()
-		if (in_array($commandName, array('bang', 'missed')) && $useCharacter === TRUE) {
+		if ($useCharacter === TRUE) {
 			$loggedUser = LoggedUser::whoIsLogged();
 			$playerRepository = new PlayerRepository();
 			$actualPlayer = $playerRepository->getOneByUserAndGame($loggedUser['id'], $game['id']);
-			
+
 			if ($actualPlayer->getCharacter()->getIsCalamityJanet()) {
-				if ($commandName == 'bang') {
+				// kvoli calamity janet musime vymenit bang a missed ak pouziva svoj charakter
+				// uprava sa tyka aj metod v ActualPlayerHasCardsChecker getHasBang/MissedOnHand()
+				if (in_array($commandName, array('bang', 'missed'))) {
+					if ($actualPlayer->getCharacter()->getIsCalamityJanet()) {
+						if ($commandName == 'bang') {
+							$commandName = 'missed';
+						} elseif ($commandName == 'missed') {
+							$commandName = 'bang';
+						}
+					}
+				}
+			} elseif ($actualPlayer->getCharacter()->getIsElenaFuente()) {
+				// ak je elena fuente pod utokmi a pouziva svoj charakter, berieme to ako keby pouzivala missed
+				// uprava sa tyka aj metody v ActualPlayerHasCardsChecker
+				if ($actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
 					$commandName = 'missed';
-				} elseif ($commandName == 'missed') {
-					$commandName = 'bang';
 				}
 			}
 		}
@@ -777,6 +832,176 @@ abstract class Command {
 		$this->actualPlayer['command_response'] = '';
 		$this->actualPlayer->save();
 
+		$this->game->save();
+	}
+	
+	protected function removePlayerFromGame() {
+		$this->actualPlayer['actual_lifes'] = 0;
+		$this->actualPlayer['position'] = 0;
+		$this->actualPlayer['phase'] = 0;
+		$this->actualPlayer = $this->actualPlayer->save(TRUE);
+		// TODO message ze hrac zomrel
+
+		// ak je v hre Vera Custer tak moze mat jeden z tychto charakterov
+		// preto su vsetky premenne array a nie len Player
+		$vultureSams = array();
+		$gregDiggers = array();
+		$herbHunters = array();
+		foreach ($this->getPlayers() as $player) {
+			// pozrieme sa na vsetkych hracov ktori este nie su mrtvi a ani nie su aktualny hrac (bohvie ako je on ulozeny v $this->players :)
+			if ($player['actual_lifes'] > 0 && $this->actualPlayer['id'] != $player['id']) {
+				if ($player->getCharacter()->getIsVultureSam()) {
+					$vultureSams[] = $player;
+				} elseif ($player->getCharacter()->getIsGregDigger()) {
+					$gregDiggers[] = $player;
+				} elseif ($player->getCharacter()->getIsHerbHunter()) {
+					$herbHunters[] = $player;
+				}
+			}
+		}
+		
+		// pridame vsetkym gregom diggerom 2 zivoty (resp. tolko kolko potrebuju)
+		if ($gregDiggers) {
+			foreach ($gregDiggers as $gregDigger) {
+				$newLifes = min($gregDigger['actual_lifes'] + 2, $gregDigger['max_lifes']);
+				$gregDigger['actual_lifes'] = $newLifes;
+				$gregDigger->save();
+			}
+		}
+
+		// potiahneme pre kazdeho herba huntera 2 karty
+		if ($herbHunters) {
+			foreach ($herbHunters as $herbHunter) {
+				$drawnCards = GameUtils::drawCards($this->game, 2);
+				$handCards = unserialize($herbHunter['hand_cards']);
+				foreach ($drawnCards as $card) {
+					$handCards[] = $card;
+				}
+				$herbHunter['hand_cards'] = serialize($handCards);
+				$herbHunter->save();
+			}
+		}
+
+		if ($vultureSams) {
+			if (count($vultureSams) == 1) {
+				$vultureSamPlayer = $vultureSams[0];
+				$retVal = GameUtils::moveCards($this->game, $this->actualPlayer->getHandCards(), $this->actualPlayer, 'hand', $vultureSamPlayer, 'hand');
+				$vultureSamPlayer = $retVal['playerTo'];
+				$this->actualPlayer = $retVal['playerFrom'];
+				$retVal = GameUtils::moveCards($this->game, $this->actualPlayer->getTableCards(), $this->actualPlayer, 'hand', $vultureSamPlayer, 'table');
+				$vultureSamPlayer = $retVal['playerTo'];
+				$this->actualPlayer = $retVal['playerFrom'];
+				$retVal = GameUtils::moveCards($this->game, $this->actualPlayer->getWaitCards(), $this->actualPlayer, 'hand', $vultureSamPlayer, 'wait');
+				$vultureSamPlayer = $retVal['playerTo'];
+				$this->actualPlayer = $retVal['playerFrom'];
+			} else {
+				throw new Exception("More than one Vulture Sam in a game", 1352146582);
+			}
+		} else {
+			$retVal = GameUtils::throwCards($this->game, $this->actualPlayer, $this->actualPlayer->getHandCards(), 'hand');
+			$this->game = $retVal['game'];
+			$this->actualPlayer = $retVal['player'];
+			$retVal = GameUtils::throwCards($this->game, $this->actualPlayer, $this->actualPlayer->getTableCards(), 'table');
+			$this->game = $retVal['game'];
+			$this->actualPlayer = $retVal['player'];
+			$retVal = GameUtils::throwCards($this->game, $this->actualPlayer, $this->actualPlayer->getWaitCards(), 'wait');
+			$this->game = $retVal['game'];
+			$this->actualPlayer = $retVal['player'];
+		}
+
+		// TODO po zmene positions sa pravdepodobne zmeni aj pozicia hraca ktory
+		// je na tahu, treba to tu na tomto mieste znovu preratat a nastavit game[position]
+		// na poziciu hraca s ideckom ktore ma attacking player a rovnako aj inter_turn bude treba preratat
+		$this->game = GameUtils::changePositions($this->game);
+		$matrix = GameUtils::countMatrix($this->game);
+		$this->game['distance_matrix'] = serialize($matrix);
+		$this->game = $this->game->save(TRUE);
+
+		// najst hraca ktory ma fazu != 0 a nastavit ho v hre ako hraca ktory je na tahu 
+
+		// znovu nacitame z databazy utociaceho hraca ( pre istotu )
+		$attackingPlayerId = $this->interTurnReason['from'];
+		$playerRepository = new PlayerRepository();
+		$this->attackingPlayer = $playerRepository->getOneById($attackingPlayerId);
+
+		$playerRepository = new PlayerRepository();
+		$role = $this->actualPlayer->getRoleObject();
+
+		if ($role['type'] == Role::BANDIT) {
+			if ($playerRepository->getCountLivePlayersWithRoles($this->game['id'],
+					array(Role::ROLE_BANDIT_1, Role::ROLE_BANDIT_2, Role::ROLE_BANDIT_3,
+						Role::ROLE_RENEGARD_1, Role::ROLE_RENEGARD_2)) == 0) {
+				$this->endGame(array(Role::ROLE_SHERIFF, Role::ROLE_VICE_1, Role::ROLE_VICE_2));
+			} else {
+
+				// TODO doplnit pocty kariet ak su ine pre rozne charaktery utociacich hracov
+				// TODO doplnit podmienky pre typy utokov ktorych sa tieto tahania tykaju - indiani tam myslim nepatria
+				// TODO message o tom ze si tento hrac potiahol 3 karty za banditu
+
+				// za banditu dostane utocnik 3 karty - ale len ak slo o priamy utok
+				if ($this->attackingPlayer) {
+					$drawnCards = GameUtils::drawCards($this->game, 3);
+					$handCards = unserialize($this->attackingPlayer['hand_cards']);
+					foreach ($drawnCards as $card) {
+						$handCards[] = $card;
+					}
+
+					$this->attackingPlayer['hand_cards'] = serialize($handCards);
+					$this->attackingPlayer = $this->attackingPlayer->save(TRUE);
+				}
+			}
+		} elseif ($role['type'] == Role::SHERIFF) {
+			if ($playerRepository->getCountLivePlayersWithRoles($this->game['id']) == 1) {
+				if ($playerRepository->getCountLivePlayersWithRoles($this->game['id'], array(Role::ROLE_RENEGARD_1)) == 1) {
+					$this->endGame(array(Role::ROLE_RENEGARD_1));
+				} elseif ($playerRepository->getCountLivePlayersWithRoles($this->game['id'], array(Role::ROLE_RENEGARD_1)) == 1) {
+					$this->endGame(array(Role::ROLE_RENEGARD_2));
+				} else {
+					$this->endGame(array(Role::ROLE_BANDIT_1, Role::ROLE_BANDIT_2, Role::ROLE_BANDIT_3));
+				}
+			}
+			else {
+				$this->endGame(array(Role::ROLE_BANDIT_1, Role::ROLE_BANDIT_2, Role::ROLE_BANDIT_3));
+			}
+		} elseif ($role['type'] == Role::RENEGARD) {
+			if ($playerRepository->getCountLivePlayersWithRoles($this->game['id'],
+					array(Role::ROLE_BANDIT_1, Role::ROLE_BANDIT_2, Role::ROLE_BANDIT_3,
+						Role::ROLE_RENEGARD_1, Role::ROLE_RENEGARD_2)) == 0) {
+				$this->endGame(array(Role::ROLE_SHERIFF, Role::ROLE_VICE_1, Role::ROLE_VICE_2));
+			}
+		} elseif ($role['type'] == Role::VICE) {
+			if ($this->attackingPlayer) {
+				// TODO skontrolovat ci serif zahodi karty - mozno sa mu v niektorom dalsom kroku znovu nahodia jeho povodne karty
+				$attackingRole = $this->attackingPlayer->getRoleObject();
+				if ($attackingRole['type'] == Role::SHERIFF) {
+					$retVal = GameUtils::throwCards($this->game, $this->actualPlayer, $this->actualPlayer->getHandCards(), 'hand');
+					$this->game = $retVal['game'];
+					$this->actualPlayer = $retVal['player'];
+					$retVal = GameUtils::throwCards($this->game, $this->actualPlayer, $this->actualPlayer->getTableCards(), 'table');
+					$this->game = $retVal['game'];
+					$this->actualPlayer = $retVal['player'];
+					$retVal = GameUtils::throwCards($this->game, $this->actualPlayer, $this->actualPlayer->getWaitCards(), 'wait');
+					$this->game = $retVal['game'];
+					$this->actualPlayer = $retVal['player'];
+				}
+			}
+		}
+	}
+	
+	protected function endGame($roles) {
+		// TODO nacitat podla roles hracov ktori vyhrali hru - aj ti ktori su mrtvy v tom case
+		
+		// vytvorit nejaku tabulku hall of fame kde budu vyhry a prehry
+		
+		// vyhry a prehry za nejaku konkretnu rolu  - typ roly - cize je jedno ci si bandita1 alebo bandita2
+		$message = array(
+			'text' => 'vyhrali roles: ' . print_R($roles, TRUE),
+			'user' => User::SYSTEM,
+		);
+
+		$this->addMessage($message);
+
+		$this->game['status'] = Game::GAME_STATUS_ENDED;
 		$this->game->save();
 	}
 }

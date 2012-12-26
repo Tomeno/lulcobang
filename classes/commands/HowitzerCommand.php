@@ -1,6 +1,6 @@
 <?php
 
-class GatlingCommand extends Command {
+class HowitzerCommand extends Command {
 
 	protected $template = 'you-are-attacked.tpl';
 
@@ -32,30 +32,30 @@ class GatlingCommand extends Command {
 				}
 			}
 
-			$this->game['inter_turn_reason'] = serialize(array('action' => 'gatling', 'from' => $this->actualPlayer['id'], 'to' => $nextPositionPlayer['id']));
+			$this->game['inter_turn_reason'] = serialize(array('action' => 'howitzer', 'from' => $this->actualPlayer['id'], 'to' => $nextPositionPlayer['id']));
 			$this->game['inter_turn'] = $nextPositionPlayer['id'];
 			$this->game->save();
 
-			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
+			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards, 'table');
 		}
 	}
 
 	protected function generateMessages() {
 		if ($this->check == self::OK) {
 			$message = array(
-				'text' => $this->loggedUser['username'] . ' pouzil gulomet a striela na vsetkych',
+				'text' => $this->loggedUser['username'] . ' pouzil hufnicu a striela na vsetkych',
 				'notToUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);
 			
 			$message = array(
-				'text' => 'pouzil si gulomet a strielas na vsetkych',
+				'text' => 'pouzil si hufnicu a strielas na vsetkych',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);
 		} else {
 			$message = array(
-				'text' => 'nieco sa stalo pri pouziti gulometu',
+				'text' => 'nieco sa stalo pri pouziti hufnice',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);

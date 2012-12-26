@@ -7,7 +7,7 @@ class StaticPageBox extends AbstractBox {
 	protected function setup() {
 		$pageTypeRepository = new PageTypeRepository(TRUE);
 		$pageType = $pageTypeRepository->getOneByAlias(Utils::get('action'));
-
+		
 		$pageRepository = new PageRepository(TRUE);
 		$page = $pageRepository->getOneByPageType($pageType['id']);
 

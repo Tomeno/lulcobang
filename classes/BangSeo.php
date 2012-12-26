@@ -32,8 +32,10 @@ class BangSeo {
 	 * @return	void
 	 */
 	public static function addTitlePart($titlePart) {
-		self::$titleParts[] = $titlePart;
-		self::addContentForKeywords($titlePart, self::HIGH_PRIORITY);
+		if ($titlePart) {
+			self::$titleParts[] = $titlePart;
+			self::addContentForKeywords($titlePart, self::HIGH_PRIORITY);
+		}
 	}
 
 	/**
