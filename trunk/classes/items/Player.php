@@ -137,26 +137,6 @@ class Player extends LinkableItem {
 	public function getWaitCards() {
 		return $this->getAdditionalField('wait_cards');
 	}
-
-//	public function setPhase($phase) {
-//		$GLOBALS['db']->update('player', array('phase' => $phase), 'id = ' . intval($this['id']));
-//	}
-	
-	/**
-	 * checks if player can pass
-	 *
-	 * @todo special ability for character ...
-	 * 
-	 * @return boolean
-	 */
-//	public function getCanPass() {
-//		if ($this['actual_lifes'] >= count($this->getAdditionalField('hand_cards'))) {
-//			return true;
-//		}
-//		else {
-//			return false;
-//		}
-//	}
 	
 	public function getRange() {
 		$card = $this->getHasGun();
@@ -194,6 +174,24 @@ class Player extends LinkableItem {
 	public function setNoticeList($noticeList) {
 		$this->setAdditionalField('notice_list', $noticeList);
 		$this['notices'] = serialize($noticeList);
+	}
+	
+	public function getCardWithId($place = 'hand', $cardId = NULL) {
+		$method = 'get' . ucfirst($place) . 'Cards';
+		$cards = $this->$method();
+		
+		if ($cards) {
+			if ($cardId === NULL) {
+				return array_rand($cards);
+			} else {
+				foreach ($cards as $card) {
+					if ($card['id'] == $cardId) {
+						return $card;
+					}
+				}
+			}
+		}
+		return NULL;
 	}
 }
 

@@ -40,11 +40,11 @@ class ExecuteCommand {
 		}
 		
 		if ($additionalCardId) {
-			if (!$cardId && !$playerId) {
+			//if (!$cardId && !$playerId) {
 				$cardRepository = new CardRepository(TRUE);
 				$card = $cardRepository->getOneById($additionalCardId);
 				$commandString .= ' ' . str_replace('-', '', $card->getItemAlias());
-			}
+			//}
 		}
 		
 		if ($cardId) {

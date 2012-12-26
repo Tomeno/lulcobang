@@ -169,6 +169,14 @@ class Card extends LinkableItem {
 			return FALSE;
 		}
 	}
+	
+	public function getIsSpades() {
+		if ($this['color'] == 1) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
 
 	/**
 	 * checks if card is type of $type

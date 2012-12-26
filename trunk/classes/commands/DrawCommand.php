@@ -34,6 +34,8 @@ class DrawCommand extends Command {
 	
 	const YOU_ARE_UNDER_DUEL_ATTACK = 16;
 	
+	const MISSING_DYNAMITE_CARD = 17;
+	
 	protected $template = 'cards-choice.tpl';
 
 	protected $drawType = '';
@@ -66,6 +68,8 @@ class DrawCommand extends Command {
 					$this->params[0] = 'barrel';	// nastavime parameter ako keby chcel pouzit barel
 					if ($notices['character_jourdonnais_used']) {
 						$this->check = self::CHARACTER_ALREADY_USED;
+					} elseif ($this->interTurnReason['action'] == 'duel') {
+						$this->check = self::YOU_ARE_UNDER_DUEL_ATTACK;
 					} else {
 						$this->check = self::OK;
 						$this->drawType = 'character';
@@ -82,7 +86,17 @@ class DrawCommand extends Command {
 				if ($this->actualPlayer['phase'] == Player::PHASE_DRAW) {
 					$this->check = self::OK;
 				} elseif ($this->actualPlayer['phase'] == Player::PHASE_DYNAMITE) {
-					$this->check = self::DRAW_DYNAMITE_FIRST;
+					if ($this->params[0] == 'dynamite') {
+						$card = $this->actualPlayer->getHasDynamiteOnTheTable();
+						if ($card) {
+							$this->addCard($card);
+							$this->check = self::OK;
+						} else {
+							$this->check = self::MISSING_DYNAMITE_CARD;
+						}
+					} else {
+						$this->check = self::DRAW_DYNAMITE_FIRST;
+					}
 				} elseif ($this->actualPlayer['phase'] == Player::PHASE_JAIL) {
 					if ($this->params[0] == 'jail') {
 						$card = $this->actualPlayer->getHasJailOnTheTable();
@@ -116,7 +130,12 @@ class DrawCommand extends Command {
 
 				// TODO tieto karty treba najprv ukazat hracom cez log a aby sa dali vyhodit, musia byt najprv v ruke aktualneho hraca a potom ich vyhodi
 
-				$drawnCards = GameUtils::drawCards($this->game, 1);	// TODO pocet zavisi aj od charakteru
+				$count = 1;
+				if ($this->useCharacter && $this->actualPlayer->getCharacter()->getIsLuckyDuke()) {
+					$count = 2;
+				}
+				
+				$drawnCards = GameUtils::drawCards($this->game, $count);	// TODO pocet zavisi aj od charakteru
 				$isHeart = FALSE;
 				$cardRepository = new CardRepository();
 				$thrownCards = array();
@@ -162,9 +181,84 @@ class DrawCommand extends Command {
 				// ktora karta je v odhadzovacom balicku skor? jail ci ta ktoru som potiahol?
 				GameUtils::throwCards($this->game, NULL, $thrownCards);
 			} elseif ($this->params[0] == 'dynamite') {
+				$count = 1;
+				if ($this->useCharacter && $this->actualPlayer->getCharacter()->getIsLuckyDuke()) {
+					$count = 2;
+				}
+				$drawnCards = GameUtils::drawCards($this->game, $count);
+				$isSafe = FALSE;
+				$cardRepository = new CardRepository();
+				$thrownCards = array();
+				foreach ($drawnCards as $drawnCardId) {
+					$drawnCard = $cardRepository->getOneById($drawnCardId);
+					$thrownCards[] = $drawnCard;
+					if (!$drawnCard->getIsSpades() || in_array($drawnCard['value'], array('10', 'J', 'Q', 'K', 'A'))) {
+						$isSafe = TRUE;
+						// break tu nie je lebo musime prejst cez vsetky karty
+						// aby sme vyrobili pole kariet ktore treba vyhodit
+					}
+				}
 
+				$dynamite = $this->actualPlayer->getHasDynamiteOnTheTable();
+				if ($isSafe === TRUE) {
+					$this->drawResult = self::OK;
+					if ($this->actualPlayer->getHasJailOnTheTable()) {
+						$phase = Player::PHASE_JAIL;
+					} else {
+						$phase = Player::PHASE_DRAW;
+					}
+					$this->actualPlayer['phase'] = $phase;
+					$this->actualPlayer = $this->actualPlayer->save(TRUE);
+					
+					// posunieme dynamit dalsiemu hracovi
+					$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer);
+					GameUtils::moveCards($this->game, array($dynamite), $this->actualPlayer, 'table', $nextPositionPlayer, 'table');
+				} else {
+					$this->drawResult = self::KO;
+					
+					// stiahneme hracovi tri zivoty
+					$newLifes = $this->actualPlayer['actual_lifes'] - 3;
+					$this->actualPlayer['actual_lifes'] = $newLifes;
+					if ($this->actualPlayer->getHasJailOnTheTable()) {
+						$phase = Player::PHASE_JAIL;
+					} else {
+						$phase = Player::PHASE_DRAW;
+					}
+					$this->actualPlayer['phase'] = $phase;
+					$this->actualPlayer = $this->actualPlayer->save(TRUE);
+					
+					// zahodime dynamit
+					$retVal = GameUtils::throwCards($this->game, $this->actualPlayer, array($dynamite), 'table');
+					$this->actualPlayer = $retVal['player'];
+					$this->game = $retVal['game'];
+					
+					if ($newLifes <= 0) {
+						$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer);
+						$this->game['turn'] = $nextPositionPlayer['id'];
+						$this->game->save();
+
+						// TODO next player check if is sheriff - phase predraw,
+						// if has dynamite and/or jail - phase dynamite / jail, else phase draw
+						if ($nextPositionPlayer->getHasDynamiteOnTheTable()) {
+							$phase = Player::PHASE_DYNAMITE;
+						} elseif ($nextPositionPlayer->getHasJailOnTheTable()) {
+							$phase = Player::PHASE_JAIL;
+						} else {
+							$phase = Player::PHASE_DRAW;
+						}
+						$nextPositionPlayer['phase'] = $phase;
+						$nextPositionPlayer->save();
+
+						$this->removePlayerFromGame();
+					}
+				}
+				GameUtils::throwCards($this->game, NULL, $thrownCards);
 			} elseif ($this->params[0] == 'barrel') {
-				$drawnCards = GameUtils::drawCards($this->game, 1);	// TODO pocet zavisi aj od charakteru
+				$count = 1;
+				if ($this->useCharacter && $this->actualPlayer->getCharacter()->getIsLuckyDuke()) {
+					$count = 2;
+				}
+				$drawnCards = GameUtils::drawCards($this->game, $count);	// TODO pocet zavisi aj od charakteru
 				$isHeart = FALSE;
 				$cardRepository = new CardRepository();
 				$thrownCards = array();
@@ -221,7 +315,6 @@ class DrawCommand extends Command {
 		);
 		
 		// TODO ak mame extension a je tu vlak alebo zizen tak su pocty ine
-		//var_dump($this->useCharacter);exit();
 		if ($this->useCharacter === TRUE) {
 			$character = $this->actualPlayer->getCharacter();
 			if ($character->getIsKitCarlson()) {
@@ -281,6 +374,12 @@ class DrawCommand extends Command {
 						'notToUser' => $this->loggedUser['id'],
 					);
 					$this->addMessage($message);
+				} elseif ($this->check == self::MISSING_JAIL_CARD) {
+					$message = array(
+						'text' => 'nie si vo vazeni',
+						'toUser' => $this->loggedUser['id'],
+					);
+					$this->addMessage($message);
 				} else {
 					$message = array(
 						'text' => 'nepodarilo sa ti ujst z vazenia',
@@ -295,7 +394,37 @@ class DrawCommand extends Command {
 					$this->addMessage($message);
 				}
 			} elseif ($this->params[0] == 'dynamite') {
-				
+				if ($this->drawResult == self::OK) {
+					$message = array(
+						'text' => 'dynamit ti nevybuchol',
+						'toUser' => $this->loggedUser['id'],
+					);
+					$this->addMessage($message);
+					
+					$message = array(
+						'text' => $this->loggedUser['username'] . ' sa vyhol vybuchu dynamitu',
+						'notToUser' => $this->loggedUser['id'],
+					);
+					$this->addMessage($message);
+				} elseif ($this->check == self::MISSING_DYNAMITE_CARD) {
+					$message = array(
+						'text' => 'nemas pred sebou dynamit',
+						'toUser' => $this->loggedUser['id'],
+					);
+					$this->addMessage($message);
+				} else {
+					$message = array(
+						'text' => 'dynamit ti vybuchol v rukach',
+						'toUser' => $this->loggedUser['id'],
+					);
+					$this->addMessage($message);
+					
+					$message = array(
+						'text' => $this->loggedUser['username'] . 'vi vybuchol dynamit v rukach',
+						'notToUser' => $this->loggedUser['id'],
+					);
+					$this->addMessage($message);
+				}
 			} elseif ($this->params[0] == 'barrel') {
 				
 				// TODO lokalizovane hlasky nech beru do uvahy aj to ze ci bol pouzity barel alebo charakter

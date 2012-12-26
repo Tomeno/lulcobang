@@ -1,19 +1,50 @@
 <?php
 
 class IndexBox extends AbstractBox {
-	protected $template = 'menu.tpl';
+	protected $template = 'homepage.tpl';
 	
-	protected $pageTypes = array('rooms', 'cards', 'roles', 'characters');
-
 	protected function setup() {
-		$pages = array();
-		foreach ($this->pageTypes as $pageType) {
-			$page = PageActionMap::getPageByTypeAndLanguage($pageType);
-			if ($page) {
-				$pages[] = $page;
+		// cards
+		$cardBaseTypeRepository = new CardBaseTypeRepository();
+		$validCardBaseTypes = $cardBaseTypeRepository->getByValid(1);
+
+		$validCardBaseTypesIdList = array();
+		foreach ($validCardBaseTypes as $cardBaseType) {
+			$validCardBaseTypesIdList[] = $cardBaseType['id'];
+		}
+
+		$cardRepository = new CardRepository();
+		$cardRepository->setGroupBy('card_base_type');
+		$cards = $cardRepository->getAll();
+	
+		$validCards = array();
+		$notValidCards = array();
+		foreach ($cards as $card) {
+			if (in_array($card['card_base_type'], $validCardBaseTypesIdList)) {
+				$validCards[] = $card;
+			} else {
+				$notValidCards[] = $card;
 			}
 		}
-		MySmarty::assign('pages', $pages);
+		
+		MySmarty::assign('validCards', $validCards);
+		MySmarty::assign('notValidCards', $notValidCards);
+		
+		// characters
+		$characterRepository = new CharacterRepository();
+		$characters = $characterRepository->getAll();
+		
+		$validCharacters = array();
+		$notValidCharacters = array();
+		foreach ($characters as $character) {
+			if ($character['valid'] == 1) {
+				$validCharacters[] = $character;
+			} else {
+				$notValidCharacters[] = $character;
+			}
+		}
+		MySmarty::assign('validCharacters', $validCharacters);
+		MySmarty::assign('notValidCharacters', $notValidCharacters);
 	}
 }
 

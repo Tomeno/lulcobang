@@ -34,7 +34,7 @@ class ActualPlayerHasCardsChecker extends Checker {
 				$checkingMethod = str_replace('###CARD_PLACEHOLDER###', ucfirst($cardName), $checkingMethod);
 				
 				// pre calamity janet prehodime karty bang a missed ak sa pouziva charakter
-				if ($this->command->getUseCharacter() == TRUE && $this->command->getActualPlayer()->getCharacter()->getIsCalamityJanet()) {
+				if ($this->command->getUseCharacter() == TRUE && $actualPlayer->getCharacter()->getIsCalamityJanet()) {
 					if ($checkingMethod == 'getHasMissedOnHand') {
 						$checkingMethod = 'getHasBangOnHand';
 					} elseif ($checkingMethod == 'getHasBangOnHand') {
@@ -52,7 +52,11 @@ class ActualPlayerHasCardsChecker extends Checker {
 				}
 				$checkingMethod = str_replace('###PLACE_PLACEHOLDER###', $place, $checkingMethod);
 
-				$card = $actualPlayer->$checkingMethod();
+				if ($this->command->getUseCharacter() == TRUE && $actualPlayer->getCharacter()->getIsElenaFuente()) {
+					$card = $actualPlayer->getCardWithId();
+				} else {
+					$card = $actualPlayer->$checkingMethod();
+				}
 				
 				if ($card) {
 					if ($negation === FALSE) {
