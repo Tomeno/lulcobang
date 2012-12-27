@@ -5,7 +5,7 @@ class SombreroCommand extends DefensiveCommand {
 		if ($this->check == DefensiveCommand::OK) {
 			// odhodime sombrero
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards, 'table');
-			
+			$this->runMollyStarkAction();
 			$this->changeInterturn();
 		}
 	}

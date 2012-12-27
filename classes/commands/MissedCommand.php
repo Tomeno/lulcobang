@@ -4,6 +4,7 @@ class MissedCommand extends DefensiveCommand {
 	protected function run() {
 		if ($this->check == DefensiveCommand::OK) {
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
+			$this->runMollyStarkAction();
 			$this->changeInterturn();
 		}
 	}

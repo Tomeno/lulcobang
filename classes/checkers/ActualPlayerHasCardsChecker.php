@@ -53,10 +53,10 @@ class ActualPlayerHasCardsChecker extends Checker {
 				$checkingMethod = str_replace('###PLACE_PLACEHOLDER###', $place, $checkingMethod);
 
 				if ($this->command->getUseCharacter() == TRUE && $actualPlayer->getCharacter()->getIsElenaFuente()) {
-					$card = $actualPlayer->getCardWithId();
-				} else {
-					$card = $actualPlayer->$checkingMethod();
+					$checkingMethod = 'getHas' . ucfirst($cardName) . 'OnHand';
 				}
+
+				$card = $actualPlayer->$checkingMethod();
 				
 				if ($card) {
 					if ($negation === FALSE) {

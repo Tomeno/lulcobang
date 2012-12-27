@@ -20,45 +20,43 @@ class LifeCommand extends Command {
 	protected function check() {
 		// TODO skontrolovat ci uz hrac nie je na 0
 		
-		if ($this->useCharacter && $this->actualPlayer->getCharacter()->getIsChuckWengam()) {
-			if ($this->actualPlayer['actual_lifes'] > 1) {
-				$this->check = self::LOST_LIFE_AND_DRAW_CARDS;
-			} else {
-				$this->check = self::CANNOT_LOST_YOUR_LAST_LIFE;
-			}
-		} else {
-			$checker = new PlayerPhaseChecker($this, array('isUnderAttack'));
-			if ($checker->check()) {
-				if ($this->params[0] == 'beer') {
-					// zistime ci hrac moze pouzit zachranne pivo
-					$livePlayers = 0;
-					foreach ($this->getPlayers() as $player) {
-						if ($player['actual_lifes'] > 0) {
-							$livePlayers++;
-						}
+		$checker = new PlayerPhaseChecker($this, array('isUnderAttack'));
+		if ($checker->check()) {
+			if ($this->params[0] == 'beer') {
+				// zistime ci hrac moze pouzit zachranne pivo
+				$livePlayers = 0;
+				foreach ($this->getPlayers() as $player) {
+					if ($player['actual_lifes'] > 0) {
+						$livePlayers++;
 					}
+				}
 
-					if ($livePlayers > 2) {
-						if ($this->actualPlayer['actual_lifes'] == 1) {
-							$this->beerCard = $this->actualPlayer->getHasBeerOnHand();
-							if ($this->beerCard) {
-								$this->check = self::SAVE_LAST_LIFE;
-							} else {
-								$this->check = self::NO_BEER_ON_HAND;
-							}
+				if ($livePlayers > 2) {
+					if ($this->actualPlayer['actual_lifes'] == 1) {
+						$this->beerCard = $this->actualPlayer->getHasBeerOnHand();
+						if ($this->beerCard) {
+							$this->check = self::SAVE_LAST_LIFE;
 						} else {
-							$this->check = self::NOT_LAST_LIFE;
+							$this->check = self::NO_BEER_ON_HAND;
 						}
 					} else {
-						$this->check = self::ONLY_TWO_PLAYERS_IN_GAME;
+						$this->check = self::NOT_LAST_LIFE;
 					}
 				} else {
-					// mozno bude treba pridat dalsie checkery
-					$this->check = self::OK;
+					$this->check = self::ONLY_TWO_PLAYERS_IN_GAME;
 				}
 			} else {
-				// treba toto?
+				// mozno bude treba pridat dalsie checkery
+				$this->check = self::OK;
 			}
+		} else {
+			if ($this->useCharacter && $this->actualPlayer->getCharacter()->getIsChuckWengam()) {
+				if ($this->actualPlayer['actual_lifes'] > 1) {
+					$this->check = self::LOST_LIFE_AND_DRAW_CARDS;
+				} else {
+					$this->check = self::CANNOT_LOST_YOUR_LAST_LIFE;
+				}
+			} 
 		}
 	}
 
