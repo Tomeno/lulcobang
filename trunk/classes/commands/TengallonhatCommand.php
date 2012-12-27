@@ -5,7 +5,7 @@ class TengallonhatCommand extends DefensiveCommand {
 		if ($this->check == DefensiveCommand::OK) {
 			// odhodime ten gallon hat
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards, 'table');
-			
+			$this->runMollyStarkAction();
 			$this->changeInterturn();
 		}
 	}

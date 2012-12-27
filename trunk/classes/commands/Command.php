@@ -971,18 +971,23 @@ abstract class Command {
 			}
 		} elseif ($role['type'] == Role::VICE) {
 			if ($this->attackingPlayer) {
-				// TODO skontrolovat ci serif zahodi karty - mozno sa mu v niektorom dalsom kroku znovu nahodia jeho povodne karty
 				$attackingRole = $this->attackingPlayer->getRoleObject();
 				if ($attackingRole['type'] == Role::SHERIFF) {
-					$retVal = GameUtils::throwCards($this->game, $this->actualPlayer, $this->actualPlayer->getHandCards(), 'hand');
+					$retVal = GameUtils::throwCards($this->game, $this->attackingPlayer, $this->attackingPlayer->getHandCards(), 'hand');
 					$this->game = $retVal['game'];
-					$this->actualPlayer = $retVal['player'];
-					$retVal = GameUtils::throwCards($this->game, $this->actualPlayer, $this->actualPlayer->getTableCards(), 'table');
+					$this->attackingPlayer = $retVal['player'];
+					$retVal = GameUtils::throwCards($this->game, $this->attackingPlayer, $this->attackingPlayer->getTableCards(), 'table');
 					$this->game = $retVal['game'];
-					$this->actualPlayer = $retVal['player'];
-					$retVal = GameUtils::throwCards($this->game, $this->actualPlayer, $this->actualPlayer->getWaitCards(), 'wait');
+					$this->attackingPlayer = $retVal['player'];
+					$retVal = GameUtils::throwCards($this->game, $this->attackingPlayer, $this->attackingPlayer->getWaitCards(), 'wait');
 					$this->game = $retVal['game'];
-					$this->actualPlayer = $retVal['player'];
+					$this->attackingPlayer = $retVal['player'];
+					
+					// kedze je mozne ze rusime nejaku modru kartu ktora ovplyvnuje vzdialenost, preratame maticu
+					// ak to bude velmi pomale, budeme to robit len ak je medzi zrusenymi kartami fakt takato karta
+					$matrix = GameUtils::countMatrix($this->game);
+					$this->game['distance_matrix'] = serialize($matrix);
+					$this->game->save();
 				}
 			}
 		}
@@ -1003,6 +1008,18 @@ abstract class Command {
 
 		$this->game['status'] = Game::GAME_STATUS_ENDED;
 		$this->game->save();
+	}
+	
+	protected function runMollyStarkAction() {
+		if ($this->useCharacter === TRUE &&
+			$this->actualPlayer->getCharacter()->getIsMollyStark() &&
+			$this->actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
+		
+			$drawnCards = GameUtils::drawCards($this->game, 1);
+			$handCards = unserialize($this->actualPlayer['hand_cards']);
+			$handCards = array_merge($handCards, $drawnCards);
+			$this->actualPlayer['hand_cards'] = serialize($handCards);
+		}
 	}
 }
 

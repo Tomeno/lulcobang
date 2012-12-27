@@ -182,7 +182,7 @@ class Player extends LinkableItem {
 		
 		if ($cards) {
 			if ($cardId === NULL) {
-				return array_rand($cards);
+				return $cards[array_rand($cards)];
 			} else {
 				foreach ($cards as $card) {
 					if ($card['id'] == $cardId) {

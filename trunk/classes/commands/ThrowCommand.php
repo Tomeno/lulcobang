@@ -2,13 +2,12 @@
 
 class ThrowCommand extends Command {
 
-	protected $thrownCards = array();
-
 	const OK = 1;
 
 	protected function check() {
-		$this->check = self::OK;
+		// TODO checker pre jose delgada?
 		
+		$this->check = self::OK;
 	}
 	
 	protected function run() {
@@ -18,6 +17,19 @@ class ThrowCommand extends Command {
 				$place = 'hand';
 			}
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards, $place);
+			
+			if ($this->useCharacter && $this->actualPlayer->getCharacter()->getIsJoseDelgado()) {
+				// TODO ulozit pocet pouziti charakteru v ramci kola - moze to spravit len dvakrat
+				if ($place == 'hand' && count($this->cards) == 1 && $this->cards[0]->getIsBlue()) {
+					$drawnCards = GameUtils::drawCards($this->game, 2);
+					$handCards = unserialize($this->actualPlayer['hand_cards']);
+					$handCards = array_merge($handCards, $drawnCards);
+					$this->actualPlayer['hand_cards'] = serialize($handCards);
+					
+					// zistit ci sa tu nahodou nestane to ze hracovi ostanu karty v ruke a este mu pribudnu dalsie
+					$this->actualPlayer->save();
+				}
+			}
 			
 			if ($place == 'table') {
 				// kedze je mozne ze rusime nejaku modru kartu ktora ovplyvnuje vzdialenost, preratame maticu

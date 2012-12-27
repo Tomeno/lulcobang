@@ -109,6 +109,7 @@ class BangCommand extends Command {
 	protected function run() {
 		if ($this->check == self::OK) {
 			if ($this->interTurnReason['action'] == 'indians') {
+				$this->runMollyStarkAction();
 				$this->changeInterturn();
 			} elseif ($this->interTurnReason['action'] == 'duel') {
 				$attackedPlayerId = intval($this->interTurnReason['to']);

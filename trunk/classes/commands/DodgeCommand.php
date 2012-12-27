@@ -5,7 +5,8 @@ class DodgeCommand extends DefensiveCommand {
 		if ($this->check == DefensiveCommand::OK) {
 			// odhodime kartu dodge
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
-
+			$this->runMollyStarkAction();
+			
 			// potiahneme kartu
 			$drawnCards = GameUtils::drawCards($this->game, 1);
 			$handCards = unserialize($this->actualPlayer['hand_cards']);

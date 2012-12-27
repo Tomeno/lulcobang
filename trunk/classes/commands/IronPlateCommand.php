@@ -4,6 +4,7 @@ class IronPlateCommand extends DefensiveCommand {
 	protected function run() {
 		if ($this->check == DefensiveCommand::OK) {
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards, 'table');
+			$this->runMollyStarkAction();
 			$this->changeInterturn();
 		}
 	}
