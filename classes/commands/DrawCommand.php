@@ -36,11 +36,19 @@ class DrawCommand extends Command {
 	
 	const MISSING_DYNAMITE_CARD = 17;
 	
+	const PLAYER_NOT_SELECTED = 18;
+	
+	const PLAYER_DOESNT_HAVE_CARD_ON_THE_TABLE = 19;
+	
+	const NO_CARD_SELECTED = 20;
+
 	protected $template = 'cards-choice.tpl';
 
 	protected $drawType = '';
 	
 	protected $drawResult = NULL;
+	
+	protected $place = 'hand';
 
 	protected function check() {
 		if ($this->actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
@@ -84,7 +92,66 @@ class DrawCommand extends Command {
 			$playerOnTurn = $this->game->getPlayerOnTurn();
 			if ($playerOnTurn['id'] == $this->actualPlayer['id']) {
 				if ($this->actualPlayer['phase'] == Player::PHASE_DRAW) {
-					$this->check = self::OK;
+					if ($this->useCharacter === TRUE && $this->actualPlayer->getCharacter()->getIsJesseJones()) {
+						// TODO messages
+						$attackedPlayer = $this->params[0];
+						foreach ($this->players as $player) {
+							$user = $player->getUser();
+							if ($user['username'] == $attackedPlayer) {
+								$this->enemyPlayer = $player;
+								break;
+							}
+						}
+
+						if ($this->enemyPlayer) {
+							$handCards = $this->enemyPlayer->getHandCards();
+							$card = $handCards[array_rand($handCards)];
+							if ($card) {
+								$this->addEnemyPlayerCard($this->enemyPlayer, $card);
+								$this->place = 'hand';
+								$this->check = self::OK;
+							} else {
+								$this->check = self::NO_CARDS_ON_HAND;
+							}
+						} else {
+							$this->check = self::PLAYER_NOT_SELECTED;
+						}
+					} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getCharacter()->getIsPedroRamirez()) {
+						// TODO skontrolovat ci su v odhadzovacom balicku nejake karty
+						// TODO messages
+						$this->check = self::OK;
+					} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getCharacter()->getIsPatBrennan()) {
+						// TODO messages
+						$attackedPlayer = $this->params[0];
+						foreach ($this->players as $player) {
+							$user = $player->getUser();
+							if ($user['username'] == $attackedPlayer) {
+								$this->enemyPlayer = $player;
+								break;
+							}
+						}
+
+						if ($this->enemyPlayer) {
+							if (isset($this->params[1])) {
+								$cardName = ucfirst($this->params[1]);
+								$method = 'getHas' . $cardName . 'OnTheTable';
+								$card = $this->enemyPlayer->$method();
+								if ($card) {
+									$this->addEnemyPlayerCard($this->enemyPlayer, $card);
+									$this->place = 'table';
+									$this->check = self::OK;
+								} else {
+									$this->check = self::PLAYER_DOESNT_HAVE_CARD_ON_THE_TABLE;
+								}
+							} else {
+								$this->check = self::NO_CARD_SELECTED;
+							}
+						} else {
+							$this->check = self::PLAYER_NOT_SELECTED;
+						}
+					} else {
+						$this->check = self::OK;
+					}
 				} elseif ($this->actualPlayer['phase'] == Player::PHASE_DYNAMITE) {
 					if ($this->params[0] == 'dynamite') {
 						$card = $this->actualPlayer->getHasDynamiteOnTheTable();
@@ -298,7 +365,33 @@ class DrawCommand extends Command {
 				GameUtils::throwCards($this->game, NULL, $thrownCards);
 			} else {
 				$counts = $this->getCountCards();
-
+				
+				if ($this->useCharacter === TRUE) {
+					if ($this->actualPlayer->getCharacter()->getIsJesseJones()) {
+						$retVal = GameUtils::moveCards($this->game, $this->enemyPlayersCards[$this->enemyPlayer['id']], $this->enemyPlayer, 'hand', $this->actualPlayer, $this->place);
+						$this->actualPlayer = $retVal['playerTo'];
+						$this->game = $retVal['game'];
+					} elseif ($this->actualPlayer->getCharacter()->getIsPatBrennan()) {
+						$retVal = GameUtils::moveCards($this->game, $this->enemyPlayersCards[$this->enemyPlayer['id']], $this->enemyPlayer, 'hand', $this->actualPlayer, $this->place);
+						$this->actualPlayer = $retVal['playerTo'];
+						$this->game = $retVal['game'];
+						
+						// kedze je mozne ze rusime nejaku modru kartu ktora ovplyvnuje vzdialenost, preratame maticu
+						// ak to bude velmi pomale, budeme to robit len ak je medzi zrusenymi kartami fakt takato karta
+						$matrix = GameUtils::countMatrix($this->game);
+						$this->game['distance_matrix'] = serialize($matrix);
+						$this->game->save();
+						
+					} elseif ($this->actualPlayer->getCharacter()->getIsPedroRamirez()) {
+						$throwPile = unserialize($this->game['throw_pile']);
+						$card = array_pop($throwPile);
+						$this->game['throw_pile'] = serialize($throwPile);
+						$handCards = unserialize($this->actualPlayer['hand_cards']);
+						$handCards[] = $card;
+						$this->actualPlayer['hand_cards'] = serialize($handCards);
+					}
+				}
+				
 				$drawnCards = GameUtils::drawCards($this->game, $counts['draw']);
 
 				$possibleChoices = array(
@@ -320,7 +413,7 @@ class DrawCommand extends Command {
 			'pick' => 2,
 			'rest_action' => '',
 		);
-		
+
 		// TODO ak mame extension a je tu vlak alebo zizen tak su pocty ine
 		if ($this->useCharacter === TRUE) {
 			$character = $this->actualPlayer->getCharacter();
@@ -360,6 +453,24 @@ class DrawCommand extends Command {
 					'draw' => $draw,
 					'pick' => $pick,
 					'rest_action' => 'show_second',
+				);
+			} elseif ($character->getIsJesseJones()) {
+				$counts = array(
+					'draw' => 1,
+					'pick' => 1,
+					'rest_action' => '',
+				);
+			} elseif ($character->getIsPedroRamirez()) {
+				$counts = array(
+					'draw' => 1,
+					'pick' => 1,
+					'rest_action' => '',
+				);
+			} elseif ($character->getIsPatBrennan()) {
+				$counts = array(
+					'draw' => 0,
+					'pick' => 0,
+					'rest_action' => '',
 				);
 			}
 		}

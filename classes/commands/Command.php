@@ -911,6 +911,10 @@ abstract class Command {
 			$this->game = $retVal['game'];
 			$this->actualPlayer = $retVal['player'];
 		}
+	
+		// znovunacitame game z databazy, lebo sa par veci zmenilo medzitym
+		$gameRepository = new GameRepository();
+		$this->game = $gameRepository->getOneById($this->game['id']);
 
 		// TODO po zmene positions sa pravdepodobne zmeni aj pozicia hraca ktory
 		// je na tahu, treba to tu na tomto mieste znovu preratat a nastavit game[position]

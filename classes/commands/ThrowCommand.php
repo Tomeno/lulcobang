@@ -230,13 +230,13 @@ class ThrowCommand extends Command {
 			$this->addMessage($message);
 		} elseif ($this->check == self::CHARACTER_ALREADY_USED) {
 			$message = array(
-				'text' => 'Uz si pouzil svoj charakter',
+				'text' => 'V tomto kole si uz pouzil svoj charakter',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);
 		} elseif ($this->check == self::CHARACTER_ALREADY_USED_TWICE) {
 			$message = array(
-				'text' => 'Uz si pouzil svoj charakter dvakrat',
+				'text' => 'V tomto kole si uz pouzil svoj charakter dvakrat',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);
