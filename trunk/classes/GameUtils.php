@@ -142,7 +142,7 @@ class GameUtils {
 		return $game->save(TRUE);
 	}
 	
-	protected function getPlayerOnSeat($game, $seat) {
+	protected static function getPlayerOnSeat($game, $seat) {
 		foreach ($game->getAdditionalField('players') as $player) {
 			if ($player['seat'] == $seat) {
 				return $player;
@@ -160,21 +160,68 @@ class GameUtils {
 		DB::update(self::$table, $params, 'id = ' . intval($game['id']));
 	}
 	
+//	public static function getPlayerOnNextPosition($game, $actualPlayer = NULL) {
+//		$playerRepository = new PlayerRepository();
+//		$players = $playerRepository->getLivePlayersByGame($game['id']);
+//		$playersCount = count($players);
+//
+//		if ($actualPlayer === NULL) {
+//			$actualPlayer = $playerRepository->getOneByIdAndGame($game['turn'], $game['id']);
+//		}
+//		$next = $actualPlayer['position'] + 1;
+//		
+//		$nextPosition = $next <= $playersCount ? $next : $next - $playersCount;
+//		return $playerRepository->getOneByPositionAndGame($nextPosition, $game['id']);
+//	}
+	
+	
+	
 	public static function getPlayerOnNextPosition($game, $actualPlayer = NULL) {
 		$playerRepository = new PlayerRepository();
-		$players = $playerRepository->getLivePlayersByGame($game['id']);
-		$playersCount = count($players);
-
 		if ($actualPlayer === NULL) {
 			$actualPlayer = $playerRepository->getOneByIdAndGame($game['turn'], $game['id']);
 		}
-		$next = $actualPlayer['position'] + 1;
 		
-		$nextPosition = $next <= $playersCount ? $next : $next - $playersCount;
-		return $playerRepository->getOneByPositionAndGame($nextPosition, $game['id']);
+		$findingStarted = FALSE;
+		$nextPlayer = NULL;
+		foreach (self::$positions as $seat) {
+			if ($findingStarted === TRUE) {
+				$player = self::getPlayerOnSeat($game, $seat);
+				if ($player) {
+					if ($player['actual_lifes'] > 0) {
+						$nextPlayer = $player;
+						break;
+					}
+				}
+			}
+			
+			if ($actualPlayer['seat'] == $seat) {
+				$findingStarted = TRUE;
+			}
+		}
+		
+		if ($nextPlayer === NULL) {
+			foreach (self::$positions as $seat) {
+				$player = self::getPlayerOnSeat($game, $seat);
+				if ($player) {
+					if ($player['actual_lifes'] > 0) {
+						$nextPlayer = $player;
+						break;
+					}
+				}
+			}
+		}
+		
+		return $nextPlayer;
 	}
 	
+	
+	
+	
+	
 	public static function getNextPosition($game, $actualPosition = 0) {
+		echo 'GameUtils::getNextPosition';
+		exit();
 		$playerRepository = new PlayerRepository();
 		$players = $playerRepository->getLivePlayersByGame($game['id']);
 		$playersCount = count($players);
