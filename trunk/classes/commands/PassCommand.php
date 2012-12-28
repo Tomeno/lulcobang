@@ -52,6 +52,9 @@ class PassCommand extends Command {
 			if (isset($notices['character_jourdonnais_used'])) {
 				unset($notices['character_jourdonnais_used']);
 			}
+			if (isset($notices['character_used'])) {
+				unset($notices['character_used']);
+			}
 			$this->actualPlayer->setNoticeList($notices);
 			$this->actualPlayer->save();
 

@@ -32,7 +32,8 @@ class ExecuteCommand {
 		}
 
 		if ($playCardId) {
-			if (!$cardId && !$playerId) {
+			// $command == 'throw' pridane kvoli Doc Holydayovi
+			if (!$cardId && !$playerId || ($command == 'throw')) {
 				$cardRepository = new CardRepository(TRUE);
 				$card = $cardRepository->getOneById($playCardId);
 				$commandString .= ' ' . str_replace('-', '', $card->getItemAlias());
@@ -56,8 +57,8 @@ class ExecuteCommand {
 		if ($place) {
 			$commandString .= ' ' . $place;
 		}
-		//echo $commandString;
-		//exit();
+//		echo $commandString;
+//		exit();
 		Command::setup($commandString, $game);
 	}
 }

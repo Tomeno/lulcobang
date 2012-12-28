@@ -72,6 +72,7 @@ class LifeCommand extends Command {
 				// tequila joe si posledny zivot zachrani a 1 si este prida
 				$this->actualPlayer['actual_lifes'] + 1;	
 			}
+			$this->runMollyStarkAction();
 			$this->changeInterturn();
 		} elseif ($this->check == self::LOST_LIFE_AND_DRAW_CARDS) {
 			// Chuck Wengam si moze zobrat zivot a potiahnut dve karty

@@ -212,7 +212,14 @@ class DrawCommand extends Command {
 					
 					// posunieme dynamit dalsiemu hracovi
 					$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer);
-					GameUtils::moveCards($this->game, array($dynamite), $this->actualPlayer, 'table', $nextPositionPlayer, 'table');
+					if ($nextPositionPlayer->getHasDynamiteOnTheTable()) {
+						// ak dalsi hrac uz ma na stole dynamit, musim sa pozriet na hraca za nim
+						$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $nextPositionPlayer);
+					}
+					if ($nextPositionPlayer['id'] != $this->actualPlayer['id']) {
+						// v pripade dvoch hracov a dvoch dynamitov sa dynamity neposuvaju
+						GameUtils::moveCards($this->game, array($dynamite), $this->actualPlayer, 'table', $nextPositionPlayer, 'table');
+					}
 				} else {
 					$this->drawResult = self::KO;
 					

@@ -19,6 +19,11 @@ class ActualPlayerHasCardsChecker extends Checker {
 			$localizedParams = $this->command->getLocalizedParams();
 			$precheck = TRUE;
 
+			if ($this->command->getUseCharacter() === TRUE && $actualPlayer->getCharacter()->getIsDocHolyday()) {
+				// v pripade doca holydaya spravime celu kontrolu v prikaze throw
+				return TRUE;
+			}
+			
 			foreach ($this->precheckerParams as $checkingMethod) {
 				$cardIndex = 0;
 				$placeIndex = 1;
@@ -55,7 +60,7 @@ class ActualPlayerHasCardsChecker extends Checker {
 				if ($this->command->getUseCharacter() == TRUE && $actualPlayer->getCharacter()->getIsElenaFuente()) {
 					$checkingMethod = 'getHas' . ucfirst($cardName) . 'OnHand';
 				}
-
+				
 				$card = $actualPlayer->$checkingMethod();
 				
 				if ($card) {
