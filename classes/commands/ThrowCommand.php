@@ -27,11 +27,16 @@ class ThrowCommand extends Command {
 	protected $template = 'you-are-attacked.tpl';
 	
 	protected function check() {
-		if ($this->useCharacter === TRUE && $this->actualPlayer->getCharacter()->getIsDocHolyday()) {
+		if ($this->useCharacter === TRUE && $this->actualPlayer->getIsDocHolyday()) {
 			$notices = $this->actualPlayer->getNoticeList();
 			if (isset($notices['character_used']) && $notices['character_used'] > 0) {
 				$this->check = self::CHARACTER_ALREADY_USED;
 			} else {
+				
+				// znulujeme karty lebo uz tam jedna je z precheckera
+				$this->cards = array();
+				exit();
+				
 				// TODO tu ked pouzijem rovnaky typ kariet, nastava problem a vyhodim len jednu
 				// lebo getHas ... vrati dvakrat tu istu kartu
 				// docasne kym nebudem robit tieto veci cez idecka, mame pridanu podmienku
@@ -86,24 +91,26 @@ class ThrowCommand extends Command {
 					$this->check = self::YOU_HAVE_TO_THROW_TWO_CARDS;
 				}
 			}	
-		} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getCharacter()->getIsSidKetchum()) {
+		} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsSidKetchum()) {
 			// TODO sid ketchum moze pouzit tuto moznost aj mimo svoj tah
+			
+			// znulujeme karty lebo uz tam jedna je z precheckera
+			$this->cards = array();
 			
 			// TODO tu ked pouzijem rovnaky typ kariet, nastava problem a vyhodim len jednu
 			// lebo getHas ... vrati dvakrat tu istu kartu
 			// docasne kym nebudem robit tieto veci cez idecka, mame pridanu podmienku
-			$method = 'getHas' . ucfirst($this->params[1]) . 'OnHand';
+			$method = 'getHas' . ucfirst($this->params[0]) . 'OnHand';
 			$firstCard = $this->actualPlayer->$method();
 			if ($firstCard) {
 				$this->addCard($firstCard);
 			}
 			
-			$method = 'getHas' . ucfirst($this->params[2]) . 'OnHand';
+			$method = 'getHas' . ucfirst($this->params[1]) . 'OnHand';
 			$secondCard = $this->actualPlayer->$method();
 			if ($secondCard) {
 				$this->addCard($secondCard);
 			}
-			
 			if (count($this->cards) == 2) {
 				if ($firstCard['id'] == $secondCard['id']) {
 					$message = array(
@@ -121,7 +128,7 @@ class ThrowCommand extends Command {
 			} else {
 				$this->check = self::YOU_HAVE_TO_THROW_TWO_CARDS;
 			}
-		} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getCharacter()->getIsJoseDelgado()) {
+		} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsJoseDelgado()) {
 			$notices = $this->actualPlayer->getNoticeList();
 			if (isset($notices['character_used']) && $notices['character_used'] > 1) {
 				$this->check = self::CHARACTER_ALREADY_USED_TWICE;
@@ -158,9 +165,7 @@ class ThrowCommand extends Command {
 			}
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards, $place);
 			
-			if ($this->useCharacter === TRUE && $this->actualPlayer->getCharacter()->getIsJoseDelgado()) {
-				// TODO ulozit pocet pouziti charakteru v ramci kola - moze to spravit len dvakrat
-				
+			if ($this->useCharacter === TRUE && $this->actualPlayer->getIsJoseDelgado()) {
 				$drawnCards = GameUtils::drawCards($this->game, 2);
 				$handCards = unserialize($this->actualPlayer['hand_cards']);
 				$handCards = array_merge($handCards, $drawnCards);

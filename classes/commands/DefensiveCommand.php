@@ -17,7 +17,24 @@ abstract class DefensiveCommand extends Command {
 			} elseif ($this->interTurnReason['action'] == 'duel') {
 				$this->check = self::YOU_ARE_UNDER_DUEL_ATTACK;
 			} else {
-				$this->check = self::OK;
+				// proti Belle Star sa nedaju pouzit karty vylozene na stole
+				$attackingPlayerNotices = $this->attackingPlayer->getNoticeList();
+				if ($attackingPlayerNotices['character_used'] && $this->attackingPlayer->getIsBelleStar()) {
+					$attackingUser = $this->attackingPlayer->getUser();
+					$card = $this->cards[0];
+					// vedla a uhyb sa daju pouzit, preto tu je podmienka ze karta musi byt zelena
+					if ($card->getIsGreen()) {
+						$message = array(
+							'toUser' => $this->loggedUser['id'],
+							'text' => 'Nemozes pouzit ' . $card->getTitle() . ' proti ' . $attackingUser['username'],
+						);
+						$this->addMessage($message);
+					} else {
+						$this->check = self::OK;
+					}
+				} else {
+					$this->check = self::OK;
+				}
 			}
 		} else {
 			$this->check = self::CANNOT_PLAY_CARD;

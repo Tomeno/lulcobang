@@ -53,6 +53,13 @@ class KnifeCommand extends Command {
 			$this->attackedPlayer->save();
 
 			$this->actualPlayer['phase'] = Player::PHASE_WAITING;
+			if ($this->useCharacter === TRUE) {
+				if ($this->actualPlayer->getIsBelleStar()) {
+					$notices = $this->actualPlayer->getNoticeList();
+					$notices['character_used'] = 1;
+					$this->actualPlayer->setNoticeList($notices);
+				}
+			}
 			$this->actualPlayer->save();
 
 			// TODO toto plati len ak je to utok bangom, ale bang sa pouziva na viacerych miestach - premysliet a dorobit aj duel a indianov prip dalsie

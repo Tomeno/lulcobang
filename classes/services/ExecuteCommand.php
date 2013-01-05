@@ -20,7 +20,7 @@ class ExecuteCommand {
 		}
 		
 		$commandString .= $command;
-		if ($playerId) {
+		if ($playerId && $command !== 'brawl') {
 			$playerRepository = new PlayerRepository();
 			$player = $playerRepository->getOneById($playerId);
 			if ($player) {
@@ -31,7 +31,7 @@ class ExecuteCommand {
 			}
 		}
 
-		if ($playCardId) {
+		if ($playCardId && $command !== 'brawl') {
 			// $command == 'throw' pridane kvoli Doc Holydayovi
 			if (!$cardId && !$playerId || ($command == 'throw')) {
 				$cardRepository = new CardRepository(TRUE);
@@ -48,10 +48,14 @@ class ExecuteCommand {
 			//}
 		}
 		
-		if ($cardId) {
-			$cardRepository = new CardRepository(TRUE);
-			$card = $cardRepository->getOneById($cardId);
-			$commandString .= ' ' . str_replace('-', '', $card->getItemAlias());
+		if ($command == 'brawl') {
+			$commandString .= ' ' . addslashes(Utils::post('card'));
+		} else {
+			if ($cardId) {
+				$cardRepository = new CardRepository(TRUE);
+				$card = $cardRepository->getOneById($cardId);
+				$commandString .= ' ' . str_replace('-', '', $card->getItemAlias());
+			}
 		}
 
 		if ($place) {

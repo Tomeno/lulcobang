@@ -18,6 +18,13 @@ class HowitzerCommand extends Command {
 				if ($player['actual_lifes'] > 0) {
 					if ($player['id'] == $this->actualPlayer['id']) {
 						$this->actualPlayer['phase'] = Player::PHASE_WAITING;
+						if ($this->useCharacter === TRUE) {
+							if ($this->actualPlayer->getIsBelleStar()) {
+								$notices = $this->actualPlayer->getNoticeList();
+								$notices['character_used'] = 1;
+								$this->actualPlayer->setNoticeList($notices);
+							}
+						}
 						$this->actualPlayer->save();
 					} else {
 						if ($player['id'] == $nextPositionPlayer['id']) {

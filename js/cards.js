@@ -28,6 +28,11 @@ function selectCardToPlay(id, type, place) {
 		if (type) {
 			type = type.replace(/-/g, '');
 			$('command').value = type;
+			
+			var table = $('table');
+			if (table) {
+				table.setAttribute('class', type);
+			}
 		}
 		
 		if (place) {
@@ -39,31 +44,89 @@ function selectCardToPlay(id, type, place) {
 }
 
 function ejectCard(card, type) {
-	card.addClassName('selected');
-	card.addClassName(type);
+	if (card) {
+		card.addClassName('selected');
+		card.addClassName(type);
+	}
 }
 
 function rejectCard(card, type) {
-	card.removeClassName('selected');
-	card.removeClassName(type);
+	if (card) {
+		card.removeClassName('selected');
+		card.removeClassName(type);
+	}
 }
 
 function selectCard(id, playerId, place) {
-	$('selected-card').value = id;
-
-	if (place) {
-		$('place').value = place;
+	var command = $('command').value;
+	var selectedCard = $('selected-card');
+	var i;
+	if (command == 'brawl') {
+		var playerToCard = [];
+		var actualValue = selectedCard.value;
+		if (actualValue) {
+			var valueParts = actualValue.split(';');
+			
+			for (i = 0; i < valueParts.length; i++) {
+				var oneItem = valueParts[i].split('-');
+				playerToCard[oneItem[0]] = oneItem[1];
+			}
+		}
+		if (playerToCard[playerId]) {
+			var oldCard = $('card-' + playerToCard[playerId]);
+			rejectCard(oldCard, 'brawl');
+		}
+		
+		if (playerToCard[playerId] != id) {
+			var newCard = $('card-' + id);
+			ejectCard(newCard, 'brawl');
+		} else {
+			id = 0;
+		}
+		playerToCard[playerId] = id;
+		
+		var finalArray = [];
+		for (var key in playerToCard) {
+			if (typeof playerToCard[key] !== 'function') {
+				finalArray.push(key + '-' + playerToCard[key]);
+			}
+		}
+		
+		var newValue = finalArray.join(';');
+		selectedCard.value = newValue;
 	} else {
-		$('place').value = '';
-	}
-	
-	// sluzi momentalne pri cat balou ako vyber karty hraca zo stola, uvidime ci to budeme oddelovat alebo to nechame tu - asi to bude musiet byt nejaka specialna metoda ktora spravi nieco ine ako select PLayer
-	if (playerId) {
-		selectPlayer(playerId, true);
-	}
+		var newSelectedCard = $('card-' + id);
+		var oldSelectedCardId = selectedCard.value;
 
-	// TODO kazdy hrac by mohol mat rozne zony ktore by sa tymto sposobom vyselektovali ako kliknutelne
-	// napr. bang na vzdialenost 1 oznaci len hracov vo vzdialenosti 1 atd
+		if (oldSelectedCardId == 0) {
+			ejectCard(newSelectedCard, 'xxx');
+			selectedCard.value = id;
+		} else {
+			if (oldSelectedCardId == id) {
+				rejectCard(newSelectedCard, 'xxx');
+				selectedCard.value = 0;
+			} else {
+				var oldSelectedCard = $('card-' + oldSelectedCardId);
+				rejectCard(oldSelectedCard, 'xxx');
+				ejectCard(newSelectedCard, 'xxx');
+				selectedCard.value = id;
+			}
+		}	
+
+		if (place) {
+			$('place').value = place;
+		} else {
+			$('place').value = '';
+		}
+	
+		// sluzi momentalne pri cat balou ako vyber karty hraca zo stola, uvidime ci to budeme oddelovat alebo to nechame tu - asi to bude musiet byt nejaka specialna metoda ktora spravi nieco ine ako select PLayer
+		if (playerId) {
+			selectPlayer(playerId, true);
+		}
+
+		// TODO kazdy hrac by mohol mat rozne zony ktore by sa tymto sposobom vyselektovali ako kliknutelne
+		// napr. bang na vzdialenost 1 oznaci len hracov vo vzdialenosti 1 atd
+	}
 }
 
 function drawCards() {
@@ -74,6 +137,7 @@ function drawCards() {
 function playCard() {
 	executeCommand();
 }
+
 function throwCard() {
 	$('command').value = 'throw';
 	executeCommand();
@@ -85,13 +149,16 @@ function putCard() {
 }
 
 function selectPlayer(id, fromSelectCard) {
-	$('selected-player').value = id;
-	if (fromSelectCard) {
+	var command = $('command').value;
+	if (command != 'brawl') {
+		$('selected-player').value = id;
+		if (fromSelectCard) {
 
-	} else {
-		$('selected-card').value = 0;
+		} else {
+			$('selected-card').value = 0;
+		}
+		$('place').value = '';
 	}
-	$('place').value = '';
 }
 
 function passTurn() {

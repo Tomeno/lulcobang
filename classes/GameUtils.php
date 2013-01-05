@@ -88,16 +88,18 @@ class GameUtils {
 					$distance = min($arg1, $arg2);
 					
 					if ($player2->getHasMustangOnTheTable()) {
-						// TODO ak je tu belle stark ci ako sa vola, tak v jej tahu nemaju vplyv modre karty
-						// takze ani mustang nebude platit, a ani barel a dalsie
-						$distance++;
+						// pre Belle Star neplatia v jej tahu modre karty u ostatnych hracov
+						if (!$player1->getIsBelleStar()) {
+							$distance++;
+						}
 					}
 					if ($player2->getHasHideoutOnTheTable()) {
-						// TODO ak je tu belle stark ci ako sa vola, tak v jej tahu nemaju vplyv modre karty
-						// takze ani hideout nebude platit, a ani barel a dalsie
-						$distance++;
+						// pre Belle Star neplatia v jej tahu modre karty u ostatnych hracov
+						if (!$player1->getIsBelleStar()) {
+							$distance++;
+						}
 					}
-					if ($player2->getCharacter()->getIsPaulRegret()) {
+					if ($player2->getIsPaulRegret()) {
 						$distance++;
 					}
 					if ($player1->getHasAppaloosaOnTheTable()) {
@@ -106,7 +108,7 @@ class GameUtils {
 					if ($player1->getHasSilverOnTheTable()) {
 						$distance--;
 					}
-					if ($player1->getCharacter()->getIsRoseDoolan()) {
+					if ($player1->getIsRoseDoolan()) {
 						$distance--;
 					}
 					

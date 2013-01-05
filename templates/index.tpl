@@ -12,6 +12,8 @@
 		<script type="text/javascript" src="{$baseUrl}js/cards.js"></script>
 		<link type="text/css" rel="stylesheet" media="all" href="{$baseUrl}static/css/new_style.css" />
 		<link type="text/css" rel="stylesheet" media="all" href="{$baseUrl}static/css/prototip.css" />
+		<link rel="shortcut icon" href="/images/favicon.ico" />
+		<link rel="icon" href="/images/favicon.ico" />
 	</head>
 	<body{if $bodyAdded} {$bodyAdded}{/if}>
 		<div id="content">

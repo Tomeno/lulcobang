@@ -36,7 +36,7 @@ class BangCommand extends Command {
 				$canPlayMoreBangs = TRUE;
 				// TODO pocet kariet bang zavisi od kariet v rozsireni kazatel a prestrelka, upravit tento if
 				// ani willy kid nemoze strielat ked pride kazatel
-			} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getCharacter()->getIsWillyTheKid()) {
+			} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsWillyTheKid()) {
 				$canPlayMoreBangs = TRUE;
 			} elseif ($this->actualPlayer->getHasVolcanicOnTheTable()) {
 				$canPlayMoreBangs = TRUE;
@@ -149,6 +149,13 @@ class BangCommand extends Command {
 
 				$this->actualPlayer['phase'] = Player::PHASE_WAITING;
 				$this->actualPlayer['bang_used'] = $this->actualPlayer['bang_used'] + 1;
+				if ($this->useCharacter === TRUE) {
+					if ($this->actualPlayer->getIsBelleStar() || $this->actualPlayer->getIsSlabTheKiller()) {
+						$notices = $this->actualPlayer->getNoticeList();
+						$notices['character_used'] = 1;
+						$this->actualPlayer->setNoticeList($notices);
+					}
+				}
 				$this->actualPlayer->save();
 
 				$this->game['inter_turn'] = $this->attackedPlayer['id'];
