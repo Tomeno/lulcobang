@@ -4,6 +4,10 @@ class GeneralStoreCommand extends Command {
 	
 	const OK = 1;
 
+	protected $template = 'cards-choice.tpl';
+	
+	protected $drawnCards = array();
+	
 	protected function check() {
 		$this->check = self::OK;
 	}
@@ -17,9 +21,11 @@ class GeneralStoreCommand extends Command {
 				}
 			}
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
-			$drawnCards = GameUtils::drawCards($this->game, $livePlayers);
-
-			// TODO vymysliet ako to spravit
+			$this->drawnCards = GameUtils::drawCards($this->game, $livePlayers);
+			
+			$this->game['inter_turn_reason'] = serialize(array('action' => 'general_store', 'from' => $this->actualPlayer['id'], 'cards' => $this->getCardIds()));
+			$this->game['inter_turn'] = $this->actualPlayer['id'];
+			$this->game->save();
 		}
 	}
 
@@ -40,7 +46,29 @@ class GeneralStoreCommand extends Command {
 	}
 
 	protected function createResponse() {
-		// TODO
+		$cardRepository = new CardRepository();
+		$possibleCards = array();
+		foreach ($this->drawnCards as $cardId) {
+			$possibleCards[] = $cardRepository->getOneById($cardId);
+		}
+
+		MySmarty::assign('possiblePickCount', 1);
+		MySmarty::assign('possibleCards', $possibleCards);
+		MySmarty::assign('possibleCardsCount', count($possibleCards));
+		MySmarty::assign('game', $this->game);
+		$response = MySmarty::fetch($this->template);
+
+		$playerPossibleChoices = array(
+			'drawn_cards' => $this->drawnCards,
+			'possible_pick_count' => 1,
+			'rest_action' => 'general_store',
+		);
+		$this->actualPlayer['phase'] = Player::PHASE_UNDER_ATTACK;
+		$this->actualPlayer['possible_choices'] = serialize($playerPossibleChoices);
+		$this->actualPlayer['command_response'] = $response;
+		$this->actualPlayer->save();
+
+		return $response;
 	}
 }
 

@@ -777,6 +777,14 @@ abstract class Command {
 	public function getCards() {
 		return $this->cards;
 	}
+	
+	public function getCardIds() {
+		$cardIds = array();
+		foreach ($this->getCards() as $card) {
+			$cardIds[] = $card['id'];
+		}
+		return $cardIds;
+	}
 
 	public function getEnemyPlayer() {
 		return $this->enemyPlayer;
@@ -815,7 +823,7 @@ abstract class Command {
 	protected function changeInterturn() {
 		$attackingPlayerNotices = $this->attackingPlayer->getNoticeList();
 		if ($this->attackingPlayer->getIsSlabTheKiller() && $attackingPlayerNotices['character_used'] &&
-			in_array($this->interTurnReason['action'], array('bang'))) {
+			in_array($this->interTurnReason['action'], array('bang')) && $this->commandName != 'life') {
 			// zrusime slab the killerovi prvu ranu, dalsie vedla by uz malo ist do else vetvy
 			if (isset($attackingPlayerNotices['character_used'])) {
 				unset($attackingPlayerNotices['character_used']);
@@ -884,10 +892,9 @@ abstract class Command {
 				throw new Exception('Moze byt aktualny hrac niekto iny?', 1353360969);
 			}
 			$this->actualPlayer['command_response'] = '';
-			$this->actualPlayer->save();
-
-			$this->game->save();
 		}
+		$this->actualPlayer->save();
+		$this->game->save();
 	}
 	
 	protected function removePlayerFromGame() {
