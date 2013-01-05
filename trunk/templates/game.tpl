@@ -11,17 +11,24 @@
 		{/foreach}
 
 		{foreach from=$game.players item='player' name=players}
+			{if $game.playerOnTurn.id == $player.id && $game.playerOnTurn.id == $game.playerOnMove.id}
+				{if $me.id == $player.id && $me.phase == 5}
+					<a href="#" onclick="passTurn(); return false;" title="{localize key='pass'}">
+						<span class="stop"></span>
+					</a>
+				{/if}
+			{/if}
 			<div id="player_0{$me|position_class:$player}" class="player">
 				<div class="player_info">
 					<div class="player_name">
-						{if $game.playerOnTurn.id == $player.id && $me.id == $player.id}
-							<a href="#" onclick="passTurn(); return false;">
-								<span class="pass">{localize key='pass'}</span>
-							</a>
+						{if $player.id == $game.playerOnTurn.id && $game.playerOnTurn.id == $game.playerOnMove.id}
+							<span class="green"></span>
+						{elseif $player.id == $game.playerOnTurn.id && $game.playerOnTurn.id != $game.playerOnMove.id}
+							<span class="orange"></span>
+						{elseif $player.id == $game.playerOnmove.id && $game.playerOnTurn.id != $game.playerOnMove.id}
+							<span class="green"></span>
 						{/if}
 						<a href="{$player.url}" onclick="selectPlayer({$player.id});return false;">
-							{if $game.playerOnTurn.id == $player.id} * {/if}
-							{if $game.playerOnMove.id == $player.id} # {/if}
 							{$player.user.username}
 						</a>
 					</div>
@@ -69,13 +76,13 @@
 							<a href="{$player.character.url}" onclick="{if $player.user.id == $me.user.id}useCharacter();{else}window.open(this.href, '_blank');{/if} return false;" title="{$player.character.name|escape} ({$player.max_lifes}): {$player.character.localizedDescription|escape}" class="popup-source">
 								{image src=$player.character.imagePath alt=$player.character.name width='44' height='76'}
 							</a>
-							<div class="popup-target" style="display:none;">
+							{*<div class="popup-target" style="display:none;">
 								<div class="popup-character">
 									{image src=$player.character.imagePath alt=$player.character.name width='66' height='114'}
 									<h4>{$player.character.name}</h4>
 									<p>{$player.character.localizedDescription}</p>
 								</div>
-							</div>
+							</div>*}
 						</div>
 
 						<div class="role{if $player.roleObject.isSheriff or $player.user.id == $me.user.id or $player.actual_lifes == 0}{* popup*}{/if}">
@@ -83,76 +90,70 @@
 								<a href="{$player.roleObject.url}" onclick="window.open(this.href, '_blank'); return false;" class="popup-source">
 									{image src=$player.roleObject.imagePath alt=$player.roleObject.title width='44' height='76'}
 								</a>
-								<div class="popup-target" style="display:none;">
-									<div class="popup-role">
-										{image src=$player.roleObject.imagePath alt=$player.roleObject.title width='66' height='114'}
-										<h4>{$player.roleObject.localizedTitle}</h4>
-										<p>{$player.roleObject.localizedDescription}</p>
-									</div>
-								</div>
 							{else}
 								{image src=$player.roleObject.backImagePath alt='rola' width='44' height='76'}
 							{/if}
 						</div>
 					</div>
+					{assign var='baseWidth' value=240}
 					{if $player.handCards}
-						{foreach from=$player.handCards item='handCard' name='handCards'}
-							{if $smarty.foreach.handCards.index mod 6 == 0}<div class="row">{/if}
-								<div id="card-{$handCard.id}" class="card{if $player.user.id == $me.user.id}{* popup*}{/if}">
+						{assign var='cardsCount' value=$player.handCards|@count}
+						{if $cardsCount > 6}
+							{assign var='cardWidth' value=$baseWidth/$cardsCount}
+						{else}
+							{assign var='cardWidth' value=0}
+						{/if}
+						<div class="row cards">
+							<span class="card_icon hand_cards"></span>
+							{foreach from=$player.handCards item='handCard' name='handCards'}
+								<div{if $player.user.id == $me.user.id} id="card-{$handCard.id}"{/if} class="card"{if $cardWidth} style="width: {$cardWidth}px;"{/if}>
 									{if $player.user.id == $me.user.id}
-										<a href="{$handCard.url}" onclick="selectCardToPlay('{$handCard.id}', '{$handCard.itemAlias}'); return false;" title="{$handCard.title|escape}: {$handCard.description|escape}" class="popup-source">
+										<a href="{$handCard.url}" onclick="selectCardToPlay('{$handCard.id}', '{$handCard.itemAlias}'); return false;" title="{$handCard.title|escape}: {$handCard.description|escape}">
 											{image src=$handCard.imagePath alt=$handCard.title width='44' height='76'}
 										</a>
-										<div class="popup-target" style="display:none;">
-											<div class="popup-card">
-												{image src=$handCard.imagePath alt=$handCard.title width='66' height='114'}
-												<h4>{$handCard.title}</h4>
-												<p>{$handCard.description}</p>
-											</div>
-										</div>
 									{else}
 										{image src=$handCard.backImagePath alt="card" width='44' height='76'}
 									{/if}
 								</div>
-							{if $smarty.foreach.handCards.index mod 6 == 5 or $smarty.foreach.handCards.last}</div>{/if}
-						{/foreach}
+							{/foreach}
+						</div>
 					{/if}
 					{if $player.tableCards}
-						{foreach from=$player.tableCards item='tableCard' name='tableCards'}
-							{if $smarty.foreach.tableCards.index mod 6 == 0}<div class="row">{/if}
-								<div id="card-{$tableCard.id}" class="card{* popup*}">
+						{assign var='cardsCount' value=$player.tableCards|@count}
+						{if $cardsCount > 6}
+							{assign var='cardWidth' value=$baseWidth/$cardsCount}
+						{else}
+							{assign var='cardWidth' value=0}
+						{/if}
+						<div class="row cards">
+							<span class="card_icon table_cards"></span>
+							{foreach from=$player.tableCards item='tableCard' name='tableCards'}
+								<div id="card-{$tableCard.id}" class="card"{if $cardWidth} style="width: {$cardWidth}px;"{/if}>
 									<a href="{$tableCard.url}" onclick="{if $player.id == $me.id}selectCardToPlay('{$tableCard.id}', '{$tableCard.itemAlias}', 'table');{else}selectCard('{$tableCard.id}', '{$player.id}', 'table');{/if} return false;" title="{$tableCard.title|escape}: {$tableCard.description|escape}" class="popup-source">
 										{image src=$tableCard.imagePath alt="card" width='44' height='76'}
 									</a>
-									<div class="popup-target" style="display:none;">
-										<div class="popup-card">
-											{image src=$tableCard.imagePath alt=$tableCard.title width='66' height='114'}
-											<h4>{$tableCard.title}</h4>
-											<p>{$tableCard.description}</p>
-										</div>
-									</div>
 								</div>
-							{if $smarty.foreach.tableCards.index mod 6 == 5 or $smarty.foreach.tableCards.last}</div>{/if}
-						{/foreach}
+							{/foreach}
+						</div>
 					{/if}
 					{if $player.waitCards}
-						{foreach from=$player.waitCards item='waitCard' name='waitCards'}
-							{if $smarty.foreach.waitCards.index mod 6 == 0}<div class="row">{/if}
-								<div id="card-{$waitCard.id}" class="card{* popup*}">
+						{assign var='cardsCount' value=$player.waitCards|@count}
+						{if $cardsCount > 6}
+							{assign var='cardWidth' value=$baseWidth/$cardsCount}
+						{else}
+							{assign var='cardWidth' value=0}
+						{/if}
+						<div class="row cards">
+							<span class="card_icon wait_cards"></span>
+							{foreach from=$player.waitCards item='waitCard' name='waitCards'}
+								<div id="card-{$waitCard.id}" class="card" {if $cardWidth} style="width: {$cardWidth}px;"{/if}>
 									<a href="{$waitCard.url}" onclick="{if $player.id == $me.id}selectCardToPlay('{$waitCard.id}', '{$waitCard.itemAlias}', 'wait');{else}selectCard('{$waitCard.id}', '{$player.id}', 'wait');{/if} return false;" title="{$waitCard.title|escape}: {$waitCard.description|escape}" class="popup-source">
 										{image src=$waitCard.imagePath alt="card" width='44' height='76'}
 									</a>
-									<div class="popup-target" style="display:none;">
-										<div class="popup-card">
-											{image src=$waitCard.imagePath alt=$waitCard.title width='66' height='114'}
-											<h4>{$waitCard.title}</h4>
-											<p>{$waitCard.description}</p>
-										</div>
-									</div>
 									<div class="gray"></div>
 								</div>
-							{if $smarty.foreach.waitCards.index mod 6 == 5 or $smarty.foreach.waitCards.last}</div>{/if}
-						{/foreach}
+							{/foreach}
+						</div>
 					{/if}
 				{/if}
 			</div>
@@ -184,22 +185,15 @@
 			</div>
 			
 		{/if}
-		{if $game.topThrowPile}
-			<div id="odpad" class="card{* popup*}">
-				<a href="{$game.topThrowPile.url}" onclick="window.open(this.href, '_blank'); return false;" class="popup-source">
-					{image src=$game.topThrowPile.imagePath alt=$game.topThrowPile.title width='44' height='76'}
-				</a>
-				<div class="popup-target" style="display:none;">
-					<div class="popup-card">
-						{image src=$game.topThrowPile.imagePath alt=$game.topThrowPile.title width='66' height='114'}
-						<h4>{$game.topThrowPile.title}</h4>
-						<p>{$game.topThrowPile.description}</p>
-					</div>
-				</div>
-			</div>
-		{/if}
+		<a id="odpad" class="card" href="#" onclick="playCard(); return false;" title="Click here to play selected card">
+			{if $game.topThrowPile}
+				{image src=$game.topThrowPile.imagePath alt=$game.topThrowPile.title width='44' height='76'}
+			{else}
+				<span class="card play"></span>
+			{/if}	
+		</a>
 		<a href="#" onclick="throwCard(); return false;" title="Click here to throw selected card"><span class="card throw"><img src="static/images/odpad.jpg" alt="" /></span></a>
-		<a href="#" onclick="playCard(); return false;" title="Click here to play selected card"><span class="card play"></span></a>
+
 		<div id="overlay-response"{if not $response} style="display: none;"{/if}>
 			{$response}
 		</div>

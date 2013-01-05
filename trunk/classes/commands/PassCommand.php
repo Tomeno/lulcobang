@@ -20,7 +20,7 @@ class PassCommand extends Command {
 					$handCardsCount = count($this->actualPlayer->getHandCards());
 					if ($this->actualPlayer['actual_lifes'] >= $handCardsCount) {
 						$this->check = self::OK;
-					} elseif ($this->useCharacter == TRUE && $handCardsCount <= 10 && $this->actualPlayer->getCharacter()->getIsSeanMallory()) {
+					} elseif ($this->useCharacter == TRUE && $handCardsCount <= 10 && $this->actualPlayer->getIsSeanMallory()) {
 						$this->check = self::OK;
 					} else {
 						$this->check = self::TOO_MANY_CARDS;

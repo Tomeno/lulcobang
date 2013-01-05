@@ -50,7 +50,7 @@ class LifeCommand extends Command {
 				$this->check = self::OK;
 			}
 		} else {
-			if ($this->useCharacter && $this->actualPlayer->getCharacter()->getIsChuckWengam()) {
+			if ($this->useCharacter && $this->actualPlayer->getIsChuckWengam()) {
 				if ($this->actualPlayer['actual_lifes'] > 1) {
 					$this->check = self::LOST_LIFE_AND_DRAW_CARDS;
 				} else {
@@ -68,7 +68,7 @@ class LifeCommand extends Command {
 		if ($this->check == self::SAVE_LAST_LIFE) {
 			GameUtils::throwCards($this->game, $this->actualPlayer, array($this->beerCard));
 			
-			if ($this->actualPlayer->getCharacter()->getIsTequilaJoe()) {
+			if ($this->actualPlayer->getIsTequilaJoe()) {
 				// tequila joe si posledny zivot zachrani a 1 si este prida
 				$this->actualPlayer['actual_lifes'] + 1;	
 			}
@@ -103,7 +103,7 @@ class LifeCommand extends Command {
 				$this->removePlayerFromGame();
 			} elseif ($this->useCharacter === TRUE && $newLifes > 0) {
 				// ak bol pouzity charakter a nebol to este posledny zivot
-				if ($this->actualPlayer->getCharacter()->getIsElGringo()) {
+				if ($this->actualPlayer->getIsElGringo()) {
 					// el gringo
 					$attackingPlayerHandCards = $this->attackingPlayer->getHandCards();
 					if ($attackingPlayerHandCards) {
@@ -112,7 +112,7 @@ class LifeCommand extends Command {
 						$this->actualPlayer = $retVal['playerTo'];
 						$this->attackingPlayer = $retVal['playerFrom'];
 					}
-				} elseif ($this->actualPlayer->getCharacter()->getIsBartCassidy()) {
+				} elseif ($this->actualPlayer->getIsBartCassidy()) {
 					// bart cassidy
 					$drawnCards = GameUtils::drawCards($this->game, 1);
 					$handCards = unserialize($this->actualPlayer['hand_cards']);

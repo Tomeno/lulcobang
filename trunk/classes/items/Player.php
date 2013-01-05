@@ -78,6 +78,29 @@ class Player extends LinkableItem {
 				$cardType = Utils::createLowercaseFromText($cardType);
 				return $this->hasCardType($cardType, $place);
 			}
+		} elseif (substr($methodName, 0, 5) === 'getIs') {
+			$isCharacter = $this->getCharacter()->$methodName();
+			
+			if ($isCharacter === FALSE) {
+				// skontrolujeme este ci hrac nie je Vera Custer a ci nema vybraty prave spominany charakter
+				$isVera = $this->getCharacter()->getIsVeraCuster();
+				if ($isVera === TRUE) {
+					$notices = $this->getNoticeList();
+					if (isset($notices['selected_character'])) {
+						$characterRepository = new CharacterRepository();
+						$characterId = intval($notices['selected_character']);
+						$selectedCharacter = $characterRepository->getOneById($characterId);
+						
+						$findingCharacter = strtolower(str_replace('getIs', '', $methodName));
+						$selectedCharacterName = strtolower(str_replace(array(' ', '\''), '', $selectedCharacter['name']));
+						
+						if ($findingCharacter == $selectedCharacterName) {
+							$isCharacter = TRUE;
+						}
+					}
+				}
+			}
+			return $isCharacter;
 		}
 		throw new Exception('Method ' . $methodName . ' doesn\'t exist');
 	}

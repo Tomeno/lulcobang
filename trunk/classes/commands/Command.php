@@ -52,6 +52,13 @@ abstract class Command {
 	protected $players = NULL;
 
 	/**
+	 * executed command name
+	 * 
+	 * @var	string
+	 */
+	protected $commandName = '';
+	
+	/**
 	 * command params
 	 *
 	 * @var	mixed
@@ -474,6 +481,15 @@ abstract class Command {
 				'ActualPlayerHasCardsChecker' => 'getHasSpringfieldOnHand',
 			),
 		),
+		'brawl' => array(
+			'class' => 'BrawlCommand',
+			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
+			'precheckParams' => array(
+				'GameChecker' => 'gameStarted',
+				'PlayerPhaseChecker' => 'isInPlayPhase',
+				'ActualPlayerHasCardsChecker' => 'getHasBrawlOnHand',
+			),
+		),
 	);
 
 	private function  __construct($params, $localizedParams, $game) {
@@ -541,11 +557,11 @@ abstract class Command {
 			$playerRepository = new PlayerRepository();
 			$actualPlayer = $playerRepository->getOneByUserAndGame($loggedUser['id'], $game['id']);
 
-			if ($actualPlayer->getCharacter()->getIsCalamityJanet()) {
+			if ($actualPlayer->getIsCalamityJanet()) {
 				// kvoli calamity janet musime vymenit bang a missed ak pouziva svoj charakter
 				// uprava sa tyka aj metod v ActualPlayerHasCardsChecker getHasBang/MissedOnHand()
 				if (in_array($commandName, array('bang', 'missed'))) {
-					if ($actualPlayer->getCharacter()->getIsCalamityJanet()) {
+					if ($actualPlayer->getIsCalamityJanet()) {
 						if ($commandName == 'bang') {
 							$commandName = 'missed';
 						} elseif ($commandName == 'missed') {
@@ -553,7 +569,7 @@ abstract class Command {
 						}
 					}
 				}
-			} elseif ($actualPlayer->getCharacter()->getIsElenaFuente()) {
+			} elseif ($actualPlayer->getIsElenaFuente()) {
 				// ak je elena fuente pod utokmi a pouziva svoj charakter, berieme to ako keby pouzivala missed
 				// uprava sa tyka aj metody v ActualPlayerHasCardsChecker
 				if ($actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
@@ -578,6 +594,7 @@ abstract class Command {
 			}
 
 			$class = new $commandClassName($params, $localizedParams, $game);
+			$class->setCommandName($commandName);
 			$class->setUseCharacter($useCharacter);
 			$precheckers = array();
 			if (self::$commands[$commandName]['precheckers']) {
@@ -593,7 +610,7 @@ abstract class Command {
 
 			return $class->execute();
 		} else {
-			throw new Exception('Command not found', 1332363146);// TODO add message command not found
+			throw new Exception('Command "' . $commandName . '" not found', 1332363146);// TODO add message command not found
 		}
 	}
 
@@ -603,6 +620,7 @@ abstract class Command {
 			$this->run();
 			$this->generateMessages();
 		}
+		$this->runSuzyLafayetteAction();
 		$this->write();
 		return $this->createResponse();
 	}
@@ -786,56 +804,90 @@ abstract class Command {
 		return $this->useCharacter;
 	}
 	
+	public function setCommandName($commandName) {
+		$this->commandName = $commandName;
+	}
+	
+	public function getCommandName() {
+		return $this->commandName;
+	}
+	
 	protected function changeInterturn() {
-		if (in_array($this->interTurnReason['action'], array('indians', 'gatling', 'howitzer'))) {
-			$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer);
-			// ak je hrac na nasledujucej pozicii ten ktory utocil, ukoncime inter turn
-			if ($nextPositionPlayer['id'] == $this->attackingPlayer['id']) {
+		$attackingPlayerNotices = $this->attackingPlayer->getNoticeList();
+		if ($this->attackingPlayer->getIsSlabTheKiller() && $attackingPlayerNotices['character_used'] &&
+			in_array($this->interTurnReason['action'], array('bang'))) {
+			// zrusime slab the killerovi prvu ranu, dalsie vedla by uz malo ist do else vetvy
+			if (isset($attackingPlayerNotices['character_used'])) {
+				unset($attackingPlayerNotices['character_used']);
+			}
+			$this->attackingPlayer->setNoticeList($attackingPlayerNotices);
+			$this->attackingPlayer->save();
+		} else {
+			if (in_array($this->interTurnReason['action'], array('indians', 'gatling', 'howitzer'))) {
+				$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer);
+				// ak je hrac na nasledujucej pozicii ten ktory utocil, ukoncime inter turn
+				if ($nextPositionPlayer['id'] == $this->attackingPlayer['id']) {
+					$this->game['inter_turn_reason'] = '';
+					$this->game['inter_turn'] = 0;
+
+					if ($this->attackingPlayer->getIsBelleStar()) {
+						$attackingPlayerNotices = $this->attackingPlayer->getNoticeList();
+						if (isset($attackingPlayerNotices['character_used'])) {
+							unset($attackingPlayerNotices['character_used']);
+						}
+						$this->attackingPlayer->setNoticeList($attackingPlayerNotices);
+					}
+
+					$this->attackingPlayer['phase'] = Player::PHASE_PLAY;
+					$this->attackingPlayer->save();
+				} else {
+					// inak nastavime pokracovanie interturnu
+					$nextPositionPlayer['phase'] = Player::PHASE_UNDER_ATTACK;
+					$nextPositionPlayer->save();
+
+					$this->game['inter_turn_reason'] = serialize(array('action' => $this->interTurnReason['action'], 'from' => $this->attackingPlayer['id'], 'to' => $nextPositionPlayer['id']));
+					$this->game['inter_turn'] = $nextPositionPlayer['id'];
+				}
+			} else {
+				// ukoncime interturn
 				$this->game['inter_turn_reason'] = '';
 				$this->game['inter_turn'] = 0;
 
+				if ($this->attackingPlayer->getIsBelleStar() || $this->attackingPlayer->getIsSlabTheKiller()) {
+					$attackingPlayerNotices = $this->attackingPlayer->getNoticeList();
+					if (isset($attackingPlayerNotices['character_used'])) {
+						unset($attackingPlayerNotices['character_used']);
+					}
+					$this->attackingPlayer->setNoticeList($attackingPlayerNotices);
+				}
 				$this->attackingPlayer['phase'] = Player::PHASE_PLAY;
 				$this->attackingPlayer->save();
-			} else {
-				$nextPositionPlayer['phase'] = Player::PHASE_UNDER_ATTACK;
-				$nextPositionPlayer->save();
-
-				// inak nastavime pokracovanie interturnu
-				$this->game['inter_turn_reason'] = serialize(array('action' => $this->interTurnReason['action'], 'from' => $this->attackingPlayer['id'], 'to' => $nextPositionPlayer['id']));
-				$this->game['inter_turn'] = $nextPositionPlayer['id'];
 			}
-		} else {
-			// ukoncime interturn
-			$this->game['inter_turn_reason'] = '';
-			$this->game['inter_turn'] = 0;
+			// premazeme notices
+			$notices = $this->actualPlayer->getNoticeList();
+			if (isset($notices['barrel_used'])) {
+				unset($notices['barrel_used']);
+			}
+			if (isset($notices['character_jourdonnais_used'])) {
+				unset($notices['character_jourdonnais_used']);
+			}
+			if (isset($notices['character_used'])) {
+				unset($notices['character_used']);
+			}
+			$this->actualPlayer->setNoticeList($notices);
+			// aktualnemu hracovi nastavime fazu na none a response na nic vzdy
+			if ($this->actualPlayer['id'] == $this->interTurnReason['to']) {
+				$this->actualPlayer['phase'] = Player::PHASE_NONE;
+			} elseif ($this->actualPlayer['id'] == $this->interTurnReason['from']) {
+				$this->actualPlayer['phase'] = Player::PHASE_PLAY;
+			} else {
+				throw new Exception('Moze byt aktualny hrac niekto iny?', 1353360969);
+			}
+			$this->actualPlayer['command_response'] = '';
+			$this->actualPlayer->save();
 
-			$this->attackingPlayer['phase'] = Player::PHASE_PLAY;
-			$this->attackingPlayer->save();
+			$this->game->save();
 		}
-		// premazeme notices
-		$notices = $this->actualPlayer->getNoticeList();
-		if (isset($notices['barrel_used'])) {
-			unset($notices['barrel_used']);
-		}
-		if (isset($notices['character_jourdonnais_used'])) {
-			unset($notices['character_jourdonnais_used']);
-		}
-		if (isset($notices['character_used'])) {
-			unset($notices['character_used']);
-		}
-		$this->actualPlayer->setNoticeList($notices);
-		// aktualnemu hracovi nastavime fazu na none a response na nic vzdy
-		if ($this->actualPlayer['id'] == $this->interTurnReason['to']) {
-			$this->actualPlayer['phase'] = Player::PHASE_NONE;
-		} elseif ($this->actualPlayer['id'] == $this->interTurnReason['from']) {
-			$this->actualPlayer['phase'] = Player::PHASE_PLAY;
-		} else {
-			throw new Exception('Moze byt aktualny hrac niekto iny?', 1353360969);
-		}
-		$this->actualPlayer['command_response'] = '';
-		$this->actualPlayer->save();
-
-		$this->game->save();
 	}
 	
 	protected function removePlayerFromGame() {
@@ -853,11 +905,22 @@ abstract class Command {
 		foreach ($this->getPlayers() as $player) {
 			// pozrieme sa na vsetkych hracov ktori este nie su mrtvi a ani nie su aktualny hrac (bohvie ako je on ulozeny v $this->players :)
 			if ($player['actual_lifes'] > 0 && $this->actualPlayer['id'] != $player['id']) {
-				if ($player->getCharacter()->getIsVultureSam()) {
+				// najprv pozrieme ci hrac nie je vera custer s charakterom zabiteho hraca, ak ano, vera uz nemoze mat jeho vlastnost
+				if ($player->getIsVeraCuster()) {
+					$notices = $player->getNoticeList();
+					$actualPlayerCharacter = $this->actualPlayer->getCharacter();
+					if (isset($notices['selected_character']) && $notices['selected_character'] == $actualPlayerCharacter['id']) {
+						unset($notices['selected_character']);
+					}
+					$player->setNoticeList($notices);
+					$player->save();
+				}
+				
+				if ($player->getIsVultureSam()) {
 					$vultureSams[] = $player;
-				} elseif ($player->getCharacter()->getIsGregDigger()) {
+				} elseif ($player->getIsGregDigger()) {
 					$gregDiggers[] = $player;
-				} elseif ($player->getCharacter()->getIsHerbHunter()) {
+				} elseif ($player->getIsHerbHunter()) {
 					$herbHunters[] = $player;
 				}
 			}
@@ -1019,13 +1082,37 @@ abstract class Command {
 	
 	protected function runMollyStarkAction() {
 		if ($this->useCharacter === TRUE &&
-			$this->actualPlayer->getCharacter()->getIsMollyStark() &&
+			$this->actualPlayer->getIsMollyStark() &&
 			$this->actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
 		
 			$drawnCards = GameUtils::drawCards($this->game, 1);
 			$handCards = unserialize($this->actualPlayer['hand_cards']);
 			$handCards = array_merge($handCards, $drawnCards);
 			$this->actualPlayer['hand_cards'] = serialize($handCards);
+		}
+	}
+	
+	protected function runSuzyLafayetteAction() {
+		if (!in_array($this->commandName, array('create', 'join', 'init', 'choose_character', 'start'))) {
+			if ($this->actualPlayer && $this->actualPlayer->getIsSuzyLafayette()) {
+				if (!in_array($this->commandName, array('throw', 'draw', 'choose_cards'))) {
+					$handCards = unserialize($this->actualPlayer['hand_cards']);
+					if (count($handCards) == 0) {
+						$drawnCards = GameUtils::drawCards($this->game, 1);
+						$handCards = array_merge($handCards, $drawnCards);
+						$this->actualPlayer['hand_cards'] = serialize($handCards);
+						$this->actualPlayer = $this->actualPlayer->save(TRUE);
+					}
+				}
+			} elseif ($this->enemyPlayer && $this->enemyPlayer->getIsSuzyLafayette()) {
+				$handCards = unserialize($this->enemyPlayer['hand_cards']);
+				if (count($handCards) == 0) {
+					$drawnCards = GameUtils::drawCards($this->game, 1);
+					$handCards = array_merge($handCards, $drawnCards);
+					$this->enemyPlayer['hand_cards'] = serialize($handCards);
+					$this->enemyPlayer = $this->enemyPlayer->save(TRUE);
+				}
+			}
 		}
 	}
 }
