@@ -19,6 +19,8 @@ class BangCommand extends Command {
 	
 	const USED_BANG_ALREADY = 9;
 	
+	const CANNOT_ATTACK_APACHE_KID = 10;
+	
 	protected $bangCard = NULL;
 
 	protected $attackedPlayer = NULL;
@@ -144,23 +146,34 @@ class BangCommand extends Command {
 				$this->actualPlayer['phase'] = Player::PHASE_NONE;
 				$this->actualPlayer->save();
 			} else {
-				$this->attackedPlayer['phase'] = Player::PHASE_UNDER_ATTACK;
-				$this->attackedPlayer->save(TRUE);
+				$canAttack = $this->checkCanAttackApacheKid();
+				
+				if ($canAttack === TRUE) {
+					$this->attackedPlayer['phase'] = Player::PHASE_UNDER_ATTACK;
+					$this->attackedPlayer->save(TRUE);
 
-				$this->actualPlayer['phase'] = Player::PHASE_WAITING;
-				$this->actualPlayer['bang_used'] = $this->actualPlayer['bang_used'] + 1;
-				if ($this->useCharacter === TRUE) {
-					if ($this->actualPlayer->getIsBelleStar() || $this->actualPlayer->getIsSlabTheKiller()) {
-						$notices = $this->actualPlayer->getNoticeList();
-						$notices['character_used'] = 1;
-						$this->actualPlayer->setNoticeList($notices);
+					$this->actualPlayer['phase'] = Player::PHASE_WAITING;
+				
+					if ($this->useCharacter === TRUE) {
+						if ($this->actualPlayer->getIsBelleStar() || $this->actualPlayer->getIsSlabTheKiller()) {
+							$notices = $this->actualPlayer->getNoticeList();
+							$notices['character_used'] = 1;
+							$this->actualPlayer->setNoticeList($notices);
+						}
 					}
+					
+					$this->game['inter_turn'] = $this->attackedPlayer['id'];
+					$this->game['inter_turn_reason'] = serialize(array('action' => 'bang', 'from' => $this->actualPlayer['id'], 'to' => $this->attackedPlayer['id']));
+					$this->game->save();
+				} else {
+					$this->check = self::CANNOT_ATTACK_APACHE_KID;
 				}
+				
+				// pouzitie bangu zapiseme aj ked hrac nemohol zautocit na apache kida
+				$this->actualPlayer['bang_used'] = $this->actualPlayer['bang_used'] + 1;
 				$this->actualPlayer->save();
 
-				$this->game['inter_turn'] = $this->attackedPlayer['id'];
-				$this->game['inter_turn_reason'] = serialize(array('action' => 'bang', 'from' => $this->actualPlayer['id'], 'to' => $this->attackedPlayer['id']));
-				$this->game->save();
+				
 			}
 			// vyhodime kartu bang
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
@@ -256,6 +269,23 @@ class BangCommand extends Command {
 			$message = array(
 				'text' => 'V tomto kole si uz pouzil bang',
 				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::CANNOT_ATTACK_APACHE_KID) {
+			$message = array(
+				'text' => $this->loggedUser['username'] . ' zautocil Bangom na ' . $attackedUser['username'],
+				'notToUser' => $attackedUser['id'],
+			);
+			$this->addMessage($message);
+
+			$message = array(
+				'text' => $this->loggedUser['username'] . ' na teba zautocil Bangom',
+				'toUser' => $attackedUser['id'],
+			);
+			$this->addMessage($message);
+			
+			$message = array(
+				'text' => 'Utok karovymi kartami proti Apache Kidovi nema ziadny efekt',
 			);
 			$this->addMessage($message);
 		}

@@ -45,6 +45,13 @@ abstract class Command {
 	protected $attackingPlayer = NULL;
 
 	/**
+	 * attacking cards
+	 * 
+	 * @var array<Card>
+	 */
+	protected $attackingCards = array();
+	
+	/**
 	 * players in game
 	 *
 	 * @var	array<Player>
@@ -501,6 +508,9 @@ abstract class Command {
 		$attackingPlayerId = $this->interTurnReason['from'];
 		$playerRepository = new PlayerRepository();
 		$this->attackingPlayer = $playerRepository->getOneById($attackingPlayerId);
+		
+		$cardRepository = new CardRepository();
+		$this->attackingCards = $cardRepository->getById($this->interTurnReason['cards']);
 
 		$roomRepository = new RoomRepository();
 		if ($game) {
@@ -832,7 +842,7 @@ abstract class Command {
 			$this->attackingPlayer->save();
 		} else {
 			if (in_array($this->interTurnReason['action'], array('indians', 'gatling', 'howitzer'))) {
-				$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer);
+				$nextPositionPlayer = $this->getNextPositionPlayer($this->game, $this->actualPlayer);
 				// ak je hrac na nasledujucej pozicii ten ktory utocil, ukoncime inter turn
 				if ($nextPositionPlayer['id'] == $this->attackingPlayer['id']) {
 					$this->game['inter_turn_reason'] = '';
@@ -853,7 +863,12 @@ abstract class Command {
 					$nextPositionPlayer['phase'] = Player::PHASE_UNDER_ATTACK;
 					$nextPositionPlayer->save();
 
-					$this->game['inter_turn_reason'] = serialize(array('action' => $this->interTurnReason['action'], 'from' => $this->attackingPlayer['id'], 'to' => $nextPositionPlayer['id']));
+					$this->game['inter_turn_reason'] = serialize(array(
+						'action' => $this->interTurnReason['action'],
+						'from' => $this->attackingPlayer['id'],
+						'to' => $nextPositionPlayer['id'],
+						'cards' => $this->interTurnReason['cards']
+					));
 					$this->game['inter_turn'] = $nextPositionPlayer['id'];
 				}
 			} else {
@@ -1121,6 +1136,46 @@ abstract class Command {
 				}
 			}
 		}
+	}
+	
+	protected function getNextPositionPlayer($game, $actualPlayer) {
+		$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($game, $actualPlayer);
+		if ($nextPositionPlayer['id'] == $this->attackingPlayer['id']) {
+			return $nextPositionPlayer;
+		} else {
+			if ($nextPositionPlayer->getIsApacheKid()) {
+				$isDiamonds = FALSE;
+				foreach ($this->attackingCards as $attackingCard) {
+					if ($attackingCard->getIsDiamonds()) {
+						$isDiamonds = TRUE;
+						break;
+					}
+				}
+
+				if ($isDiamonds) {
+					$nextPositionPlayer = $this->getNextPositionPlayer($game, $nextPositionPlayer);
+				}
+			}
+			return $nextPositionPlayer;
+		}
+	}
+	
+	protected function checkCanAttackApacheKid() {
+		$canAttack = TRUE;
+		if ($this->attackedPlayer->getIsApacheKid()) {
+			$isDiamonds = FALSE;
+			foreach ($this->cards as $attackingCard) {
+				if ($attackingCard->getIsDiamonds()) {
+					$isDiamonds = TRUE;
+					break;
+				}
+			}
+
+			if ($isDiamonds) {
+				$canAttack = FALSE;
+			}
+		}
+		return $canAttack;
 	}
 }
 

@@ -11,10 +11,11 @@ class IndiansCommand extends Command {
 
 	protected function run() {
 		if ($this->check == self::OK) {
+			// TODO apache kid moze byt hned za utocnikom
+			// TODO moze sa stat ze hraju uz len dvaja apache kid a utocnik - asi staci ak skontrolujeme ci next pos player != od actual
+			
 			$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer);
 
-			// TODO utocime len na zijucich hracov
-			
 			foreach ($this->players as $player) {
 				if ($player['actual_lifes'] > 0) {
 					if ($player['id'] == $this->actualPlayer['id']) {
@@ -33,7 +34,7 @@ class IndiansCommand extends Command {
 				}
 			}
 
-			$this->game['inter_turn_reason'] = serialize(array('action' => 'indians', 'from' => $this->actualPlayer['id'], 'to' => $nextPositionPlayer['id']));
+			$this->game['inter_turn_reason'] = serialize(array('action' => 'indians', 'from' => $this->actualPlayer['id'], 'to' => $nextPositionPlayer['id'], 'cards' => $this->getCardIds()));
 			$this->game['inter_turn'] = $nextPositionPlayer['id'];
 			$this->game->save();
 
