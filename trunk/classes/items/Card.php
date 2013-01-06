@@ -25,6 +25,11 @@ class Card extends LinkableItem {
 	const BLUE = 2;
 	const GREEN = 3;
 
+	const SPADES = 1;
+	const HEARTS = 2;
+	const CLUBS = 3;
+	const DIAMONDS = 4;
+	
 	/**
 	 * constructor
 	 *
@@ -155,7 +160,16 @@ class Card extends LinkableItem {
 	 * @return	boolean
 	 */
 	public function getIsRed() {
-		if ($this['color'] == 2 || $this['color'] == 4) {
+		if ($this->getIsHeart() || $this->getIsDiamonds()) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
+
+		
+	public function getIsSpades() {
+		if ($this['color'] == self::SPADES) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -163,15 +177,23 @@ class Card extends LinkableItem {
 	}
 	
 	public function getIsHeart() {
-		if ($this['color'] == 2) {
+		if ($this['color'] == self::HEARTS) {
 			return TRUE;
 		} else {
 			return FALSE;
 		}
 	}
 	
-	public function getIsSpades() {
-		if ($this['color'] == 1) {
+	public function getIsClubs() {
+		if ($this['color'] == self::CLUBS) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
+
+	public function getIsDiamonds() {
+		if ($this['color'] == self::DIAMONDS) {
 			return TRUE;
 		} else {
 			return FALSE;

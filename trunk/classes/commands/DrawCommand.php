@@ -335,6 +335,10 @@ class DrawCommand extends Command {
 					$this->game = $retVal['game'];
 					
 					if ($newLifes <= 0) {
+						// TODO check ci nema na ruke pivo / piva a ak ano automaticky ich pouzit na zachranu
+						// aspon dokym nebude na 1 zivote
+						// nezabudnut na tequilla joe
+						
 						$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer);
 						$this->game['turn'] = $nextPositionPlayer['id'];
 						$this->game->save();

@@ -235,7 +235,7 @@
 	<script type="text/javascript">
 		clearInterval(gameBoxTimeInterval);
 		{if $refreshGameBox}
-			gameBoxTimeInterval = setInterval('refreshGameBox({$game.id}, {$room.id})', 5000);
+			gameBoxTimeInterval = setInterval('refreshGameBox("{$game.id}", "{$room.id}")', 5000);
 		{/if}
 	</script>
 </div>

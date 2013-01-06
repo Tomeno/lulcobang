@@ -8,7 +8,9 @@ class DuelCommand extends Command {
 	const PLAYER_IS_NOT_IN_GAME = 6;
 	
 	const CANNOT_ATTACK_DEAD_PLAYER = 7;
-		
+	
+	const CANNOT_ATTACK_APACHE_KID = 8;
+
 	protected $attackedPlayer = NULL;
 
 	protected $template = 'you-are-attacked.tpl';
@@ -41,15 +43,21 @@ class DuelCommand extends Command {
 
 	protected function run() {
 		if ($this->check == self::OK) {
-			$this->attackedPlayer['phase'] = Player::PHASE_UNDER_ATTACK;
-			$this->attackedPlayer->save();
+			$canAttack = $this->checkCanAttackApacheKid();
+				
+			if ($canAttack === TRUE) {
+				$this->attackedPlayer['phase'] = Player::PHASE_UNDER_ATTACK;
+				$this->attackedPlayer->save();
 
-			$this->actualPlayer['phase'] = Player::PHASE_WAITING;
-			$this->actualPlayer->save();
+				$this->actualPlayer['phase'] = Player::PHASE_WAITING;
+				$this->actualPlayer->save();
 
-			$this->game['inter_turn'] = $this->attackedPlayer['id'];
-			$this->game['inter_turn_reason'] = serialize(array('action' => 'duel', 'from' => $this->actualPlayer['id'], 'to' => $this->attackedPlayer['id']));
-			$this->game->save();
+				$this->game['inter_turn'] = $this->attackedPlayer['id'];
+				$this->game['inter_turn_reason'] = serialize(array('action' => 'duel', 'from' => $this->actualPlayer['id'], 'to' => $this->attackedPlayer['id']));
+				$this->game->save();
+			} else {
+				$this->check = self::CANNOT_ATTACK_APACHE_KID;
+			}
 
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
 		}
@@ -88,6 +96,23 @@ class DuelCommand extends Command {
 			$message = array(
 				'text' => 'nemozes utocit na mrtveho hraca',
 				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::CANNOT_ATTACK_APACHE_KID) {
+			$message = array(
+				'text' => $this->loggedUser['username'] . ' zautocil duelom na ' . $attackedUser['username'],
+				'notToUser' => $attackedUser['id'],
+			);
+			$this->addMessage($message);
+			
+			$message = array(
+				'text' => $this->loggedUser['username'] . ' na teba zautocil duelom',
+				'toUser' => $attackedUser['id'],
+			);
+			$this->addMessage($message);
+			
+			$message = array(
+				'text' => 'Utok karovymi kartami proti Apache Kidovi nema ziadny efekt',
 			);
 			$this->addMessage($message);
 		}
