@@ -19,10 +19,11 @@ abstract class DefensiveCommand extends Command {
 			} else {
 				// proti Belle Star sa nedaju pouzit karty vylozene na stole
 				$attackingPlayerNotices = $this->attackingPlayer->getNoticeList();
-				if ($attackingPlayerNotices['character_used'] && $this->attackingPlayer->getIsBelleStar()) {
+				if ($attackingPlayerNotices['character_used'] && $this->attackingPlayer->getIsBelleStar($this->game)) {
 					$attackingUser = $this->attackingPlayer->getUser();
 					$card = $this->cards[0];
 					// vedla a uhyb sa daju pouzit, preto tu je podmienka ze karta musi byt zelena
+					// ak tu bude elena fuente, tak asi nastane problem, lebo ona moze z ruky odhodit aj zelenu kartu
 					if ($card->getIsGreen()) {
 						$message = array(
 							'toUser' => $this->loggedUser['id'],

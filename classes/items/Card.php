@@ -159,8 +159,8 @@ class Card extends LinkableItem {
 	 *
 	 * @return	boolean
 	 */
-	public function getIsRed() {
-		if ($this->getIsHeart() || $this->getIsDiamonds()) {
+	public function getIsRed(Game $game) {
+		if ($this->getIsHearts($game) || $this->getIsDiamonds($game)) {
 			return TRUE;
 		} else {
 			return FALSE;
@@ -168,35 +168,55 @@ class Card extends LinkableItem {
 	}
 
 		
-	public function getIsSpades() {
-		if ($this['color'] == self::SPADES) {
+	public function getIsSpades(Game $game) {
+		if ($game->getIsHNBlessing()) {
+			return FALSE;
+		} elseif ($game->getIsHNCurse()) {
 			return TRUE;
 		} else {
-			return FALSE;
+			if ($this['color'] == self::SPADES) {
+				return TRUE;
+			} else {
+				return FALSE;
+			}
 		}
 	}
 	
-	public function getIsHeart() {
-		if ($this['color'] == self::HEARTS) {
+	public function getIsHearts(Game $game) {
+		if ($game->getIsHNBlessing()) {
 			return TRUE;
-		} else {
+		} elseif ($game->getIsHNCurse()) {
 			return FALSE;
+		} else {
+			if ($this['color'] == self::HEARTS) {
+				return TRUE;
+			} else {
+				return FALSE;
+			}
 		}
 	}
 	
-	public function getIsClubs() {
-		if ($this['color'] == self::CLUBS) {
-			return TRUE;
-		} else {
+	public function getIsClubs(Game $game) {
+		if ($game->getIsHNBlessing() || $game->getIsHNCurse()) {
 			return FALSE;
+		} else {
+			if ($this['color'] == self::CLUBS) {
+				return TRUE;
+			} else {
+				return FALSE;
+			}
 		}
 	}
 
-	public function getIsDiamonds() {
-		if ($this['color'] == self::DIAMONDS) {
-			return TRUE;
-		} else {
+	public function getIsDiamonds(Game $game) {
+		if ($game->getIsHNBlessing() || $game->getIsHNCurse()) {
 			return FALSE;
+		} else {
+			if ($this['color'] == self::DIAMONDS) {
+				return TRUE;
+			} else {
+				return FALSE;
+			}
 		}
 	}
 

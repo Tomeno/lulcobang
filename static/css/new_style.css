@@ -154,7 +154,7 @@ body
 #player_07 { left:900px; top:240px; }
 #player_08 { left:850px; top:480px; }
 
-#kopa, #odpad, .throw, .play {
+#kopa, #odpad, .throw, .play, #high_noon_actual_card {
 	position: absolute;
 }
 
@@ -182,6 +182,13 @@ body
 	left:600px;
 	top:425px;
 }
+
+#high_noon_actual_card
+{
+	left:525px;
+	top:370px;
+}
+
 
 #chat {
 	width: 10%;
@@ -239,6 +246,11 @@ p.copy {
 	color: black;
 }
 
+.formular input.remember_checkbox {
+	width: auto;
+	height: auto;
+}
+
 .formular textarea {
 	height: 90px;
 	width: 300px;
@@ -247,6 +259,11 @@ p.copy {
 
 .formular span.label {
 	display: block;
+}
+
+.formular span.checkbox.label {
+	padding-left: 15px;
+	display: inline;
 }
 
 .formular .field {
@@ -395,4 +412,8 @@ p.copy {
 
 .row.cards {
 	padding-left: 20px;
+}
+
+.card.high_noon {
+	left: 100px;
 }

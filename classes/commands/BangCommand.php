@@ -34,13 +34,17 @@ class BangCommand extends Command {
 	protected function check() {
 		if ($this->actualPlayer['phase'] == Player::PHASE_PLAY) {
 			$canPlayMoreBangs = FALSE;
-			if ($this->actualPlayer['bang_used'] < 1) {
+			$bangLimit = 1;
+			if ($this->game->getIsHNTheSermon()) {
+				$bangLimit = 0;
+			} elseif ($this->game->getIsHNShootout()) {
+				$bangLimit = 2;
+			}
+			if ($this->actualPlayer['bang_used'] < $bangLimit) {
 				$canPlayMoreBangs = TRUE;
-				// TODO pocet kariet bang zavisi od kariet v rozsireni kazatel a prestrelka, upravit tento if
-				// ani willy kid nemoze strielat ked pride kazatel
-			} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsWillyTheKid()) {
+			} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsWillyTheKid($this->game) && !$this->game->getIsHNTheSermon()) {
 				$canPlayMoreBangs = TRUE;
-			} elseif ($this->actualPlayer->getHasVolcanicOnTheTable()) {
+			} elseif ($this->actualPlayer->getHasVolcanicOnTheTable() && !$this->game->getIsHNTheSermon()) {
 				$canPlayMoreBangs = TRUE;
 			}
 			
@@ -80,13 +84,21 @@ class BangCommand extends Command {
 					$this->check = self::CANNOT_PLAY_BANG_AGAINST_YOURSELF;
 				}
 			} else {
-				$this->check = self::USED_BANG_ALREADY;
+				if ($this->game->getIsHNTheSermon()) {
+					$this->check = self::CANNOT_PLAY_BANG;
+				} else {
+					$this->check = self::USED_BANG_ALREADY;
+				}
 			}
 		} elseif ($this->actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
 			if ($this->interTurnReason['action'] == 'indians') {
 				$this->check = self::OK;
 			} elseif ($this->interTurnReason['action'] == 'duel') {
-				$this->check = self::OK;
+				if ($this->game->getIsHNTheSermon() && $this->actualPlayer['id'] == $this->attackingPlayer['id']) {
+					$this->check = self::CANNOT_PLAY_BANG;
+				} else {
+					$this->check = self::OK;
+				}
 			} else {
 				$this->check = self::CANNOT_PLAY_BANG;
 			}
@@ -98,14 +110,6 @@ class BangCommand extends Command {
 		} else {
 			$this->check = self::NOT_YOUR_TURN;
 		}
-		// TODO check if actual player is in play state - momentalne moze hrat bang aj ked este nepotiahol jail a myslim ze by to slo aj keby nepotiahol vobec
-
-		// TODO check actual player state - if waiting cannot play bang again
-
-		// TODO check if has volcanic or is willy the kid for playing more than one bang in a round
-
-		// TODO create as checker
-			
 	}
 
 	protected function run() {
@@ -155,7 +159,7 @@ class BangCommand extends Command {
 					$this->actualPlayer['phase'] = Player::PHASE_WAITING;
 				
 					if ($this->useCharacter === TRUE) {
-						if ($this->actualPlayer->getIsBelleStar() || $this->actualPlayer->getIsSlabTheKiller()) {
+						if ($this->actualPlayer->getIsBelleStar($this->game) || $this->actualPlayer->getIsSlabTheKiller($this->game)) {
 							$notices = $this->actualPlayer->getNoticeList();
 							$notices['character_used'] = 1;
 							$this->actualPlayer->setNoticeList($notices);

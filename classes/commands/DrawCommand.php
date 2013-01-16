@@ -41,6 +41,12 @@ class DrawCommand extends Command {
 	const PLAYER_DOESNT_HAVE_CARD_ON_THE_TABLE = 19;
 	
 	const NO_CARD_SELECTED = 20;
+	
+	const DRAW_HIGH_NOON = 21;
+	
+	const DRAW_FISTFUL = 22;
+	
+	const LOST_ONE_LIFE_AND_CONTINUE = 23;
 
 	protected $template = 'cards-choice.tpl';
 
@@ -65,7 +71,7 @@ class DrawCommand extends Command {
 							$this->check = self::BARREL_ALREADY_USED;
 						} else {
 							$attackingPlayerNotices = $this->attackingPlayer->getNoticeList();
-							if ($attackingPlayerNotices['character_used'] && $this->attackingPlayer->getIsBelleStar()) {
+							if ($attackingPlayerNotices['character_used'] && $this->attackingPlayer->getIsBelleStar($this->game)) {
 								$attackingUser = $this->attackingPlayer->getUser();
 								$message = array(
 									'toUser' => $this->loggedUser['id'],
@@ -81,7 +87,7 @@ class DrawCommand extends Command {
 						$this->check = self::DO_NOT_HAVE_BARREL;
 					}
 				}
-			} elseif ($this->useCharacter && $this->actualPlayer->getIsJourdonnais()) {
+			} elseif ($this->useCharacter && $this->actualPlayer->getIsJourdonnais($this->game)) {
 				if ($this->interTurnReason['action'] !== 'indians') {
 					$this->params[0] = 'barrel';	// nastavime parameter ako keby chcel pouzit barel
 					if ($notices['character_jourdonnais_used']) {
@@ -102,7 +108,7 @@ class DrawCommand extends Command {
 			$playerOnTurn = $this->game->getPlayerOnTurn();
 			if ($playerOnTurn['id'] == $this->actualPlayer['id']) {
 				if ($this->actualPlayer['phase'] == Player::PHASE_DRAW) {
-					if ($this->useCharacter === TRUE && $this->actualPlayer->getIsJesseJones()) {
+					if ($this->useCharacter === TRUE && $this->actualPlayer->getIsJesseJones($this->game)) {
 						// TODO messages
 						$attackedPlayer = $this->params[0];
 						foreach ($this->players as $player) {
@@ -126,11 +132,11 @@ class DrawCommand extends Command {
 						} else {
 							$this->check = self::PLAYER_NOT_SELECTED;
 						}
-					} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsPedroRamirez()) {
+					} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsPedroRamirez($this->game)) {
 						// TODO skontrolovat ci su v odhadzovacom balicku nejake karty
 						// TODO messages
 						$this->check = self::OK;
-					} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsPatBrennan()) {
+					} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsPatBrennan($this->game)) {
 						// TODO messages
 						$attackedPlayer = $this->params[0];
 						foreach ($this->players as $player) {
@@ -159,7 +165,7 @@ class DrawCommand extends Command {
 						} else {
 							$this->check = self::PLAYER_NOT_SELECTED;
 						}
-					} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsVeraCuster()) {
+					} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsVeraCuster($this->game)) {
 						// TODO messages
 						$attackedPlayer = $this->params[0];
 						foreach ($this->players as $player) {
@@ -204,12 +210,16 @@ class DrawCommand extends Command {
 					} else {
 						$this->check = self::DRAW_JAIL_FIRST;
 					}
-				} elseif ($this->actualPlayer['role'] == Role::SHERIFF && $this->game['round'] >= 2 && $this->actualPlayer['phase'] == Player::PHASE_PREDRAW) {
-					$this->check = self::DRAW_EXTENSION_CARD_FIRST;
 				} elseif ($this->actualPlayer['phase'] == Player::PHASE_PLAY) {
 					$this->check = self::ALREADY_DRAW;
 				} elseif ($this->actualPlayer['phase'] == Player::PHASE_WAITING) {
 					$this->check = self::WAIT;
+				} elseif ($this->actualPlayer['phase'] == Player::PHASE_DRAW_HIGH_NOON) {
+					$this->check = self::DRAW_HIGH_NOON;
+				} elseif ($this->actualPlayer['phase'] == Player::PHASE_DRAW_FISTFUL) {
+					$this->check = self::DRAW_FISTFUL;
+				} elseif ($this->actualPlayer['phase'] == Player::PHASE_HIGH_NOON) {
+					$this->check = self::LOST_ONE_LIFE_AND_CONTINUE;
 				} else {
 					throw new Exception('neviem co sa este moze udiat', 1328469676);
 				}
@@ -217,6 +227,7 @@ class DrawCommand extends Command {
 				$this->check = self::NOT_YOUR_TURN;
 			}
 		}
+		var_dump($this->check);
 	}
 
 	protected function run() {
@@ -226,7 +237,7 @@ class DrawCommand extends Command {
 				// TODO tieto karty treba najprv ukazat hracom cez log a aby sa dali vyhodit, musia byt najprv v ruke aktualneho hraca a potom ich vyhodi
 
 				$count = 1;
-				if ($this->useCharacter && $this->actualPlayer->getIsLuckyDuke()) {
+				if ($this->useCharacter && $this->actualPlayer->getIsLuckyDuke($this->game)) {
 					$count = 2;
 				}
 				
@@ -237,7 +248,7 @@ class DrawCommand extends Command {
 				foreach ($drawnCards as $drawnCardId) {
 					$drawnCard = $cardRepository->getOneById($drawnCardId);
 					$thrownCards[] = $drawnCard;
-					if ($drawnCard->getIsHeart()) {
+					if ($drawnCard->getIsHearts($this->game)) {
 						$isHeart = TRUE;
 						// break tu nie je lebo musime prejst cez vsetky karty
 						// aby sme vyrobili pole kariet ktore treba vyhodit
@@ -261,23 +272,14 @@ class DrawCommand extends Command {
 					$this->game['turn'] = $nextPositionPlayer['id'];
 					$this->game->save();
 			
-					// TODO next player check if is sheriff - phase predraw,
-					// if has dynamite and/or jail - phase dynamite / jail, else phase draw
-					if ($nextPositionPlayer->getHasDynamiteOnTheTable()) {
-						$phase = Player::PHASE_DYNAMITE;
-					} elseif ($nextPositionPlayer->getHasJailOnTheTable()) {
-						$phase = Player::PHASE_JAIL;
-					} else {
-						$phase = Player::PHASE_DRAW;
-					}
-					$nextPositionPlayer['phase'] = $phase;
+					$nextPositionPlayer['phase'] = $this->getNextPhase($nextPositionPlayer);
 					$nextPositionPlayer->save();
 				}
 				// ktora karta je v odhadzovacom balicku skor? jail ci ta ktoru som potiahol?
 				GameUtils::throwCards($this->game, NULL, $thrownCards);
 			} elseif ($this->params[0] == 'dynamite') {
 				$count = 1;
-				if ($this->useCharacter && $this->actualPlayer->getIsLuckyDuke()) {
+				if ($this->useCharacter && $this->actualPlayer->getIsLuckyDuke($this->game)) {
 					$count = 2;
 				}
 				$drawnCards = GameUtils::drawCards($this->game, $count);
@@ -287,7 +289,7 @@ class DrawCommand extends Command {
 				foreach ($drawnCards as $drawnCardId) {
 					$drawnCard = $cardRepository->getOneById($drawnCardId);
 					$thrownCards[] = $drawnCard;
-					if (!$drawnCard->getIsSpades() || in_array($drawnCard['value'], array('10', 'J', 'Q', 'K', 'A'))) {
+					if (!$drawnCard->getIsSpades($this->game) || in_array($drawnCard['value'], array('10', 'J', 'Q', 'K', 'A'))) {
 						$isSafe = TRUE;
 						// break tu nie je lebo musime prejst cez vsetky karty
 						// aby sme vyrobili pole kariet ktore treba vyhodit
@@ -361,7 +363,7 @@ class DrawCommand extends Command {
 				GameUtils::throwCards($this->game, NULL, $thrownCards);
 			} elseif ($this->params[0] == 'barrel') {
 				$count = 1;
-				if ($this->useCharacter && $this->actualPlayer->getIsLuckyDuke()) {
+				if ($this->useCharacter && $this->actualPlayer->getIsLuckyDuke($this->game)) {
 					$count = 2;
 				}
 				$drawnCards = GameUtils::drawCards($this->game, $count);	// TODO pocet zavisi aj od charakteru
@@ -371,7 +373,7 @@ class DrawCommand extends Command {
 				foreach ($drawnCards as $drawnCardId) {
 					$drawnCard = $cardRepository->getOneById($drawnCardId);
 					$thrownCards[] = $drawnCard;
-					if ($drawnCard->getIsHeart()) {
+					if ($drawnCard->getIsHearts($this->game)) {
 						$isHeart = TRUE;
 						// break tu nie je lebo musime prejst cez vsetky karty
 						// aby sme vyrobili pole kariet ktore treba vyhodit
@@ -396,7 +398,7 @@ class DrawCommand extends Command {
 				}
 				GameUtils::throwCards($this->game, NULL, $thrownCards);
 			} else {
-				if ($this->useCharacter === TRUE && $this->actualPlayer->getIsVeraCuster()) {
+				if ($this->useCharacter === TRUE && $this->actualPlayer->getIsVeraCuster($this->game)) {
 					$notices = $this->actualPlayer->getNoticeList();
 					$selectedCharacter = $this->enemyPlayer->getCharacter();
 					$notices['selected_character'] = $selectedCharacter['id'];
@@ -411,11 +413,11 @@ class DrawCommand extends Command {
 				$counts = $this->getCountCards();
 				
 				if ($this->useCharacter === TRUE) {
-					if ($this->actualPlayer->getIsJesseJones()) {
+					if ($this->actualPlayer->getIsJesseJones($this->game)) {
 						$retVal = GameUtils::moveCards($this->game, $this->enemyPlayersCards[$this->enemyPlayer['id']], $this->enemyPlayer, 'hand', $this->actualPlayer, $this->place);
 						$this->actualPlayer = $retVal['playerTo'];
 						$this->game = $retVal['game'];
-					} elseif ($this->actualPlayer->getIsPatBrennan()) {
+					} elseif ($this->actualPlayer->getIsPatBrennan($this->game)) {
 						$retVal = GameUtils::moveCards($this->game, $this->enemyPlayersCards[$this->enemyPlayer['id']], $this->enemyPlayer, 'hand', $this->actualPlayer, $this->place);
 						$this->actualPlayer = $retVal['playerTo'];
 						$this->game = $retVal['game'];
@@ -426,7 +428,7 @@ class DrawCommand extends Command {
 						$this->game['distance_matrix'] = serialize($matrix);
 						$this->game->save();
 						
-					} elseif ($this->actualPlayer->getIsPedroRamirez()) {
+					} elseif ($this->actualPlayer->getIsPedroRamirez($this->game)) {
 						$throwPile = unserialize($this->game['throw_pile']);
 						$card = array_pop($throwPile);
 						$this->game['throw_pile'] = serialize($throwPile);
@@ -452,35 +454,61 @@ class DrawCommand extends Command {
 
 	private function getCountCards() {
 		// default
-		$counts = array(
-			'draw' => 2,
-			'pick' => 2,
-			'rest_action' => '',
-		);
+		if ($this->game->getIsHNTheTrain()) {
+			$counts = array(
+				'draw' => 3,
+				'pick' => 3,
+				'rest_action' => '',
+			);
+		} elseif ($this->game->getIsHNThirst()) {
+			$counts = array(
+				'draw' => 1,
+				'pick' => 1,
+				'rest_action' => '',
+			);
+		} else {
+			$counts = array(
+				'draw' => 2,
+				'pick' => 2,
+				'rest_action' => '',
+			);
+		}
 
 		// TODO ak mame extension a je tu vlak alebo zizen tak su pocty ine
 		if ($this->useCharacter === TRUE) {
 			$character = $this->actualPlayer;
-			if ($character->getIsKitCarlson()) {
+			if ($character->getIsKitCarlson($this->game)) {
 				$counts = array(
 					'draw' => 3,
 					'pick' => 2,
 					'rest_action' => 'back_to_deck',
 				);
-			} elseif ($character->getIsPixiePete()) {
+				if ($this->game->getIsHNTheTrain()) {
+					$counts['pick'] = 3;
+					$counts['rest_action'] = '';
+				}
+			} elseif ($character->getIsPixiePete($this->game)) {
 				$counts = array(
 					'draw' => 3,
 					'pick' => 3,
 					'rest_action' => '',
 				);
-			} elseif ($character->getIsBillNoface()) {
+				if ($this->game->getIsHNTheTrain()) {
+					$counts['draw'] = $counts['draw'] + 1;
+					$counts['pick'] = $counts['pick'] + 1;
+				}
+			} elseif ($character->getIsBillNoface($this->game)) {
 				$drawAndPick = 1 + ($this->actualPlayer['max_lifes'] - $this->actualPlayer['actual_lifes']);
 				$counts = array(
 					'draw' => $drawAndPick,
 					'pick' => $drawAndPick,
 					'rest_action' => '',
 				);
-			} elseif ($character->getIsBlackJack()) {
+				if ($this->game->getIsHNTheTrain()) {
+					$counts['draw'] = $counts['draw'] + 1;
+					$counts['pick'] = $counts['pick'] + 1;
+				}
+			} elseif ($character->getIsBlackJack($this->game)) {
 				$cards = $this->game->getDrawPile();
 				for ($i = 0; $i < 2; $i++) {
 					$card = array_pop($cards);
@@ -488,7 +516,7 @@ class DrawCommand extends Command {
 
 				$draw = 2;
 				$pick = 2;
-				if ($card->getIsRed()) {
+				if ($card->getIsRed($this->game)) {
 					$draw = 3;
 					$pick = 3;
 				}
@@ -498,24 +526,40 @@ class DrawCommand extends Command {
 					'pick' => $pick,
 					'rest_action' => 'show_second',
 				);
-			} elseif ($character->getIsJesseJones()) {
+				if ($this->game->getIsHNTheTrain()) {
+					$counts['draw'] = $counts['draw'] + 1;
+					$counts['pick'] = $counts['pick'] + 1;
+				}
+			} elseif ($character->getIsJesseJones($this->game)) {
 				$counts = array(
 					'draw' => 1,
 					'pick' => 1,
 					'rest_action' => '',
 				);
-			} elseif ($character->getIsPedroRamirez()) {
+				if ($this->game->getIsHNTheTrain()) {
+					$counts['draw'] = $counts['draw'] + 1;
+					$counts['pick'] = $counts['pick'] + 1;
+				}
+			} elseif ($character->getIsPedroRamirez($this->game)) {
 				$counts = array(
 					'draw' => 1,
 					'pick' => 1,
 					'rest_action' => '',
 				);
-			} elseif ($character->getIsPatBrennan()) {
+				if ($this->game->getIsHNTheTrain()) {
+					$counts['draw'] = $counts['draw'] + 1;
+					$counts['pick'] = $counts['pick'] + 1;
+				}
+			} elseif ($character->getIsPatBrennan($this->game)) {
 				$counts = array(
 					'draw' => 0,
 					'pick' => 0,
 					'rest_action' => '',
 				);
+				if ($this->game->getIsHNTheTrain()) {
+					$counts['draw'] = $counts['draw'] + 1;
+					$counts['pick'] = $counts['pick'] + 1;
+				}
 			}
 		}
 		return $counts;
@@ -631,10 +675,16 @@ class DrawCommand extends Command {
 				);
 				$this->addMessage($message);
 			}
-		} elseif ($this->check == self::DRAW_EXTENSION_CARD_FIRST) {
+		} elseif ($this->check == self::DRAW_HIGH_NOON) {
 			$message = array(
 				'toUser' => $this->loggedUser['id'],
-				'localizeKey' => 'draw_extension_card_first',
+				'text' => 'Potiahni najprv kartu z balicka High noon',
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::DRAW_FISTFUL) {
+			$message = array(
+				'toUser' => $this->loggedUser['id'],
+				'text' => 'Potiahni najprv kartu z balicka Fistful of cards',
 			);
 			$this->addMessage($message);
 		} elseif ($this->check == self::DRAW_DYNAMITE_FIRST) {
@@ -706,6 +756,12 @@ class DrawCommand extends Command {
 		} elseif ($this->check == self::YOU_ARE_UNDER_DUEL_ATTACK) {
 			$message = array(
 				'text' => 'Pri duele nemozes pouzit barel',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::LOST_ONE_LIFE_AND_CONTINUE) {
+			$message = array(
+				'text' => 'Stiahni si jeden zivot a pokracuj v hre',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);
