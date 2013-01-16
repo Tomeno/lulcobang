@@ -67,7 +67,9 @@ class LoggedUser {
 			
 			$cookieValue = md5(time() . $user['id'] . $user['username']);
 			DB::update(DB_PREFIX . 'user', array('cookie_value' => $cookieValue), 'id = ' . $user['id']);
-			setcookie(self::$cookieName, $cookieValue, NULL, '/');
+			
+			$expire = Utils::post('remember') == 1 ? strtotime('+1 year') : 0;
+			setcookie(self::$cookieName, $cookieValue, $expire, '/');
 
 			Utils::redirect(Utils::getActualUrlWithoutGetParameters(), FALSE);
 		}

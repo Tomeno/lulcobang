@@ -27,7 +27,7 @@ class ThrowCommand extends Command {
 	protected $template = 'you-are-attacked.tpl';
 	
 	protected function check() {
-		if ($this->useCharacter === TRUE && $this->actualPlayer->getIsDocHolyday()) {
+		if ($this->useCharacter === TRUE && $this->actualPlayer->getIsDocHolyday($this->game)) {
 			$notices = $this->actualPlayer->getNoticeList();
 			if (isset($notices['character_used']) && $notices['character_used'] > 0) {
 				$this->check = self::CHARACTER_ALREADY_USED;
@@ -91,7 +91,7 @@ class ThrowCommand extends Command {
 					$this->check = self::YOU_HAVE_TO_THROW_TWO_CARDS;
 				}
 			}	
-		} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsSidKetchum()) {
+		} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsSidKetchum($this->game)) {
 			// TODO sid ketchum moze pouzit tuto moznost aj mimo svoj tah
 			
 			// znulujeme karty lebo uz tam jedna je z precheckera
@@ -128,7 +128,7 @@ class ThrowCommand extends Command {
 			} else {
 				$this->check = self::YOU_HAVE_TO_THROW_TWO_CARDS;
 			}
-		} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsJoseDelgado()) {
+		} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsJoseDelgado($this->game)) {
 			$notices = $this->actualPlayer->getNoticeList();
 			if (isset($notices['character_used']) && $notices['character_used'] > 1) {
 				$this->check = self::CHARACTER_ALREADY_USED_TWICE;
@@ -165,7 +165,7 @@ class ThrowCommand extends Command {
 			}
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards, $place);
 			
-			if ($this->useCharacter === TRUE && $this->actualPlayer->getIsJoseDelgado()) {
+			if ($this->useCharacter === TRUE && $this->actualPlayer->getIsJoseDelgado($this->game)) {
 				$drawnCards = GameUtils::drawCards($this->game, 2);
 				$handCards = unserialize($this->actualPlayer['hand_cards']);
 				$handCards = array_merge($handCards, $drawnCards);

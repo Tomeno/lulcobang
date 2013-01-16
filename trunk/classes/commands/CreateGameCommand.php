@@ -18,7 +18,8 @@ class CreateGameCommand extends Command {
 		if ($this->check) {
 			$params = array(
 				'room' => $this->room['id'],
-				'creator' => $this->loggedUser['id']
+				'creator' => $this->loggedUser['id'],
+				'game_sets' => $this->room['game_sets'],
 			);
 			// TODO use repository
 			DB::insert(DB_PREFIX . 'game', $params);

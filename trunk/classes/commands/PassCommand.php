@@ -20,7 +20,7 @@ class PassCommand extends Command {
 					$handCardsCount = count($this->actualPlayer->getHandCards());
 					if ($this->actualPlayer['actual_lifes'] >= $handCardsCount) {
 						$this->check = self::OK;
-					} elseif ($this->useCharacter == TRUE && $handCardsCount <= 10 && $this->actualPlayer->getIsSeanMallory()) {
+					} elseif ($this->useCharacter == TRUE && $handCardsCount <= 10 && $this->actualPlayer->getIsSeanMallory($this->game)) {
 						$this->check = self::OK;
 					} else {
 						$this->check = self::TOO_MANY_CARDS;
@@ -58,22 +58,12 @@ class PassCommand extends Command {
 			$this->actualPlayer->setNoticeList($notices);
 			$this->actualPlayer->save();
 
-			$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer);
+			$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer, TRUE);
 			$this->game['turn'] = $nextPositionPlayer['id'];
 			$this->game->save();
 
-			// TODO next player check if is sheriff - phase predraw, 
-			// if has dynamite and/or jail - phase dynamite / jail, else phase draw
-			if ($nextPositionPlayer->getHasDynamiteOnTheTable()) {
-				$phase = Player::PHASE_DYNAMITE;
-			} elseif ($nextPositionPlayer->getHasJailOnTheTable()) {
-				$phase = Player::PHASE_JAIL;
-			} else {
-				$phase = Player::PHASE_DRAW;
-			}
-			$nextPositionPlayer['phase'] = $phase;
+			$nextPositionPlayer['phase'] = $this->getNextPhase($nextPositionPlayer);
 			$nextPositionPlayer->save();
-		
 		}
 	}
 

@@ -30,7 +30,7 @@ class Game extends Item {
 		$throwPileCards = array();
 		if ($throwPile) {
 			foreach ($throwPile as $cardId) {
-				$throwPileCards[] = $cardRepository->getOneById($cardId);
+				$throwPileCards[] = $cardRepository->getOneById(intval($cardId));
 			}
 		}
 		$this->setAdditionalField('throw_pile', $throwPileCards);
@@ -40,6 +40,49 @@ class Game extends Item {
 		$this->setAdditionalField('players', $players);
 		
 		$this->setAdditionalField('matrix', unserialize($game['distance_matrix']));
+		
+		$gameSets = unserialize($game['game_sets']);
+		if (in_array(3, $gameSets)) {
+			$isHighNoon = TRUE;
+		} else {
+			$isHighNoon = FALSE;
+		}
+		$this->setAdditionalField('isHighNoon', $isHighNoon);
+		
+		if ($isHighNoon) {
+			$highNoonPile = unserialize($game['high_noon_pile']);
+			$highNoonRepository = new HighNoonRepository(TRUE);
+			$highNoonPileCards = array();
+			if ($highNoonPile) {
+				foreach ($highNoonPile as $cardId) {
+					$highNoonPileCards[] = $highNoonRepository->getOneById(intval($cardId));
+				}
+			}
+			$this->setAdditionalField('highNoonPile', $highNoonPileCards);
+			
+			if ($game['high_noon']) {
+				$highNoonRepository = new HighNoonRepository();
+				$highNoon = $highNoonRepository->getOneById(intval($game['high_noon']));
+				$this->setAdditionalField('highNoon', $highNoon);
+			}
+		}
+	}
+	
+		
+	public function __call($methodName, $arguments) {
+		if (substr($methodName, 0, 7) === 'getIsHN') {
+			if ($this['high_noon']) {
+				$realHighNoonCard = $this->getAdditionalField('highNoon');
+				$realHighNoon = strtolower(str_replace(array(' ', '\''), '', $realHighNoonCard['title']));
+				$highNoon = strtolower(str_replace('getIsHN', '', $methodName));
+
+				if ($realHighNoon == $highNoon) {
+					return TRUE;
+				}
+			}
+			return FALSE;
+		}
+		// TODO fistful
 	}
 
 	public function getThrowPile() {
@@ -112,6 +155,22 @@ class Game extends Item {
 			return $matrix[$playerFrom][$playerTo];
 		}
 		return FALSE;
+	}
+
+	public function getIsHighNoon() {
+		return $this->getAdditionalField('isHighNoon');
+	}
+	
+	public function getHighNoonActualCard() {
+		return $this->getAdditionalField('highNoon');
+	}
+	
+	public function getHighNoonPile() {
+		return $this->getAdditionalField('highNoonPile');
+	}
+	
+	public function getTopHighNoonPile() {
+		return array_pop($this->getHighNoonPile());
 	}
 }
 

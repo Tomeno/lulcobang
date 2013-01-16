@@ -18,8 +18,9 @@ class ActualPlayerHasCardsChecker extends Checker {
 			$params = $this->command->getParams();
 			$localizedParams = $this->command->getLocalizedParams();
 			$precheck = TRUE;
+			$game = $this->command->getGame();
 
-			if ($this->command->getUseCharacter() === TRUE && $actualPlayer->getIsDocHolyday()) {
+			if ($this->command->getUseCharacter() === TRUE && $actualPlayer->getIsDocHolyday($game)) {
 				// v pripade doca holydaya spravime celu kontrolu v prikaze throw
 				return TRUE;
 			}
@@ -39,7 +40,7 @@ class ActualPlayerHasCardsChecker extends Checker {
 				$checkingMethod = str_replace('###CARD_PLACEHOLDER###', ucfirst($cardName), $checkingMethod);
 				
 				// pre calamity janet prehodime karty bang a missed ak sa pouziva charakter
-				if ($this->command->getUseCharacter() == TRUE && $actualPlayer->getIsCalamityJanet()) {
+				if ($this->command->getUseCharacter() == TRUE && $actualPlayer->getIsCalamityJanet($game)) {
 					if ($checkingMethod == 'getHasMissedOnHand') {
 						$checkingMethod = 'getHasBangOnHand';
 					} elseif ($checkingMethod == 'getHasBangOnHand') {
@@ -57,7 +58,7 @@ class ActualPlayerHasCardsChecker extends Checker {
 				}
 				$checkingMethod = str_replace('###PLACE_PLACEHOLDER###', $place, $checkingMethod);
 
-				if ($this->command->getUseCharacter() == TRUE && $actualPlayer->getIsElenaFuente()) {
+				if ($this->command->getUseCharacter() == TRUE && $actualPlayer->getIsElenaFuente($game)) {
 					$checkingMethod = 'getHas' . ucfirst($cardName) . 'OnHand';
 				}
 				

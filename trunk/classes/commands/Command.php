@@ -497,6 +497,9 @@ abstract class Command {
 				'ActualPlayerHasCardsChecker' => 'getHasBrawlOnHand',
 			),
 		),
+		'draw_high_noon' => array(
+			'class' => 'DrawHighNoonCommand',
+		),
 	);
 
 	private function  __construct($params, $localizedParams, $game) {
@@ -567,19 +570,17 @@ abstract class Command {
 			$playerRepository = new PlayerRepository();
 			$actualPlayer = $playerRepository->getOneByUserAndGame($loggedUser['id'], $game['id']);
 
-			if ($actualPlayer->getIsCalamityJanet()) {
+			if ($actualPlayer->getIsCalamityJanet($game)) {
 				// kvoli calamity janet musime vymenit bang a missed ak pouziva svoj charakter
 				// uprava sa tyka aj metod v ActualPlayerHasCardsChecker getHasBang/MissedOnHand()
 				if (in_array($commandName, array('bang', 'missed'))) {
-					if ($actualPlayer->getIsCalamityJanet()) {
-						if ($commandName == 'bang') {
-							$commandName = 'missed';
-						} elseif ($commandName == 'missed') {
-							$commandName = 'bang';
-						}
+					if ($commandName == 'bang') {
+						$commandName = 'missed';
+					} elseif ($commandName == 'missed') {
+						$commandName = 'bang';
 					}
 				}
-			} elseif ($actualPlayer->getIsElenaFuente()) {
+			} elseif ($actualPlayer->getIsElenaFuente($game)) {
 				// ak je elena fuente pod utokmi a pouziva svoj charakter, berieme to ako keby pouzivala missed
 				// uprava sa tyka aj metody v ActualPlayerHasCardsChecker
 				if ($actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
@@ -832,7 +833,7 @@ abstract class Command {
 	
 	protected function changeInterturn() {
 		$attackingPlayerNotices = $this->attackingPlayer->getNoticeList();
-		if ($this->attackingPlayer->getIsSlabTheKiller() && $attackingPlayerNotices['character_used'] &&
+		if ($this->attackingPlayer->getIsSlabTheKiller($this->game) && $attackingPlayerNotices['character_used'] &&
 			in_array($this->interTurnReason['action'], array('bang')) && $this->commandName != 'life') {
 			// zrusime slab the killerovi prvu ranu, dalsie vedla by uz malo ist do else vetvy
 			if (isset($attackingPlayerNotices['character_used'])) {
@@ -848,7 +849,7 @@ abstract class Command {
 					$this->game['inter_turn_reason'] = '';
 					$this->game['inter_turn'] = 0;
 
-					if ($this->attackingPlayer->getIsBelleStar()) {
+					if ($this->attackingPlayer->getIsBelleStar($this->game)) {
 						$attackingPlayerNotices = $this->attackingPlayer->getNoticeList();
 						if (isset($attackingPlayerNotices['character_used'])) {
 							unset($attackingPlayerNotices['character_used']);
@@ -876,7 +877,7 @@ abstract class Command {
 				$this->game['inter_turn_reason'] = '';
 				$this->game['inter_turn'] = 0;
 
-				if ($this->attackingPlayer->getIsBelleStar() || $this->attackingPlayer->getIsSlabTheKiller()) {
+				if ($this->attackingPlayer->getIsBelleStar($this->game) || $this->attackingPlayer->getIsSlabTheKiller($this->game)) {
 					$attackingPlayerNotices = $this->attackingPlayer->getNoticeList();
 					if (isset($attackingPlayerNotices['character_used'])) {
 						unset($attackingPlayerNotices['character_used']);
@@ -928,7 +929,7 @@ abstract class Command {
 			// pozrieme sa na vsetkych hracov ktori este nie su mrtvi a ani nie su aktualny hrac (bohvie ako je on ulozeny v $this->players :)
 			if ($player['actual_lifes'] > 0 && $this->actualPlayer['id'] != $player['id']) {
 				// najprv pozrieme ci hrac nie je vera custer s charakterom zabiteho hraca, ak ano, vera uz nemoze mat jeho vlastnost
-				if ($player->getIsVeraCuster()) {
+				if ($player->getIsVeraCuster($this->game)) {
 					$notices = $player->getNoticeList();
 					$actualPlayerCharacter = $this->actualPlayer->getCharacter();
 					if (isset($notices['selected_character']) && $notices['selected_character'] == $actualPlayerCharacter['id']) {
@@ -938,11 +939,11 @@ abstract class Command {
 					$player->save();
 				}
 				
-				if ($player->getIsVultureSam()) {
+				if ($player->getIsVultureSam($this->game)) {
 					$vultureSams[] = $player;
-				} elseif ($player->getIsGregDigger()) {
+				} elseif ($player->getIsGregDigger($this->game)) {
 					$gregDiggers[] = $player;
-				} elseif ($player->getIsHerbHunter()) {
+				} elseif ($player->getIsHerbHunter($this->game)) {
 					$herbHunters[] = $player;
 				}
 			}
@@ -1104,7 +1105,7 @@ abstract class Command {
 	
 	protected function runMollyStarkAction() {
 		if ($this->useCharacter === TRUE &&
-			$this->actualPlayer->getIsMollyStark() &&
+			$this->actualPlayer->getIsMollyStark($this->game) &&
 			$this->actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
 		
 			$drawnCards = GameUtils::drawCards($this->game, 1);
@@ -1116,7 +1117,7 @@ abstract class Command {
 	
 	protected function runSuzyLafayetteAction() {
 		if (!in_array($this->commandName, array('create', 'join', 'init', 'choose_character', 'start'))) {
-			if ($this->actualPlayer && $this->actualPlayer->getIsSuzyLafayette()) {
+			if ($this->actualPlayer && $this->actualPlayer->getIsSuzyLafayette($this->game)) {
 				if (!in_array($this->commandName, array('throw', 'draw', 'choose_cards'))) {
 					$handCards = unserialize($this->actualPlayer['hand_cards']);
 					if (count($handCards) == 0) {
@@ -1126,7 +1127,7 @@ abstract class Command {
 						$this->actualPlayer = $this->actualPlayer->save(TRUE);
 					}
 				}
-			} elseif ($this->enemyPlayer && $this->enemyPlayer->getIsSuzyLafayette()) {
+			} elseif ($this->enemyPlayer && $this->enemyPlayer->getIsSuzyLafayette($this->game)) {
 				$handCards = unserialize($this->enemyPlayer['hand_cards']);
 				if (count($handCards) == 0) {
 					$drawnCards = GameUtils::drawCards($this->game, 1);
@@ -1143,10 +1144,10 @@ abstract class Command {
 		if ($nextPositionPlayer['id'] == $this->attackingPlayer['id']) {
 			return $nextPositionPlayer;
 		} else {
-			if ($nextPositionPlayer->getIsApacheKid()) {
+			if ($nextPositionPlayer->getIsApacheKid($this->game)) {
 				$isDiamonds = FALSE;
 				foreach ($this->attackingCards as $attackingCard) {
-					if ($attackingCard->getIsDiamonds()) {
+					if ($attackingCard->getIsDiamonds($this->game)) {
 						$isDiamonds = TRUE;
 						break;
 					}
@@ -1162,10 +1163,10 @@ abstract class Command {
 	
 	protected function checkCanAttackApacheKid() {
 		$canAttack = TRUE;
-		if ($this->attackedPlayer->getIsApacheKid()) {
+		if ($this->attackedPlayer->getIsApacheKid($this->game)) {
 			$isDiamonds = FALSE;
 			foreach ($this->cards as $attackingCard) {
-				if ($attackingCard->getIsDiamonds()) {
+				if ($attackingCard->getIsDiamonds($this->game)) {
 					$isDiamonds = TRUE;
 					break;
 				}
@@ -1176,6 +1177,46 @@ abstract class Command {
 			}
 		}
 		return $canAttack;
+	}
+	
+	protected function getNextPhase(Player $player) {
+		$phase = NULL;
+		// TODO fistful of cards
+		if ($player->getRoleObject()->getIsSheriff() && $player['phase'] == Player::PHASE_NONE) {
+			$phase = $this->checkSheriffExtensions();
+		} elseif ($player['phase'] == Player::PHASE_NONE) {
+			$phase = $this->checkOtherExtensions();
+		}
+		
+		if ($phase === NULL) {
+			// if has dynamite and/or jail - phase dynamite / jail, else phase draw
+			if ($player->getHasDynamiteOnTheTable()) {
+				$phase = Player::PHASE_DYNAMITE;
+			} elseif ($player->getHasJailOnTheTable()) {
+				$phase = Player::PHASE_JAIL;
+			} else {
+				$phase = Player::PHASE_DRAW;
+			}
+		}
+		return $phase;
+	}
+	
+	protected function checkSheriffExtensions() {
+		if ($this->game->getIsHighNoon()) {
+			if ($this->game->getHighNoonPile()) {
+				return Player::PHASE_DRAW_HIGH_NOON;
+			} else {
+				return Player::PHASE_HIGH_NOON;
+			}
+		}
+		return NULL;
+	}
+	
+	protected function checkOtherExtensions() {
+		if ($this->game->getIsHighNoon() && !$this->game->getHighNoonPile()) {
+			return Player::PHASE_HIGH_NOON;
+		}
+		return NULL;
 	}
 }
 

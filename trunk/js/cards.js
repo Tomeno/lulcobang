@@ -179,3 +179,8 @@ function useCharacter() {
 		useCharacter.value = 1;
 	}
 }
+
+function drawHighNoon() {
+	$('command').value = 'draw_high_noon';
+	executeCommand();
+}

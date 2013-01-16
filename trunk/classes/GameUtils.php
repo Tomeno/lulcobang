@@ -89,17 +89,17 @@ class GameUtils {
 					
 					if ($player2->getHasMustangOnTheTable()) {
 						// pre Belle Star neplatia v jej tahu modre karty u ostatnych hracov
-						if (!$player1->getIsBelleStar()) {
+						if (!$player1->getIsBelleStar($game)) {
 							$distance++;
 						}
 					}
 					if ($player2->getHasHideoutOnTheTable()) {
 						// pre Belle Star neplatia v jej tahu modre karty u ostatnych hracov
-						if (!$player1->getIsBelleStar()) {
+						if (!$player1->getIsBelleStar($game)) {
 							$distance++;
 						}
 					}
-					if ($player2->getIsPaulRegret()) {
+					if ($player2->getIsPaulRegret($game)) {
 						$distance++;
 					}
 					if ($player1->getHasAppaloosaOnTheTable()) {
@@ -108,7 +108,7 @@ class GameUtils {
 					if ($player1->getHasSilverOnTheTable()) {
 						$distance--;
 					}
-					if ($player1->getIsRoseDoolan()) {
+					if ($player1->getIsRoseDoolan($game)) {
 						$distance--;
 					}
 					
@@ -150,7 +150,7 @@ class GameUtils {
 				return $player;
 			}
 		}
-		return null;
+		return NULL;
 	}
 	
 	public static function setTurn($game, $position) {
@@ -178,19 +178,24 @@ class GameUtils {
 	
 	
 	
-	public static function getPlayerOnNextPosition($game, $actualPlayer = NULL) {
+	public static function getPlayerOnNextPosition($game, $actualPlayer = NULL, $fromPass = FALSE) {
 		$playerRepository = new PlayerRepository();
 		if ($actualPlayer === NULL) {
 			$actualPlayer = $playerRepository->getOneByIdAndGame($game['turn'], $game['id']);
 		}
 		
+		$positions = self::$positions;
+		if ($fromPass === TRUE && $game->getIsHNGoldRush()) {
+			$positions = array_reverse($positions);
+		}
+		
 		$findingStarted = FALSE;
 		$nextPlayer = NULL;
-		foreach (self::$positions as $seat) {
+		foreach ($positions as $seat) {
 			if ($findingStarted === TRUE) {
 				$player = self::getPlayerOnSeat($game, $seat);
 				if ($player) {
-					if ($player['actual_lifes'] > 0) {
+					if ($player['actual_lifes'] > 0 || ($fromPass === TRUE && $game->getIsHNGhostTown())) {
 						$nextPlayer = $player;
 						break;
 					}
@@ -203,17 +208,16 @@ class GameUtils {
 		}
 		
 		if ($nextPlayer === NULL) {
-			foreach (self::$positions as $seat) {
+			foreach ($positions as $seat) {
 				$player = self::getPlayerOnSeat($game, $seat);
 				if ($player) {
-					if ($player['actual_lifes'] > 0) {
+					if ($player['actual_lifes'] > 0 || ($fromPass === TRUE && $game->getIsHNGhostTown())) {
 						$nextPlayer = $player;
 						break;
 					}
 				}
 			}
 		}
-		
 		return $nextPlayer;
 	}
 	

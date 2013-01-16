@@ -54,7 +54,7 @@ class PunchCommand extends Command {
 
 			$this->actualPlayer['phase'] = Player::PHASE_WAITING;
 			if ($this->useCharacter === TRUE) {
-				if ($this->actualPlayer->getIsBelleStar()) {
+				if ($this->actualPlayer->getIsBelleStar($this->game)) {
 					$notices = $this->actualPlayer->getNoticeList();
 					$notices['character_used'] = 1;
 					$this->actualPlayer->setNoticeList($notices);

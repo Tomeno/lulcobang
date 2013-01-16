@@ -41,7 +41,7 @@ class PlayerPhaseChecker extends Checker {
 					'localizeKey' => 'not_your_turn',
 				);
 				break;
-			case Player::PHASE_PREDRAW:
+			case Player::PHASE_DRAW_HIGH_NOON:
 				$message = array(
 					'localizeKey' => 'draw_predraw_first',
 				);

@@ -3,13 +3,15 @@
 class Player extends LinkableItem {
 
 	const PHASE_NONE = 0;
-	const PHASE_PREDRAW = 1;
+	const PHASE_DRAW_HIGH_NOON = 1;
 	const PHASE_DYNAMITE = 2;
 	const PHASE_JAIL = 3;
 	const PHASE_DRAW = 4;
 	const PHASE_PLAY = 5;
 	const PHASE_UNDER_ATTACK = 6;
 	const PHASE_WAITING = 7;
+	const PHASE_HIGH_NOON = 8;
+	const PHASE_DRAW_FISTFUL = 9;
 	
 	public function __construct($player) {
 		parent::__construct($player);
@@ -79,6 +81,11 @@ class Player extends LinkableItem {
 				return $this->hasCardType($cardType, $place);
 			}
 		} elseif (substr($methodName, 0, 5) === 'getIs') {
+			$game = $arguments[0];
+			if ($game && $game->getIsHNHangover()) {
+				return FALSE;
+			}
+			
 			$isCharacter = $this->getCharacter()->$methodName();
 			
 			if ($isCharacter === FALSE) {

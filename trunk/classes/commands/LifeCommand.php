@@ -17,6 +17,10 @@ class LifeCommand extends Command {
 	
 	const CANNOT_LOST_YOUR_LAST_LIFE = 7;
 	
+	const REVEREND_IN_THE_GAME = 8;
+	
+	const LOST_LIFE_IN_HIGH_NOON = 9;
+	
 	protected function check() {
 		// TODO skontrolovat ci uz hrac nie je na 0
 		
@@ -24,33 +28,40 @@ class LifeCommand extends Command {
 		if ($checker->check()) {
 			if ($this->params[0] == 'beer') {
 				// zistime ci hrac moze pouzit zachranne pivo
-				$livePlayers = 0;
-				foreach ($this->getPlayers() as $player) {
-					if ($player['actual_lifes'] > 0) {
-						$livePlayers++;
+				if ($this->game->getIsHNTheReverend()) {
+					$this->check = self::REVEREND_IN_THE_GAME;
+				} else {
+					$livePlayers = 0;
+					foreach ($this->getPlayers() as $player) {
+						if ($player['actual_lifes'] > 0) {
+							$livePlayers++;
+						}
 					}
-				}
 
-				if ($livePlayers > 2) {
-					if ($this->actualPlayer['actual_lifes'] == 1) {
-						$this->beerCard = $this->actualPlayer->getHasBeerOnHand();
-						if ($this->beerCard) {
-							$this->check = self::SAVE_LAST_LIFE;
+					if ($livePlayers > 2) {
+						if ($this->actualPlayer['actual_lifes'] == 1) {
+							$this->beerCard = $this->actualPlayer->getHasBeerOnHand();
+							if ($this->beerCard) {
+								$this->check = self::SAVE_LAST_LIFE;
+							} else {
+								$this->check = self::NO_BEER_ON_HAND;
+							}
 						} else {
-							$this->check = self::NO_BEER_ON_HAND;
+							$this->check = self::NOT_LAST_LIFE;
 						}
 					} else {
-						$this->check = self::NOT_LAST_LIFE;
+						$this->check = self::ONLY_TWO_PLAYERS_IN_GAME;
 					}
-				} else {
-					$this->check = self::ONLY_TWO_PLAYERS_IN_GAME;
 				}
 			} else {
 				// mozno bude treba pridat dalsie checkery
 				$this->check = self::OK;
 			}
+		} elseif($this->actualPlayer['phase'] == Player::PHASE_HIGH_NOON) {
+			// TODO use beer to save last life?
+			$this->check = self::LOST_LIFE_IN_HIGH_NOON;
 		} else {
-			if ($this->useCharacter && $this->actualPlayer->getIsChuckWengam()) {
+			if ($this->useCharacter && $this->actualPlayer->getIsChuckWengam($this->game)) {
 				if ($this->actualPlayer['actual_lifes'] > 1) {
 					$this->check = self::LOST_LIFE_AND_DRAW_CARDS;
 				} else {
@@ -61,19 +72,27 @@ class LifeCommand extends Command {
 	}
 
 	protected function run() {
-		
-		// TODO ked behom indianov zomrie posledny hrac pred tym kto pouzil indianov, tak je to nejako naprd
-		// actual player uz ma medzicasom inu poziciu ako je v pamati
-		
 		if ($this->check == self::SAVE_LAST_LIFE) {
 			GameUtils::throwCards($this->game, $this->actualPlayer, array($this->beerCard));
 			
-			if ($this->actualPlayer->getIsTequilaJoe()) {
+			if ($this->actualPlayer->getIsTequilaJoe($this->game)) {
 				// tequila joe si posledny zivot zachrani a 1 si este prida
 				$this->actualPlayer['actual_lifes'] + 1;	
 			}
 			$this->runMollyStarkAction();
 			$this->changeInterturn();
+		} elseif ($this->check == self::LOST_LIFE_IN_HIGH_NOON) {
+			// TODO save last life
+			
+			$newLifes = $this->actualPlayer['actual_lifes'] - 1;
+			$this->actualPlayer['actual_lifes'] = $newLifes;
+			$this->actualPlayer = $this->actualPlayer->save(TRUE);
+			if ($newLifes <= 0) {
+				$this->removePlayerFromGame();
+			} else {
+				$this->actualPlayer['phase'] = $this->getNextPhase($this->actualPlayer);
+				$this->actualPlayer->save();
+			}
 		} elseif ($this->check == self::LOST_LIFE_AND_DRAW_CARDS) {
 			// Chuck Wengam si moze zobrat zivot a potiahnut dve karty
 			$newLifes = $this->actualPlayer['actual_lifes'] - 1;
@@ -103,7 +122,7 @@ class LifeCommand extends Command {
 				$this->removePlayerFromGame();
 			} elseif ($this->useCharacter === TRUE && $newLifes > 0) {
 				// ak bol pouzity charakter a nebol to este posledny zivot
-				if ($this->actualPlayer->getIsElGringo()) {
+				if ($this->actualPlayer->getIsElGringo($this->game)) {
 					// el gringo
 					$attackingPlayerHandCards = $this->attackingPlayer->getHandCards();
 					if ($attackingPlayerHandCards) {
@@ -112,7 +131,7 @@ class LifeCommand extends Command {
 						$this->actualPlayer = $retVal['playerTo'];
 						$this->attackingPlayer = $retVal['playerFrom'];
 					}
-				} elseif ($this->actualPlayer->getIsBartCassidy()) {
+				} elseif ($this->actualPlayer->getIsBartCassidy($this->game)) {
 					// bart cassidy
 					$drawnCards = GameUtils::drawCards($this->game, 1);
 					$handCards = unserialize($this->actualPlayer['hand_cards']);
@@ -188,6 +207,12 @@ class LifeCommand extends Command {
 			$message = array(
 				'text' => $this->loggedUser['username'] . ' si zobral jeden zivot a potiahol si dve karty',
 				'notToUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::REVEREND_IN_THE_GAME) {
+			$message = array(
+				'text' => 'nemozes pouzit pivo, ked je v hre Reverend',
+				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);
 		}

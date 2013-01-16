@@ -47,9 +47,22 @@ class StartGameCommand extends Command {
 				'value' => $validCardBaseTypesIdList
 			);
 			$cardRepository->addAdditionalWhere($where);
+			
+			$gameSets = unserialize($this->room['game_sets']);
+			if ($gameSets) {
+				$where = array(
+					'column' => 'game_set',
+					'value' => $gameSets,
+				);
+				$cardRepository->addAdditionalWhere($where);
+			}
+			
 			$cards = $cardRepository->getCardIds();
 			shuffle($cards);
 
+			// TODO prepare High noon draw pile
+			// TODO - other extensions
+			
 			$players = $this->players;
 			foreach ($players as $player) {
 				$playerCards = array();
@@ -59,7 +72,8 @@ class StartGameCommand extends Command {
 				$role = $player->getAdditionalField('role');
 				$player['actual_lifes'] = $character['lifes'];
 
-				for ($i = 0; $i < $player['actual_lifes']; $i++) {
+				$cardsCount = $player->getIsBigSpencer() ? 5 : $player['actual_lifes'];
+				for ($i = 0; $i < $cardsCount; $i++) {
 					$playerCards[] = array_pop($cards);
 				}
 

@@ -21,6 +21,7 @@ class InitGameCommand extends Command {
 				} elseif ($this->game['status'] == Game::GAME_STATUS_STARTED) {
 					$this->check = self::ALREADY_STARTED;
 				} else {
+					// TODO pocet charakterov ktore si useri mozu vyberat budu sucastou nastavenia miestnosti
 					if (is_numeric($this->params[0])) {
 						$characterRepository = new CharacterRepository();
 						$charactersCount = $characterRepository->getCountByValid(1);
@@ -53,9 +54,36 @@ class InitGameCommand extends Command {
 			$roles = $roleRepository->getAll();
 			shuffle($roles);
 
-			$characters = $characterRepository->getByValid(1);
+			$gameSets = unserialize($this->room['game_sets']);
+			if ($gameSets) {
+				$characters = $characterRepository->getByValidAndGameSet(1, $gameSets);
+			} else {
+				$characters = $characterRepository->getByValid(1);
+			}
 			shuffle($characters);
 
+			// ak mame high noon
+			if (in_array(3, $gameSets)) {
+				$highNoonRepository = new HighNoonRepository();
+				$highNoonCard = $highNoonRepository->getOneById(HighNoon::CARD_HIGH_NOON);
+				
+				$highNoonRepository = new HighNoonRepository();
+				$highNoonRepository->addAdditionalWhere(
+					array('column' => 'id', 'value' => HighNoon::CARD_HIGH_NOON, 'xxx' => '!=')
+				);
+				$highNoonCards = $highNoonRepository->getAll();
+				shuffle($highNoonCards);
+				
+				$highNoonCardIds = array();
+				foreach ($highNoonCards as $card) {
+					$highNoonCardIds[] = $card['id'];
+				}
+				if ($highNoonCard) {
+					$highNoonCardIds[] = $highNoonCard['id'];
+				}
+				$this->game['high_noon_pile'] = serialize(array_reverse($highNoonCardIds));
+			}
+			
 			$j = 0;
 			foreach ($players as $player) {
 				$playerPossibleCharacters = array();
@@ -72,6 +100,7 @@ class InitGameCommand extends Command {
 				$j++;
 			}
 
+			
 			$this->game['status'] = Game::GAME_STATUS_INITIALIZED;
 			$this->game = $this->game->save(TRUE);
 			
