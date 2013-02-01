@@ -28,14 +28,14 @@ class DrawHighNoonCommand extends Command {
 	
 	protected function run() {
 		if ($this->check == 1) {
+			$this->actualPlayer['phase'] = $this->getNextPhase($this->actualPlayer);
+			$this->actualPlayer->save();
+			
 			$highNoonPile = unserialize($this->game['high_noon_pile']);
 			$drawnCard = array_pop($highNoonPile);
 			$this->game['high_noon'] = $drawnCard;
 			$this->game['high_noon_pile'] = serialize($highNoonPile);
 			$this->game = $this->game->save(TRUE);
-			
-			$this->actualPlayer['phase'] = $this->getNextPhase($this->actualPlayer);
-			$this->actualPlayer->save();
 			
 			$this->executeSpecialAction();
 			
@@ -62,6 +62,8 @@ class DrawHighNoonCommand extends Command {
 				if ($player['actual_lifes'] > 0 && $player['actual_lifes'] == $min) {
 					$player['actual_lifes'] = min($player['max_lifes'], $player['actual_lifes'] + 1);
 					$player->save();
+					
+					// TODO messages
 				}
 			}
 		}

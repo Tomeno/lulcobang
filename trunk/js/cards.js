@@ -159,6 +159,14 @@ function selectPlayer(id, fromSelectCard) {
 		}
 		$('place').value = '';
 	}
+	
+	//alert(command);
+	var commandsImmediatelyExecuted = ['bang', 'pepperbox', 'springfield', 'punch', 'knife', 'duel',
+		'panic', 'catbalou', 'conestoga', 'cancan', 'ragtime',
+		'jail', 'tequila'];
+	if (inArray(command, commandsImmediatelyExecuted)) {
+		executeCommand();
+	}
 }
 
 function passTurn() {
