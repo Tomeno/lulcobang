@@ -35,7 +35,6 @@ class ThrowCommand extends Command {
 				
 				// znulujeme karty lebo uz tam jedna je z precheckera
 				$this->cards = array();
-				exit();
 				
 				// TODO tu ked pouzijem rovnaky typ kariet, nastava problem a vyhodim len jednu
 				// lebo getHas ... vrati dvakrat tu istu kartu
