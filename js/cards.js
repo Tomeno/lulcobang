@@ -161,7 +161,7 @@ function selectPlayer(id, fromSelectCard) {
 	}
 	
 	//alert(command);
-	var commandsImmediatelyExecuted = ['bang', 'pepperbox', 'springfield', 'punch', 'knife', 'duel',
+	var commandsImmediatelyExecuted = ['bang', 'pepperbox', 'springfield', 'punch', 'knife', 'buffalorifle', 'duel',
 		'panic', 'catbalou', 'conestoga', 'cancan', 'ragtime',
 		'jail', 'tequila'];
 	if (inArray(command, commandsImmediatelyExecuted)) {

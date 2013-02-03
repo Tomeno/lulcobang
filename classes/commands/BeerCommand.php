@@ -22,11 +22,11 @@ class BeerCommand extends Command {
 			}
 
 			if ($livePlayers > 2) {
-				if ($this->actualPlayer['actual_lifes'] < $this->actualPlayer['max_lifes']) {
+				//if ($this->actualPlayer['actual_lifes'] < $this->actualPlayer['max_lifes']) {
 					$this->check = self::OK;
-				} else {
-					$this->check = self::TOO_MANY_LIFES;
-				}
+				//} else {
+				//	$this->check = self::TOO_MANY_LIFES;
+				//}
 			} else {
 				$this->check = self::ONLY_TWO_PLAYERS_IN_GAME;
 			}

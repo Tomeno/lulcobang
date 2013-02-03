@@ -14,9 +14,9 @@ you_draw_cards###Potiahol si karty
 draw_extension_card_first###Draw extension card first
 draw_dynamite_first###Najprv potiahni kartu pre dynamit
 draw_jail_first###Najprv potiahni kartu pre vazenie
-cannot_draw_no_game_in_room###No game in room, you cannot draw
-you_have_already_draw###You have already draw
-you_draw_these_cards###You draw these cards
+cannot_draw_no_game_in_room###V miestnosti sa nehrá, nemôžeš ťahať
+you_have_already_draw###Už si ťahal
+you_draw_these_cards###Potiahol si si tieto karty
 pick_x_of_cards###Vyber %s z týchto kariet
 player_pass_turn###%s posunul ťah
 you_pass_turn###Posunul si ťah

@@ -1,88 +1,114 @@
 bang_title###Bang!
-bang_description###BANG! cards are the main method to reduce other players' life points. If you want to play a BANG! card to hit one of the players, determine: a) what the distance to that player is, and b) if your weapon is capable of reaching that distance.
-missed_title###Missed!
-missed_description###A player hit by a BANG! card may immediately play a Missed! card - even though it is not his turn! - to cancel the shot. If he does not, he loses a life point.
-beer_title###Beer
-beer_description###This card lets a player regain one life point. Beer cards can be played in two ways: a) as usual, during your turn b) out of turn, but only if you have just received a hit that is lethal (i.e. a hit that takes away your last life point), and not if you are simply hit.
-saloon_title###Saloon
-saloon_description###The symbols say: "Regain one life point", and this applies to "all the other players", and on the next line: "[the player playing this card] regains one life point" The overall effect is that all players in play regain a life point.
+bang_description###BANG je základným prostriedkom na streľbu a zabíjanie ostatných hráčov. Ak chceš zahrat kartu BANG! a vystreliť na iného hráča, musíš si overiť: 1. aká je medz vami vzdialenosť a 2. či si schopný svojou aktualnou zbraňou na túto vzdialenost dosiahnuť.
+missed_title###Vedľa!
+missed_description###Hráč zasiahnutý kartou BANG! (ten, na ktorého bola karta zahraná) môže okamžite zahrať kartu Vedľa!, aby výstrel zrušil. Ak nezahrá Vedľa!, ztráca jeden život (zmenu musí zaznamenať posunutím karty svojej postavy, aby zakryl o jednu guľku viac na spodnej karte).
+beer_title###Pivo
+beer_description###Táto karta vylieči hráčovi jeden život (posuňte kartu postavy, aby bolo vidieť o guľku viac). Hráči nemôžu získať väčší počet životov, ako je ich začiatočná hodnota! Karta Pivo nemôže byť použitá na vyliečenie iného hráča.
+saloon_title###Salón
+saloon_description###Symboly hovoria: “Vylieč si život”, a platí to pre “Všetkých ostatných hráčov”, a na nasledujucom riadku: “[hráč, ktorý zahral túto kartu] vylieč si život“. Celkový efekt tejto karty je teda ten, že si všetci hráči v hre vyliečia jeden život.
 wells_fargo_title###Wells Fargo
-wells_fargo_description###The symbols say: draw 3 cards from the deck.
-diligenza_title###Diligenza
-diligenza_description###The symbols say: draw 2 cards from the deck.
-general_store_title###General Store
-general_store_description###When you play this card, turn as many cards from the deck face up as the players still playing. Starting with the player who played the card, and proceeding clockwise, each player chooses one of those cards and puts it in his hands.
-panic_title###Panic!
-panic_description###The symbols state: "draw a card" from "a player at distance 1".
+wells_fargo_description###Symboly ukazujú: potiahni si tri karty. Hráč, ktorý túto kartu zahrá si potiahne tri karty.
+diligenza_title###Dostavník
+diligenza_description###Symboly ukazujú potiahni si dve karty. Hráč, ktorý túto kartu zahrá si potiahne dve karty.
+general_store_title###Obchod
+general_store_description###Po zahraní sa otočí toľko vrchných kariet z balíčka, koľko je hrajúcich (živých) hráčov. Začínajúc hráčom, ktorý zahral túto kartu, sa postupuje proti smeru hodinových ručičiek a každý hráč si vyberie jednu z otočených kariet, ktorú si vezme do ruky.
+panic_title###Panika!
+panic_description###Symboly hovoria: „potiahni si kartu“ od „hráče na vzdálenost 1“. Lze si túto kartu tedy líznout náhodně z ruky onoho hráče nebo si vzít kartu s modrým okrajem, která leží před ním.
 cat_balou_title###Cat Balou
-cat_balou_description###The symbol say: "discard 1 card" to "1 player", from hand or table.
-indians_title###Indians!
-indians_description###Each player, excluding the one who played this card, may discard a BANG! card, or lose a life point. Neither Missed! nor Barrel has effect in this case.
+cat_balou_description###Symboly na kartě hovoria: „Zahoď kartu jakémukoliv hráči.“ zda ze stolu či z ruky je na volbě hráče, ktorý túto kartu zahrál.
+indians_title###Indiáni!
+indians_description###Každý hráč, vyjma hráče, ktorý túto kartu zahrál, musí odhodit kartu BANG! nebo ztratit život. Nelze zahrávat Vedle, ani zkoušet sa schovat za Barel.
 duel_title###Duel
-duel_description###The player playing this card challenges any other player (at any distance), staring him in the eyes. The challenged player may discard a BANG! card (even though it is not his turn!). If he does, the player who played the Duel card may discard a BANG! card, and so on: the first player failing to play a BANG! card loses one life point, and the duel is over. Note: you cannot use the Barrel or play Missed! cards during a duel, and the Duel is not considered a BANG! card.
-gatling_title###Gatling
-gatling_description###The symbols show: "a BANG!" to "all the other players".
+duel_description###Hráč zahrávající túto kartu vyzývá jiného hráče zíraje mu do očí. Vyzvaný hráč musí odhodit kartu BANG! Odhodí-li, hráč, ktorý zahrál Duel musí odhodit BANG! a tak dále: první hráč, ktorý BANG! neodhodí (buď nechce nebo nemůže), ztrácí jeden život a duel končí.
+gatling_title###Guľomet
+gatling_description###Karta Kulomet má efekt BANG! na všechny hráče, ale jelikož to není karta BANG!, můžete ji zahrát několikrát za kolo a po ní třeba i další kartu BANG!.
 mustang_title###Mustang
-mustang_description###The distance between other players and one who has a Mustang card in play is increased by 1. However, he still sees the other players at the normal distance. In the figure, if A has a Mustang horse in play, players B and F would see him at a distance of 2, C and E at a distance of 3, and D at a distance of 4, while A would continue seeing all the other players at the normal distance.
-appaloosa_title###Appaloosa/Scope
-appaloosa_description###A player who has a prized Appaloosa in play sees all the other players at a distance decreased by 1. However, other players still see him at the normal distance. Distances less than 1 are considered to be 1. In the figure, if A has an Appaloosa in play, he would see B and F at a distance of 1, C and E at a distance of 1, D at a distance of 2, while A would be seen by other players at a normal distance.
-barrel_title###Barrel
-barrel_description###C is the target of A's BANG!. C has a Barrel card in play: this card lets him "draw!" to cancel a BANG! card. So, C flips the top card of the deck and puts it on the discard pile: it's a 4 of Hearts. The use of the Barrel is successful and cancels the BANG! If the flipped card were of a different suit, then the Barrel would have had no effect, but C could have still tried to cancel the BANG! with a Missed! card.
-dynamite_title###Dynamite
-dynamite_description###The player who plays this card puts the Dynamite in front of him, face up: the Dynamite will stay there for a whole turn. When the player starts his next turn (he has Dynamite already in play), before the first phase ("draw two cards" he must "draw!": if he draws a card showing Spades and a number between 2 and 9, the Dynamite explodes (discard it)! The player immediately loses 3 life points. Otherwise, the Dynamite is passed to the player on his left, who will "draw!" on his turn. Players keep passing the Dynamite around until it explodes (with the effect explained above) or it is removed from play by a Panic! or a Cat Balou card. If a player has both the Dynamite and a Jail card, check the Dynamite first. If a character is eliminated by a Dynamite card, his elimination is not considered to be caused by any player.
-jail_title###Jail
-jail_description###This card is played in front of any player, who is now in Jail. A player in Jail must "draw!" before the beginning of his turn: if he draws a Heart card, then he escapes from Jail, discards the Jail card, and continues his turn as normal. Otherwise he discards the Jail and skips phase 1 and 2 of his turn, simply discarding exceeding cards. However, he remains a possible target for BANG! cards and can still play Missed! and Beer out of his turn. Jail cannot be played on the Sheriff.
+mustang_description###Hráč, ktorý má ve hře kartu Mustang, je viděn ostatními hráči na vzdálenost o 1 vyšší. On však ostatní hráče vidí stále na normální vzdálenost.
+appaloosa_title###Appaloosa
+appaloosa_description###Hráč, ktorý má ve hře kartu Appaloosa, vidí ostatní hráče na vzdálenost o 1 menší. Ostatní hráči ho však stále vidí na normální vzdálenost.
+barrel_title###Barel
+barrel_description###Hráč A zahrál kartu BANG! na hráče B. Hráč B má před sabou vyložen Barel, ktorý mu dává možnost sa ráně (kartě BANG! vyhnout), kdykoli otočená vrchní karta z balíčku bude srdcová. Hráč B tedy otočí a odhodí vrchní kartu lízacího balíčku, která však bohužel pro něho je piková. On má však stále možnost zahrát kartu Vedle, což samozřejmě také udělal.
+dynamite_title###Dynamit
+dynamite_description###Hráč, ktorý zahrá túto kartu, ji položí před sabe: Dynamit zůstane před ním ležet celé kolo. Když hráč začne své následující kolo (a má Dynamit stále ve hře), před svou první fází si musí Líznout!(otočit a odhodit vrchní kartu balíčku): otočí-li kartu mezi 2 až 9 listů, Dynamit exploduje, odhodí sa a hráč ztrácí 3 životy. V opačném případě pošle Dynamit hráči po levici, ktorý musí ten samý test provést na začátku svého kola. Hráči si takto předávají Dynamit okolo dokud neexploduje (s efektem výše popsaným) nebo je odhozen pomocí karet Cat Balou nebo Panika! Je-li Dynamit u hráče společně s kartou Vezení, testuje sa nejprve Dynamit. Pokud by byl hráč zabit kartou Dynamit, jeho zabití není uvažováno jako zabití jiným hráče (pro pravidla Trestů a Odměn a schopnosti postav).
+jail_title###Väzenie
+jail_description###Tato karta musí být zahrána před jakéhokoli hráče, ktorý je tím uvězněn. Uvězněný hráč si musí „Líznout!“ před začátkem svého kola: otočí-li Srdce, utekl z vězení a karta Vězení je odhozena a on pokračuje normálně ve svém tahu. V opačném případě odhodí Vězení a ztrácí fázi 1 a 2 svého tahu, tudíž pouze musí odhazovat přebytečné karty, dle svého počtu životů. Zůstává možným terčem karet BANG! a může stále zahrávat karty Vedle a Pivo mimo vlastní kolo. Karta Vězení nemůže být zahrána na Šerifa.
 volcanic_title###Volcanic
-volcanic_description###A player having this card in play may play any number of BANG! cards during his turn. This BANG! cards can be aimed at the same or different targets, but are limited to a distance of 1 (as shown by the number in the sight).
+volcanic_description###Hráč, ktorý má túto kartu vyloženou před sabou může zahrát libovolný počet karet BANG! během svého kola. Tyto karty BANG! mohou být zahrány na ten samý nebo rozdílné terče, ale pouze na vzdálenost 1 (toto je znázorněno na kartě číslem v hledáčku).
 schofield_title###Schofield
-schofield_description###You can shoot to distance 2 with this weapon.
+schofield_description###Zbraň umožňující vystřelit jednou na vzdálenost 2.
 remington_title###Remington
-remington_description###You can shoot to distance 3 with this weapon.
-rev_carabine_title###Rev.Carabine
-rev_carabine_description###You can shoot to distance 4 with this weapon.
+remington_description###Zbraň umožňující vystřelit jednou na vzdálenost 3.
+rev_carabine_title###Karabína
+rev_carabine_description###Zbraň umožňující vystřelit jednou na vzdálenost 4.
 winchester_title###Winchester
-winchester_description###You can shoot to distance 5 with this weapon.
-dodge_title###Dodge
-dodge_description###This card cancels the BANG! cards and then draws a card from the deck.
-punch_title###Punch
-punch_description###This card has same effect as BANG! card, but on distance 1. This cards isnt count as BANG!
+winchester_description###Zbraň umožňující vystřelit jednou na vzdálenost 5.
+dodge_title###Úhyb
+dodge_description###Tato karta má stejný efekt jako karta Vedle, ale hráč si líže ještě jednu z balíčku.
+punch_title###Úder
+punch_description###Tato karta má stejný efekt jako karta BANG!, ale na vzdálenost 1. Tato karta se nepočítá jako BANG!.
 springfield_title###Springfield
-springfield_description###Player which is on turn, discard card Springfield together with another card on the deck. Than he choose one player, which is target of attack with BANG! effect.
-brawl_title###Brawl
-brawl_description###The current player plays a Brawl card, discarding another card from her hand, of her choice, in addition to the Brawl card. After doing so, the Brawl effect is to force all the other players to discard a card, either from his hand of from play, chosen by the player who played the Brawl card (she can choose differently for each player).
+springfield_description###Hráč, který je právě na tahu, zahrává kartu Springfield a současně vyřazuje další kartu. Vybere si jednoho hráče, který se stává cílem útoku s efektem BANG!.
+brawl_title###Bitka
+brawl_description###Hráč, který je právě na tahu, zahrává kartu Rvačka, vyřazuje další kartu podle své volby ze své ruky, navíc ke kartě Rvačka. Jakmile to udělá, donutí efekt karty Rvačka všechny ostatní hráče, aby každý z nich vyřadil jednu karu z ruky nebo ze hry, podle výběru hráče, jenž zahrál kartu Rvačka (u každého hráče se může rozhodnout individuálně).
 rag_time_title###Rag Time
-rag_time_description###Player which is on turn, discard card Rag Time together with another card on the deck. Than he chooses one player, and take him one card from hand or table, and keep it.
+rag_time_description###Hráč, který je právě na tahu, zahrává kartu Rag Time a současně vyřazuje další kartu. Vybere si jednoho hráče, kterému vezme jednu kartu ze hry či z ruky a ponechá si ji.
 tequila_title###Tequila
-tequila_description###The current player plays a Tequila, and discards another card too. He chooses any one player to regain one life point ( he can even choose himself).
-hideout_title###Hideout
-hideout_description###The distance between other players and one who has a Hideout card in play is increased by 1. However, he still sees the other players at the normal distance.
+tequila_description###Hráč, který je právě na tahu, zahrává kartu Tequila a současně vyřazuje další kartu. Vybere si jednoho hráče, který si obnoví jeden život (může dokonce vybrat i sám sebe).
+hideout_title###Skrýša
+hideout_description###Hráč, který má ve hře kartu Úkryt, je viděn ostatními hráči na vzdálenost o 1 vyšší. On však ostatní hráče vidí stále na normální vzdálenost.
 silver_title###Silver
-silver_description###A player who has a prized Silver in play sees all the other players at a distance decreased by 1. However, other players still see him at the normal distance. Distances less than 1 are considered to be 1.
-sombrero_title###Sombrero
-sombrero_description###The current player play a Sombrero card in front of him. Starting with the next player's turn, he can discard it for the Missed! effect.
-iron_plate_title###Iron plate
-iron_plate_description###The current player play a Iron plate card in front of him. Starting with the next player's turn, he can discard it for the Missed! effect.
-ten_gallon_hat###Ten Gallon Hat
-ten_gallon_description###The current player play a Gallon Hat card in front of him. Starting with the next player's turn, he can discard it for the Missed! effect.
-bible_title###Bible
-bible_description###The current player play a Bible card in front of him. Starting with the next player's turn, he can discard it for the Missed! effect. And then he "draw!" one card from the deck.
-canteen_title###Canteen
-canteen_description###The current player plays a Canteen card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to discard it to gain 1 life point.
-knife_title###Knife
-knife_description###The current player plays a Knife card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to discard it to cause a BANG! on a player at a distance of 1. This card is not count as BANG!.
+silver_description###Hráč, který má ve hře kartu Silver, vidí ostatní hráče na vzdálenost o 1 menší. Ostatní hráči ho však stále vidí na normální vzdálenost.
+sombrero_title###Sombréro
+sombrero_description###Hráč, který je právě na tahu, před sebe vykládá kartu Sombrero. Počínaje předáním hry dalšímu hráči, ji může vyřadit a získat efekt Vedle.
+iron_plate_title###Železná košeľa
+iron_plate_description###Hráč, který je právě na tahu, před sebe vykládá kartu Železná košile. Počínaje předáním hry dalšímu hráči, ji může vyřadit a získat efekt Vedle.
+ten_gallon_hat###Kovbojský klobúk
+ten_gallon_description###Hráč, který je právě na tahu, před sebe vykládá kartu Kovbojský klobúk. Počínaje předáním hry dalšímu hráči, ji může vyřadit a získat efekt Vedle.
+bible_title###Biblia
+bible_description###Hráč, který je právě na tahu, před sebe vykládá kartu Bible. Počínaje předáním hry dalšímu hráči, ji může vyřadit a získat efekt Vedle a poté si líznout kartu z balíčku.
+canteen_title###Čutora
+canteen_description###Hráč mající vyloženou tuto kartu již jedno celé kolo, je oprávněn si při svém tahu přidat jeden život. Tuto kartu poté odhodí na pakl. Pokud ztratící svůj poslední život, není možné použít tuto kartu ani Saloon,Whisky či Tequila.
+knife_title###Nôž
+knife_description###Tato karta opravňuje hráče, který ji má vyloženou, k útoku ve stylu BANG!, ale pouze na vzdálenost 1. Samozřejmě při dodržení základních pravidel pro zelené karty.
 derringer_title###Derringer
-derringer_description###The current player plays a Derringer card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to discard it to cause a BANG! on a player at a distance of 1, and also draw a card from the deck. This card is not count as BANG!.
-howitzer_title###Howitzer
-howitzer_description###The current player plays a Howitzer card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to discard it to cause a BANG! to all the players. This card is not count as BANG!.
+derringer_description###Hráč, který je právě na tahu, před sebe vykládá kartu Derringer. Za předpokladu, že má tuto kartu stále před sebou, ji může v jednom ze svých následujících kol vyřadit, a tak zahrát efekt BANG! na hráče ve vzdálenosti 1 a zároveň si dobrat kartu z balíčku.
+howitzer_title###Húfnica
+howitzer_description###Hráč, který je právě na tahu, před sebe vykládá kartu Howitzer. Za předpokladu, že má tuto kartu stále před sebou, ji může v jednom ze svých následujících kol vyřadit, a tak zahrát efekt BANG! na všechny hráče v jakékoliv vzdálenosti.
 pepperbox_title###Pepperbox
-pepperbox_description###The current player plays a Pepperbox card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to discard it to cause a BANG! on a player at reachable distance. This card is not count as BANG!.
-buffalo_rifle_title###Buffalo Rifle
-buffalo_rifle_description###The current player plays a Buffalo Rifle card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to discard it to cause a BANG! on a player at any distance. This card is not count as BANG!.
-can_can_title###Can Can
-can_can_description###The current player plays a Can Can card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to use it to discard 1 card to 1 player at any distance, from hand or from table.
-conestoga_title###Conestoga
-conestoga_desciption###The current player plays a Conestoga card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to use it to take 1 card to 1 player at any distance, from hand or from table.
+pepperbox_description###Hráč, který je právě na tahu, před sebe vykládá kartu PepperBox. Za předpokladu, že má tuto kartu stále před sebou, ji může v jednom ze svých následujících kol vyřadit, a tak zahrát efekt BANG! na hráče ve vzdálenosti na kterou sám vidí.
+buffalo_rifle_title###Puška na bizóny
+buffalo_rifle_description###Hráč, který je právě na tahu, před sebe vykládá kartu Buffalobijka. Za předpokladu, že má tuto kartu stále před sebou, ji může v jednom ze svých následujících kol vyřadit, a tak zahrát efekt BANG! na hráče v jakékoliv vzdálenosti.
+can_can_title###Kankán
+can_can_description###Hráč, který je právě na tahu, před sebe vykládá kartu Kankán. Za předpokladu, že má tuto kartu stále před sebou, ji může v jednom ze svých následujících kol vyřadit, a zahodit jakémukoliv hráči kartu z ruky či ze stolu.
+conestoga_title###Krytý voz
+conestoga_desciption###Hráč, který je právě na tahu, před sebe vykládá kartu Conestoga. Za předpokladu, že má tuto kartu stále před sebou, ji může v jednom ze svých následujících kol vyřadit, a vzít jakémukoliv hráči kartu z ruky či ze stolu a ponechat si ji.
 pony_express_title###Pony Express
-pony_express_desciption###The current player plays a Pony Express card in front of her. During one of her following turns, provided she still has the card in front of her, she can choose to use it to "draw!" 3 cards from the deck.
+pony_express_desciption###Hráč, který je právě na tahu, před sebe vykládá kartu Pony Express. Za předpokladu, že má tuto kartu stále před sebou, ji může v jednom ze svých následujících kol vyřadit, a líznout si 3 karty z balíčku.
 whisky_title###Whisky
-whisky_description###The current player plays a Whisky, and discards another card too. This card lets a player regain two life points.
+whisky_description###Hráč, ktorý je práve na ťahu, zahrá kartu Whisky a spolu s ňou odhodí ďalšiu kartu podľa vlastného výberu. Táto karta mu pridá dva životy.
+blessing_title###Požehnanie
+curse_title###Prekliatie
+ghost_town_title###Mesto duchov
+gold_rush_title###Zlatá horúčka
+hangover_title###Opica
+high_noon_title###Pravé poludnie
+shootout_title###Prestrelka
+the_daltons_title###Daltonovci
+the_doctor_title###Doktor
+the_reverend_title###Reverend
+the_sermon_title###Kazateľ
+the_train_title###Príjazd vlaku
+thirst_title###Smäd
+blessing_description###Všetky karty sú srdcové.
+curse_description###Všetky karty sú pikové.
+ghost_town_description###Zabité postavy sa vracajú do hry ako duchovia s troma kartami. Zahrajú svoje karty a na konci ich ťahu sú opäť odstránení z hry.
+gold_rush_description###Hra prebieha proti smeru hodinových ručičiek avšak efekty kariet stále prebiehajú v smere hodinových ručičiek.
+hangover_description###Všetky postavy strácajú svoje zvláštne schopnosti.
+high_noon_description###Každý hráč stráca na začiatku svojho kola jeden život.
+shootout_description###Každý hráč môže vo svojom kole zahrať dve karty bang.
+the_daltons_description###Každý hráč, ktorý má pred sebou karty s modrým okrajom, si musí jednu z nich vybrať a odhodiť ju.
+the_doctor_description###Keď príde do hry doktor, hráč (hráči) s najnižším počtom životov si pridajú jeden život.
+the_reverend_description###Hráči nemôžu hrať kartu pivo.
+the_sermon_description###Hráči vo svojom ťahu nemôžu hrať kartu Bang!
+the_train_description###Každý hráč si vo svojej fáze 1 vezme jednu kartu navyše.
+thirst_description###Každý hráč si vo svojej fáze 1 vezme o jednu kartu menej.

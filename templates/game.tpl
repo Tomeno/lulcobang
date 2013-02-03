@@ -51,7 +51,7 @@
 							{if $player.roleObject.isSheriff}
 								<div class="card high_noon">
 									{if $game.playerOnTurn.id == $player.id && $me.id == $player.id}
-										<a href="#" onclick="drawHighNoon(); return false;" title="{$game.topHighNoonPile.title} Click here to select high noon card">
+										<a href="#" onclick="drawHighNoon(); return false;" title="Click here to draw high noon card">
 									{/if}
 									{image src=$game.topHighNoonPile.backImagePath alt='rola' width='44' height='76'}
 									{if $game.playerOnTurn.id == $player.id && $me.id == $player.id}
@@ -164,6 +164,16 @@
 							{/foreach}
 						</div>
 					{/if}
+				{else}
+					<div class="role">
+						{if $player.roleObject.isSheriff or $player.user.id == $me.user.id}
+							<a href="{$player.roleObject.url}" onclick="window.open(this.href, '_blank'); return false;">
+								{image src=$player.roleObject.imagePath alt=$player.roleObject.title width='44' height='76'}
+							</a>
+						{else}
+							{image src=$player.roleObject.backImagePath alt='rola' width='44' height='76'}
+						{/if}
+					</div>
 				{/if}
 			</div>
 		{/foreach}
@@ -193,7 +203,7 @@
 
 			{if $game.isHighNoon}
 				{if $game.highNoonActualCard}
-					<a id="high_noon_actual_card" class="card"  href="" onclick="return false;" title="{$game.highNoonActualCard.title} + description">
+					<a id="high_noon_actual_card" class="card"  href="" onclick="return false;" title="{$game.highNoonActualCard.localizedTitle|escape}: {$game.highNoonActualCard.localizedDescription|escape}">
 						{image src=$game.highNoonActualCard.imagePath alt=$game.highNoonActualCard.title width='44' height='76'}
 					</a>
 				{/if}

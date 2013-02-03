@@ -4,10 +4,11 @@ class MissedCommand extends DefensiveCommand {
 	
 	protected function check() {
 		parent::check();
-		if ($this->actualPlayer->getIsBigSpencer()) {
+		if ($this->actualPlayer->getIsBigSpencer($this->game)) {
 			$this->check = DefensiveCommand::CANNOT_PLAY_CARD;
 		}
 	}
+	
 	protected function run() {
 		if ($this->check == DefensiveCommand::OK) {
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
