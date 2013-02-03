@@ -1,40 +1,40 @@
 sheriff_title###Šerif
-sheriff_description###He must eliminate all the Outlaws and the Renegade, to protect law and order
+sheriff_description###musí zabít všechny zločince a renegáta
 renegade_title###Odpadlík
-renegade_description###He wants to be the new Sheriff; his goal is to be the last character in play.
+renegade_description###chce se stát novým šerifem, musí zabít šerifa jako posledního a zůstat jako poslední hráč ve hře.
 outlaw_title###Bandita
-outlaw_description###He would like to kill the Sheriff, but he have no scruples about eliminating each other to gain rewards!
+outlaw_description###musí zabít šerifa dříve než on jeho
 deputy_title###Pomocník
-deputy_description###He helps and protects Sheriff, and shares his same goal, at all costs!
-bart_cassidy_description###Each time he loses a life point, he immediately draws a card from the deck.
-black_jack_description###During the phase 1 of his turn, he must show the second card he draws: if it's Heart or Diamonds (just like a "draw!"), he draws one additional card (without revealing it).
-calamity_janet_description###She can use BANG! cards as Missed! cards and vice versa. If she plays a Missed! card as a BANG!, she cannot play another BANG! card that turn (unless she has a Volcanic in play).
-el_gringo_description###Each time he loses a life point due to a card played by another player, he draws a random card from the hands of that player (one card for each life point). If that player has no more cards, too bad! Note that Dynamite damages are not caused by any player.
-jesse_jones_description###During phase 1 of his turn, he may choose to draw the first card from the deck, or randomly from the hand of any other player. Then he draws the second card from the deck.
-jourdonnais_description###He is considered to have a Barrel card in play at all times; he can "draw!" when he is the target of a BANG!, and on a Heart he is missed. If he has another real Barrel card in play, he can count both of them, giving him two chances to cancel the BANG! before playing a Missed! card.
-kit_carlson_description###During the phase 1 of his turn, he looks at the top three cards of the deck: he chooses 2 to draw, and puts the other one back on the top of the deck, face down.
-lucky_duke_description###Each time he is required to "draw!", he flips the top two cards from the deck, and chooses the result he prefers. Discard both cards afterwards.
-paul_regret_description###He is considered to have a Mustang card in play at all times; all other players must add 1 to the distance to him. If he has another real Mustang card in play, he can count both of them, increasing all distances to him by a total of 2).
-pedro_ramirez_description###During the first phase of his turn, he may choose to draw the first card from the top of the discard pile or from the deck. Then, he draws the second card from the deck.
-rose_doolan_description###She is considered to have an Appaloosa card in play at all times; she sees the other players at a distance decreased by 1. If she has another real Appaloosa card in play, she can count both of them, reducing her distance to all other players by a total of 2.
-sid_ketchum_description###At any time, he may discard 2 cards from his hand to regain one life point. If he is willing and able, he can use this ability more than once at a time. But remember: you cannot have more life points than your starting amount!
-slab_the_killer_description###Players trying to cancel his BANG! cards need to play 2 Missed! cards. The Barrel effect, if successfully used, only counts as one Missed!.
-suzy_lafayette_description###As soon as she has no cards in her hand, she draws a card from the draw pile.
-vulture_sam_description###Whenever a character is eliminated from the game, Sam takes all the cards that player had in his hand and in play, and adds them to his hand.
-willy_the_kid_description###He can play any number of BANG! cards during his turn.
-apache_kid_description###He is unaffected by cards from the suit of Diamonds played by the other players. During a Duel, his ability does not work.
-belle_star_description###During her turn, no card in front on any other player has any effect. This applies both to the blue-as well as to the green-bordered cards.
-bill_noface_description###During phase 1 of his turn, he draws 1 card plus 1 card for each injury (lost life point) he currently suffers. So ,if he is at full life, he draws 1 card; with one life point less, he draws 2 cards; with two life points less, he draws 3 cards, and so forth.
-chuck_wengam_description###During his turn, he can choose to lose 1 life point to draw 2 cards from the deck. He may also use this ability more than once in the same turn however, he cannot choose to lose his last life point this way.
-doc_holyday_description###Once during his turn, he can discard any two cards from his hand for the effect of a BANG! card against a player within range of his weapon. This ability not count towards his limit of one BANG! card per turn. To hit Apache Kid in this way, at least one of the two discarded cards must not be a Diamond.
-elena_fuente_description###She can use any card in her hand as a Missed! card.
-greg_digger_description###Each time another character is eliminated, he regains 2 life points. As usual, he cannot exceed his initial number of life points in this way.
-herb_hunter_description###Each time another character is eliminated, he draws 2 extra cards from the deck.
-jose_delgado_description###During his turn he can discard a blue-bordered card from his hand to draw 2 cards from the deck. He may use this ability twice per turn.
-molly_stark_description###Each time she plays or voluntarily discards a Missed!, Beer , or BANG! card when it is not her turn, she draws one card from the deck. If she discards a BANG! card during a Duel, she does not draw her replacement cards until the end of the Duel, when she would draw one card for each BANG! card she used during the Duel. Cards that she is forced to discard due to cards Cat Balou, Brawl, or Can-Can are not considered voluntarily discarded!
-pat_brennan_description###During phase 1 of his turn, he may choose to draw the usual 2 cards from the deck, or, instead draw 1 card (and this one card only) from in play and add it to his hand. The card can be in front of any player, and can be either a blue-bordered card.
-pixie_pete_description###During phase 1 of his turn, he draws 3 cards instead of 2.
-sean_mallory_description###In phase 3 of his turn, he can hold up to 10 cards in his hand. He does not have to discard any cards if he has more cards than the number of life points he has left, but less than 11.
-tequila_joe_description###Each time he plays a Beer card, he regains 2 life points instead of 1. He only regains 1 life point from similar cards like Saloon, Tequila, or Canteen.
-veru_custer_description###At the beginning of her turn, before drawing any cards (in phase 1), she chooses any other characters still in play. Until her next turn, she has the same ability as that character.
-big_spencer_description###Nemoze hrat bang
+deputy_description###pomáhají šerifovi a vyhrají, jen vyhraje-li on
+bart_cassidy_description###kdykoli ztratí život, lízne si kartu
+black_jack_description###během první fáze svého kola ukáže druhou kartu, co líznul: je-li ta karta srdcová či kárová, lízne si ještě jednou navíc (již opět skrytě).
+calamity_janet_description###může používat karty BANG! jako karty Vedle! a naopak. Zahraje-li kartu Vedle! jako BANG! (jako efekt normálního výstřelu), nemůže zahrát další BANG! (tedy pokud nemá ve hře Volcanic). Této schopnosti může využívat i při Duelu, Indians atp.
+el_gringo_description###lízne si náhodně kartu od hráče, který mu způsobí ztrátu životu (za každý ztracený život jednu). Nic se neděje, nemá-li protivník již žádnou kartu. Pozor na to, že zranění od Dynamitu není způsobeno hráčem, který Dynamite vyložil.
+jesse_jones_description###během první fáze svého kola si může vybrat, lízne-li si první kartu z balíčku nebo z ruky jiného hráče. Druhou kartu si vždy lízne z balíčku.
+jourdonnais_description###bere se, jako kdyby měl ve hře kartu Barrel. Jakýkoli opravdový Barrel ve hře přidává efekt k tomu fiktivní, čímž si jeho hráč může otáčet pro zrušení BANG! dvě karty (za každý Barrel jednu).
+kit_carlson_description###během fáze 1 svého kola se podívá na vrchní tři karty balíčku, vybere si 2, které si lízne a třetí vrátí na vršek balíčku.
+lucky_duke_description###vždy, když si má “líznout!”, otočí si vrchní 2 karty balíčku a vybere si, která se mu hodí. Obě karty jsou následně odhozeny.
+paul_regret_description###bere se, že má ve hře kartu Mustanga. Jakýkoli opravdový Mustang se přičítá k fiktivnímu.
+pedro_ramirez_description###během první fáze svého kola, může si líznout horní kartu z odhazovacího balíčku, druhou si lízne z lízacího.
+rose_doolan_description###bere se, že má ve hře kartu Appaloosa. Jakákoli opravdová karta Appaloosa se sčítá s fiktivní.
+sid_ketchum_description###kdykoli může odhodit 2 karty z ruky, aby si vyléčil jeden život. Tuto schopnost může použít několikrát za sebou.
+slab_the_killer_description###protivníci, kteří chtějí zrušit jeho karty BANG! musí zahrát 2 karty Vedle! Schová-li se někdo úspěšně za Barrel, bere se to jako jedna zahrána karta Vedle! (je tedy nutné zahrát ještě jednu kartu Vedle!).
+suzy_lafayette_description###kdykoli nemá žádnou kartu v ruce, lízne si novou z lízacího balíčku.
+vulture_sam_description###kdykoli je hráč odstraněn ze hry, Sam získá všechny karty daného hráče, co měl v ruce a ve hře.
+willy_the_kid_description###může zahrát libovolný počet karet BANG! ve svém kole.
+apache_kid_description###Nemají na něho vliv kárové karty zahrané jinými hráči. Během Duelu tato schopnost nefunguje.
+belle_star_description###V jejím kole nemají žádný efekt všechny karty, které mají ostatní hráči před sebou ve hře. Toto platí pro karty s modrým i zeleným okrajem.
+bill_noface_description###Ve svém kole si ve fázi 1 dobírá jednu kartu plus jednu kartu za každé aktuální zranění (ztracený život). Takže pokud má plný počet životů, dobírá si 1 kartu; má-li o život méně, dobírá si 2 karty; má-li o dva životy méně, dobírá si 3 karty atd.
+chuck_wengam_description###Ve svém kole se může rozhodnout ztratit 1 život a dobrat si 2 karty. Tuto schopnost může použít vícekrát za kolo, ale nemůže takto přijít o svůj poslední život.
+doc_holyday_description###Jednou za své kolo se může rozhodnout vyřadit dvě karty ze své ruky, a tím použít efekt BANG! na hráče v dosahu své zbraně. Tato schopnost se nepočítá do limitu zahraných karet BANG! za kolo. Aby tímto způsobem zasáhl Apache Kida, musí být alespoň jedna z těchto karet jiná než kárová.
+elena_fuente_description###Může použít jakoukoli kartu ze své ruky jako Vedle.
+greg_digger_description###Kdykoli je jiná postava eliminována, obnoví si 2 životy. Stejně jako obvykle nemůže jejich počet překročit maximální množství.
+herb_hunter_description###Kdykoli je jiná postava eliminována, dobírá si 2 karty z knihovny. Pokud tedy sám zabije Banditu, dobírá si 5 karet.
+jose_delgado_description###Ve svém kole může vyřadit jednu svou kartu s modrým okrajem z ruky a dobrat si 2 karty z knihovny. Tuto schopnost může použít dvakrát za kolo.
+molly_stark_description###Vždy, když mimo své kolo zahraje nebo dobrovolně vyřadí kartu Vedle!, Pivo nebo BANG!, dobírá si 1 kartu z knihovny. Pokud vyřadí karty BANG! během Duelu, nemůže si za ně vzít náhradu, dokud Duel neskončí. Karty, k jejichž vyřazení je donucena kartami jako Cat Balou, Rvačka nebo Kankán, se nepovažují za dobrovolně vyřazené!
+pat_brennan_description###Ve svém kole se může ve fázi 1 rozhodnout dobrat obvyklé 2 karty z knihovny nebo si místo nich vzít jednu (a pouze jednu) kartu ze hry a přidat si ji do ruky. Tato karta může ležet před jakýmkoli hráčem a může mít modrý i zelený okraj.
+pixie_pete_description###Ve svém kole si ve fázi 1 dobírá 3 karty místo 2.
+sean_mallory_description###Vo svojom kole vo fáze 3, môže mať na ruke 10 kariet.
+tequila_joe_description###Kdykoli zahraje kartu Pivo, obnovuje si 2 životy místo 1. Podobnými kartami typu Salón, Tequila nebo Čutora si obnoví pouze 1 život.
+veru_custer_description###Na začátku svého kola, než si dobere ve fázi 1 karty, si vybere jednu postavu, která je stále ve hře. Do začátku svého příštího kola má stejné schopnosti jako tato postava.
+big_spencer_description###Nemôže hrať kartu Vedľa!

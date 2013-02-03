@@ -24,6 +24,14 @@ class HighNoon extends Item {
 	public function getBackImagePath() {
 		return $this->back;
 	}
+	
+	public function getLocalizedTitle() {
+		return Localize::getMessage($this['localize_key'] . '_title');
+	}
+	
+	public function getLocalizedDescription() {
+		return Localize::getMessage($this['localize_key'] . '_description');
+	}
 }
 
 ?>
