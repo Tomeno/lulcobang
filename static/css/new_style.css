@@ -417,3 +417,7 @@ p.copy {
 .card.high_noon {
 	left: 100px;
 }
+
+.error p {
+	color: red;
+}
