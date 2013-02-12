@@ -161,7 +161,8 @@ function selectPlayer(id, fromSelectCard) {
 	}
 	
 	//alert(command);
-	var commandsImmediatelyExecuted = ['bang', 'pepperbox', 'springfield', 'punch', 'knife', 'buffalorifle', 'duel',
+	var commandsImmediatelyExecuted = ['bang', 'springfield', 'punch', 'duel',
+		'pepperbox', 'knife', 'buffalorifle', 'derringer',
 		'panic', 'catbalou', 'conestoga', 'cancan', 'ragtime',
 		'jail', 'tequila'];
 	if (inArray(command, commandsImmediatelyExecuted)) {
@@ -179,12 +180,15 @@ function lostLife() {
 	executeCommand();
 }
 
-function useCharacter() {
+function useCharacter(id) {
 	var useCharacter = $('use-character');
+	var characterCard = $('character-' + id);
 	if (useCharacter.value == 1) {
 		useCharacter.value = 0;
+		rejectCard(characterCard, 'character');
 	} else {
 		useCharacter.value = 1;
+		ejectCard(characterCard, 'character');
 	}
 }
 

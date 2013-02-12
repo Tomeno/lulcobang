@@ -17,11 +17,13 @@ class LoginAction extends AbstractAction {
 		}
 
 		if (Utils::post('login')) {
-			MySmarty::assign('formSent', TRUE);
 			MySmarty::assign('username', Utils::post('username'));
-			LoggedUser::userLogin();
-			if (LoggedUser::whoIsLogged()) {
-				MySmarty::assign('loginSuccessfull', TRUE);
+			$validation = LoggedUser::userLogin();
+			//var_Dump($validation);exit();
+			if ($validation === TRUE) {
+				Utils::redirect(Utils::getActualUrlWithoutGetParameters(), FALSE);
+			} else {
+				MySmarty::assign('errors', $validation);
 			}
 		}
 
