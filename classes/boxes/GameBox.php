@@ -45,6 +45,9 @@ class GameBox extends AbstractBox {
 				} elseif ($loggedUser['id'] == $this->game['creator']) {
 					MySmarty::assign('startGameAvailable', Localize::getMessage('start_game'));
 				}
+			} elseif ($this->game['status'] == Game::GAME_STATUS_ENDED) {
+				MySmarty::assign('createGameAvailable', Localize::getMessage('create_game'));
+				MySmarty::assign('refreshGameBox', TRUE);
 			}
 		} else {
 			MySmarty::assign('createGameAvailable', Localize::getMessage('create_game'));

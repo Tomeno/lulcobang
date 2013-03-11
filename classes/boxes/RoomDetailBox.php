@@ -13,7 +13,8 @@ class RoomDetailBox extends AbstractBox {
 
 		if ($room) {
 			$gameRepository = new GameRepository();
-			$gameRepository->addAdditionalWhere(array('column' => 'status', 'value' => Game::GAME_STATUS_ENDED, 'xxx' => '!='));
+			// $gameRepository->addAdditionalWhere(array('column' => 'status', 'value' => Game::GAME_STATUS_ENDED, 'xxx' => '!='));
+			$gameRepository->addOrderBy(array('id' => 'DESC'));
 			$game = $gameRepository->getOneByRoom($room['id']);
 
 			if (Utils::post()) {
@@ -25,6 +26,7 @@ class RoomDetailBox extends AbstractBox {
 						$messageParams = array(
 							'text' => $message,
 							'room' => $room['id'],
+							'game' => $game['id'],
 						);
 						Chat::addMessage($messageParams);
 					}
@@ -57,6 +59,9 @@ class RoomDetailBox extends AbstractBox {
 
 			$chatBox = new ChatBox();
 			$chatBox->setRoom($room);
+			if ($game !== NULL) {
+				$chatBox->setGame($game);
+			}
 			MySmarty::assign('chatBox', $chatBox->render());
 		} else {
 			// TODO 404 room not found

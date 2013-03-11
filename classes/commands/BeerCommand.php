@@ -16,7 +16,7 @@ class BeerCommand extends Command {
 		} else {
 			$livePlayers = 0;
 			foreach ($this->getPlayers() as $player) {
-				if ($player['actual_lifes'] > 0) {
+				if ($player->getIsAlive()) {
 					$livePlayers++;
 				}
 			}

@@ -18,3 +18,9 @@ pass###Posuň poradie
 room_name###Názov
 room_description###Popis
 send###Odošli
+play_as###Teraz hrá ako
+room_status_free###Voľná
+room_status_0###Čaká sa
+room_status_1###Hrá sa
+room_status_2###Hrá sa
+room_status_3###Ukončená

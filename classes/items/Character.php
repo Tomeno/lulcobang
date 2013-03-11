@@ -66,7 +66,11 @@ class Character extends LinkableItem {
 	}
 
 	public function getLocalizedDescription() {
-		return Localize::getMessage($this['localize_description_key']);
+		return Localize::getMessage($this['localize_key'] . '_description');
+	}
+	
+	public function getLocalizedUsage() {
+		return Localize::getMessage($this['localize_key'] . '_usage');
 	}
 
 	public function getRelatedCards() {

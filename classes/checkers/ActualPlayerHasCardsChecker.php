@@ -62,7 +62,7 @@ class ActualPlayerHasCardsChecker extends Checker {
 					$checkingMethod = 'getHas' . ucfirst($cardName) . 'OnHand';
 				}
 				
-				$card = $actualPlayer->$checkingMethod();
+				$card = $actualPlayer->$checkingMethod($game);
 				
 				if ($card) {
 					if ($negation === FALSE) {

@@ -6,12 +6,14 @@ class ChatBox extends AbstractBox {
 
 	protected $room = NULL;
 
+	protected $game = NULL;
+	
 	protected function setup() {
 		$loggedUser = LoggedUser::whoIsLogged();
 		if ($this->room !== NULL) {
 			Room::addUser($loggedUser['id'], $this->room['id']);
 
-			$messages = Chat::getMessages($this->room['id'], $loggedUser['id']);
+			$messages = Chat::getMessages($this->room['id'], $loggedUser['id'], 0, $this->game['id']);
 
 			MySmarty::assign('loggedUser', $loggedUser);
 			MySmarty::assign('messages', $messages);
@@ -24,6 +26,10 @@ class ChatBox extends AbstractBox {
 
 	public function setRoom(Room $room) {
 		$this->room = $room;
+	}
+	
+	public function setGame(Game $game) {
+		$this->game = $game;
 	}
 }
 

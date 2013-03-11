@@ -38,32 +38,96 @@ class PassCommand extends Command {
 	
 	protected function run() {
 		if ($this->check == self::OK) {
-			$this->actualPlayer['phase'] = Player::PHASE_NONE;
-			$this->actualPlayer['bang_used'] = 0;
-			$tableCards = unserialize($this->actualPlayer['table_cards']);
-			$waitCards = unserialize($this->actualPlayer['wait_cards']);
-			$this->actualPlayer['table_cards'] = serialize(array_merge($tableCards, $waitCards));
-			$this->actualPlayer['wait_cards'] = serialize(array());
-			// znulujeme notices
-			$notices = $this->actualPlayer->getNoticeList();
-			if (isset($notices['barrel_used'])) {
-				unset($notices['barrel_used']);
+			$passTurn = TRUE;
+			if ($this->game->getIsHNVendetta() && !$this->actualPlayer->getPlayedVendetta()) {
+				// TODO mozno by toto mohla byt metoda
+				$count = 1;
+				// neviem ci lucky duke pri vendete taha dve karty
+				if ($this->useCharacter && $this->actualPlayer->getIsLuckyDuke($this->game)) {
+					$count = 2;
+				}
+				
+				$drawnCards = GameUtils::drawCards($this->game, $count);
+				$isHeart = FALSE;
+				$cardRepository = new CardRepository();
+				$thrownCards = array();
+				foreach ($drawnCards as $drawnCardId) {
+					$drawnCard = $cardRepository->getOneById($drawnCardId);
+					$thrownCards[] = $drawnCard;
+					if ($drawnCard->getIsHearts($this->game)) {
+						$isHeart = TRUE;
+						// break tu nie je lebo musime prejst cez vsetky karty
+						// aby sme vyrobili pole kariet ktore treba vyhodit
+					}
+				}
+				GameUtils::throwCards($this->game, NULL, $thrownCards);
+				
+				if ($isHeart) {
+					$passTurn = FALSE;
+				}
 			}
-			if (isset($notices['character_jourdonnais_used'])) {
-				unset($notices['character_jourdonnais_used']);
-			}
-			if (isset($notices['character_used'])) {
-				unset($notices['character_used']);
-			}
-			$this->actualPlayer->setNoticeList($notices);
-			$this->actualPlayer->save();
+			
+			if ($passTurn) {
+				$this->actualPlayer['phase'] = Player::PHASE_NONE;
+				$this->actualPlayer['bang_used'] = 0;
+				$tableCards = unserialize($this->actualPlayer['table_cards']);
+				$waitCards = unserialize($this->actualPlayer['wait_cards']);
+				$this->actualPlayer['table_cards'] = serialize(array_merge($tableCards, $waitCards));
+				$this->actualPlayer['wait_cards'] = serialize(array());
+				// znulujeme notices
+				$notices = $this->actualPlayer->getNoticeList();
+				if (isset($notices['barrel_used'])) {
+					unset($notices['barrel_used']);
+				}
+				if (isset($notices['character_jourdonnais_used'])) {
+					unset($notices['character_jourdonnais_used']);
+				}
+				if (isset($notices['character_used'])) {
+					unset($notices['character_used']);
+				}
+				// spravime zalohu premennej ghost
+				$isGhost = $this->actualPlayer->getIsGhost();
+				// zrusime ghosta
+				if (isset($notices['ghost'])) {
+					unset($notices['ghost']);
+				}
+				if (isset($notices['vendetta'])) {
+					unset($notices['vendetta']);
+				}
+				$this->actualPlayer->setNoticeList($notices);
+				$this->actualPlayer = $this->actualPlayer->save(TRUE);
 
-			$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer, TRUE);
-			$this->game['turn'] = $nextPositionPlayer['id'];
-			$this->game->save();
+				if ($this->game->getIsHNGhostTown() && $isGhost === TRUE) {
+					// odstranime ghosta
+					$this->removePlayerFromGame();
+				}
 
-			$nextPositionPlayer['phase'] = $this->getNextPhase($nextPositionPlayer);
-			$nextPositionPlayer->save();
+				$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer, TRUE);
+				$this->game['turn'] = $nextPositionPlayer['id'];
+				$this->game->save();
+
+				if ($this->game->getIsHNGhostTown() && $nextPositionPlayer['actual_lifes'] == 0) {
+					$notices = $nextPositionPlayer->getNoticeList();
+					$notices['ghost'] = 1;
+					$nextPositionPlayer->setNoticeList($notices);
+				}
+
+				$nextPositionPlayer['phase'] = $this->getNextPhase($nextPositionPlayer);
+				$nextPositionPlayer->save();
+
+				// preratame maticu
+				$matrix = GameUtils::countMatrix($this->game);
+				$this->game['distance_matrix'] = serialize($matrix);
+				$this->game->save();
+			} else {
+				$notices = $this->actualPlayer->getNoticeList();
+				$notices['vendetta'] = 1;
+				$this->actualPlayer->setNoticeList($notices);
+				$this->actualPlayer['phase'] = $this->getNextPhase($this->actualPlayer);
+				$this->actualPlayer = $this->actualPlayer->save(TRUE);
+				
+				// TODO message
+			}
 		}
 	}
 

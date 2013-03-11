@@ -740,6 +740,13 @@ abstract class Command {
 			$room = $this->getRoom();
 			$message['room'] = $room['id'];
 		}
+		
+		// vsetky message su pridavane k aktualnej hre
+		if (!$message['game']) {
+			$game = $this->getGame();
+			$message['game'] = $game['id'];
+		}
+		
 		// ak nie je urcene od koho je sprava tak je od systemu
 		if (!$message['user']) {
 			$message['user'] = User::SYSTEM;
@@ -1087,13 +1094,29 @@ abstract class Command {
 	}
 	
 	protected function endGame($roles) {
-		// TODO nacitat podla roles hracov ktori vyhrali hru - aj ti ktori su mrtvy v tom case
+		$playerRepository = new PlayerRepository();
+		$players = $playerRepository->getByGameAndRole($this->game['id'], $roles);
+		$playersNames = array();
+		foreach ($players as $player) {
+			$player['winner'] = 1;
+			$player->save();
+			$user = $player->getUser();
+			$playersNames[] = $user['username'];
+		}
+		
+		// znovu nacitame actual a attacking playera lebo to robi nejake halusky
+		if ($this->actualPlayer) {
+			$this->actualPlayer = $playerRepository->getOneById($this->actualPlayer['id']);
+		}
+		if ($this->attackingPlayer) {
+			$this->attackingPlayer = $playerRepository->getOneById($this->attackingPlayer['id']);
+		}
 		
 		// vytvorit nejaku tabulku hall of fame kde budu vyhry a prehry
 		
 		// vyhry a prehry za nejaku konkretnu rolu  - typ roly - cize je jedno ci si bandita1 alebo bandita2
 		$message = array(
-			'text' => 'vyhrali roles: ' . print_R($roles, TRUE),
+			'text' => 'vyhrali hraci: ' . implode(', ', $playersNames),
 			'user' => User::SYSTEM,
 		);
 
@@ -1182,6 +1205,7 @@ abstract class Command {
 	protected function getNextPhase(Player $player) {
 		$phase = NULL;
 		// TODO fistful of cards
+		// TODO toto asi skipneme pri vendette, lebo sherif by hned tahal dalsiu kartu z rozsirenia - sice je tam phase none tak asi netreba
 		if ($player->getRoleObject()->getIsSheriff() && $player['phase'] == Player::PHASE_NONE) {
 			$phase = $this->checkSheriffExtensions();
 		} elseif ($player['phase'] == Player::PHASE_NONE) {
@@ -1190,9 +1214,9 @@ abstract class Command {
 		
 		if ($phase === NULL) {
 			// if has dynamite and/or jail - phase dynamite / jail, else phase draw
-			if ($player->getHasDynamiteOnTheTable()) {
+			if ($player->getHasDynamiteOnTheTable($this->game)) {
 				$phase = Player::PHASE_DYNAMITE;
-			} elseif ($player->getHasJailOnTheTable()) {
+			} elseif ($player->getHasJailOnTheTable($this->game)) {
 				$phase = Player::PHASE_JAIL;
 			} else {
 				$phase = Player::PHASE_DRAW;

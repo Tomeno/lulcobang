@@ -2,10 +2,15 @@
 
 class HighNoon extends Item {
 
-	protected $imageFolder = 'images/cards/bang/extensions/high_noon/';
-	protected $back = 'images/cards/bang/special/high_noon_back.jpg';
+	protected $highNoonImageFolder = 'images/cards/bang/extensions/high_noon/';
+	protected $highNoonBack = 'images/cards/bang/special/high_noon_back.jpg';
 
+	protected $fistfulOfCardsImageFolder = 'images/cards/bang/extensions/a_fistful_of_cards/';
+	protected $fistfulOfCardsNoonBack = 'images/cards/bang/special/fistful_back.jpg';
+	
 	const CARD_HIGH_NOON = 6;
+	const CARD_FISTFUL_OF_CARDS = 28;
+	const CARD_WILD_WEST_SHOW = 38;
 	
 	/**
 	 * getter for card image path
@@ -13,7 +18,13 @@ class HighNoon extends Item {
 	 * @return	string
 	 */
 	public function getImagePath() {
-		return $this->imageFolder . $this['image'];
+		$imageFolder = '';
+		if ($this['game_set'] == Game::GAME_SET_HIGH_NOON) {
+			$imageFolder = $this->highNoonImageFolder;
+		} elseif ($this['game_set'] == Game::GAME_SET_A_FISTFUL_OF_CARDS) {
+			$imageFolder = $this->fistfulOfCardsImageFolder;
+		}
+		return $imageFolder . $this['image'];
 	}
 
 	/**
@@ -22,7 +33,11 @@ class HighNoon extends Item {
 	 * @return	string
 	 */
 	public function getBackImagePath() {
-		return $this->back;
+		if ($this['game_set'] == Game::GAME_SET_HIGH_NOON) {
+			return $this->highNoonBack;
+		} elseif ($this['game_set'] == Game::GAME_SET_A_FISTFUL_OF_CARDS) {
+			return $this->fistfulOfCardsNoonBack;
+		}
 	}
 	
 	public function getLocalizedTitle() {
@@ -31,6 +46,14 @@ class HighNoon extends Item {
 	
 	public function getLocalizedDescription() {
 		return Localize::getMessage($this['localize_key'] . '_description');
+	}
+	
+	public static function getSpecialCards() {
+		return array(
+			self::CARD_HIGH_NOON,
+			self::CARD_FISTFUL_OF_CARDS,
+			self::CARD_WILD_WEST_SHOW,
+		);
 	}
 }
 

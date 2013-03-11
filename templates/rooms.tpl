@@ -2,7 +2,7 @@
 	<div class="list">
 		{foreach from=$rooms item=room}
 			<div class="item">
-				<p><a href="{$room.url}">{$room.title}</a>{if $room.game} (BANG){/if}</p>
+				<p><a href="{$room.url}">{$room.title}</a> ({if $room.game}{$room.status}{else}{localize key='room_status_free'}{/if})</p>
 			</div>
 		{/foreach}
 	</div>

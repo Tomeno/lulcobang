@@ -421,3 +421,44 @@ p.copy {
 .error p {
 	color: red;
 }
+
+.popup {
+	display: none;
+	position: absolute;
+	background: black;
+	padding: 10px;
+	width: 250px;
+	top: 115px;
+}
+
+.popup .image {
+	float: left;
+	padding-right: 5px;
+}
+
+.popup .text .title {
+	display: block;
+	padding-bottom: 5px;
+	font-size: 15px;
+}
+
+.popup .text .description {
+	display: block;
+	padding-bottom: 5px;
+}
+
+.popup .text .usage {
+	display: block;
+}
+/*
+a:hover .popup {
+	display: block;
+}*/
+
+.winner {
+	height: 152px;
+	width: 152px;
+	background:url('../images/winner.png') no-repeat;
+	position: absolute;
+	left: 110px;
+}

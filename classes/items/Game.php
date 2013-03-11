@@ -12,6 +12,16 @@ class Game extends Item {
 	
 	const MINIMUM_PLAYERS_COUNT = 2;
 
+	const GAME_SET_BANG = 1;
+	
+	const GAME_SET_DODGE_CITY = 2;
+	
+	const GAME_SET_HIGH_NOON = 3;
+	
+	const GAME_SET_A_FISTFUL_OF_CARDS = 4;
+
+	const GAME_SET_WILD_WEST_SHOW = 5;
+	
 	public function __construct($game) {
 		parent::__construct($game);
 		
@@ -111,8 +121,11 @@ class Game extends Item {
 	 * @return	Player|NULL
 	 */
 	public function getPlayerOnTurn() {
-		$playerRepository = new PlayerRepository();
-		return $playerRepository->getOneById($this['turn']);
+		if ($this['turn']) {
+			$playerRepository = new PlayerRepository();
+			return $playerRepository->getOneById($this['turn']);
+		}
+		return NULL;
 	}
 
 	/**

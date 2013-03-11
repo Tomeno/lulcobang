@@ -7,7 +7,7 @@ class PonyExpressCommand extends Command {
 	const OK = 1;
 
 	protected function check() {
-		$res = $this->actualPlayer->getHasPonyExpressOnTheTable();
+		$res = $this->actualPlayer->getHasPonyExpressOnTheTable($this->game);
 		if ($res) {
 			$this->ponyExpressCard = $res;
 			$this->check = self::OK;

@@ -25,7 +25,7 @@
 				{$content}
 			</div>
 			<div class="clear"></div>
-			<p class="copy">Copyright 2010 - {$actualYear} &copy; Michal Lulčo | Design by <a href="http://clira.sk/" onclick="window.open('http://clira.sk/', '_blank'); return false;">Clira</a></p>
+			<p class="copy">Technology by Michal Lulčo : 2010 - {$actualYear} | Design by <a href="http://clira.sk/" onclick="window.open('http://clira.sk/', '_blank'); return false;">Clira</a></p>
 		</div>
 	</body>
 </html>
