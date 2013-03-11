@@ -7,34 +7,100 @@ outlaw_description###musí zabít šerifa dříve než on jeho
 deputy_title###Pomocník
 deputy_description###pomáhají šerifovi a vyhrají, jen vyhraje-li on
 bart_cassidy_description###kdykoli ztratí život, lízne si kartu
+bart_cassidy_usage###hráč klikne na svoj charakter a potom pokračuje ako obyčajne pri strate života, pri výbuchu dynamitu bude charakter automatický
 black_jack_description###během první fáze svého kola ukáže druhou kartu, co líznul: je-li ta karta srdcová či kárová, lízne si ještě jednou navíc (již opět skrytě).
+black_jack_usage###hráč klikne na svoj charakter a ďalej postupuje ako pri normálnom ťahaní kariet
 calamity_janet_description###může používat karty BANG! jako karty Vedle! a naopak. Zahraje-li kartu Vedle! jako BANG! (jako efekt normálního výstřelu), nemůže zahrát další BANG! (tedy pokud nemá ve hře Volcanic). Této schopnosti může využívat i při Duelu, Indians atp.
+calamity_janet_usage###hráč klikne na svoj charakter a vyberie opačnú kartu ako by vybral za normálnych okolností (BANG! namiesto Vedľa a naopak) a ďalej postupuje ako obyčajne
 el_gringo_description###lízne si náhodně kartu od hráče, který mu způsobí ztrátu životu (za každý ztracený život jednu). Nic se neděje, nemá-li protivník již žádnou kartu. Pozor na to, že zranění od Dynamitu není způsobeno hráčem, který Dynamite vyložil.
+el_gringo_usage###hráč klikne na svoj charakter a potom pokračuje ako obyčajne pri strate života
 jesse_jones_description###během první fáze svého kola si může vybrat, lízne-li si první kartu z balíčku nebo z ruky jiného hráče. Druhou kartu si vždy lízne z balíčku.
+jesse_jones_usage###hráč klikne na svoj charakter, následne na hráča, od ktorého chce zobrať prvú kartu a ďalej postupuje ako pri normálnom ťahaní kariet
 jourdonnais_description###bere se, jako kdyby měl ve hře kartu Barrel. Jakýkoli opravdový Barrel ve hře přidává efekt k tomu fiktivní, čímž si jeho hráč může otáčet pro zrušení BANG! dvě karty (za každý Barrel jednu).
+jourdonnais_usage###ak je hráč pod útokom karty Bang! (alebo karty s podobným účinkom), klikne na svoj charakter a následne na ťahací balíček kariet
 kit_carlson_description###během fáze 1 svého kola se podívá na vrchní tři karty balíčku, vybere si 2, které si lízne a třetí vrátí na vršek balíčku.
+kit_carlson_usage###hráč klikne na svoj charakter a ďalej pokračuje ako obyčajne, zobrazí sa mu niekoľko kariet, z ktorých si časť vyberie, ostatné karty sú automaticky umiestnené nazad do ťahacieho balíčka
 lucky_duke_description###vždy, když si má “líznout!”, otočí si vrchní 2 karty balíčku a vybere si, která se mu hodí. Obě karty jsou následně odhozeny.
+lucky_duke_usage###
 paul_regret_description###bere se, že má ve hře kartu Mustanga. Jakýkoli opravdový Mustang se přičítá k fiktivnímu.
+paul_regret_usage###automatické
 pedro_ramirez_description###během první fáze svého kola, může si líznout horní kartu z odhazovacího balíčku, druhou si lízne z lízacího.
+pedro_ramirez_usage###hráč klikne na svoj charakter a následne na ťahací balíček, automaticky dostane jednu kartu z odhadzovacieho balíčka a druhú z ťahacieho balíčka
 rose_doolan_description###bere se, že má ve hře kartu Appaloosa. Jakákoli opravdová karta Appaloosa se sčítá s fiktivní.
+rose_doolan_usage###automatické
 sid_ketchum_description###kdykoli může odhodit 2 karty z ruky, aby si vyléčil jeden život. Tuto schopnost může použít několikrát za sebou.
+sid_ketchum_usage###hráč klikne na svoj charakter, vyberie dve karty, ktore chce odhodiť a odhodí ich rovnako ako odhadzuje prebytočné karty na konci svojho ťahu
 slab_the_killer_description###protivníci, kteří chtějí zrušit jeho karty BANG! musí zahrát 2 karty Vedle! Schová-li se někdo úspěšně za Barrel, bere se to jako jedna zahrána karta Vedle! (je tedy nutné zahrát ještě jednu kartu Vedle!).
+slab_the_killer_usage###
 suzy_lafayette_description###kdykoli nemá žádnou kartu v ruce, lízne si novou z lízacího balíčku.
+suzy_lafayette_usage###automatické
 vulture_sam_description###kdykoli je hráč odstraněn ze hry, Sam získá všechny karty daného hráče, co měl v ruce a ve hře.
+vulture_sam_usage###automatické
 willy_the_kid_description###může zahrát libovolný počet karet BANG! ve svém kole.
+willy_the_kid_usage###
 apache_kid_description###Nemají na něho vliv kárové karty zahrané jinými hráči. Během Duelu tato schopnost nefunguje.
+apache_kid_usage###automatické
 belle_star_description###V jejím kole nemají žádný efekt všechny karty, které mají ostatní hráči před sebou ve hře. Toto platí pro karty s modrým i zeleným okrajem.
+belle_star_usage###poloautomatické, ale bude automatické
 bill_noface_description###Ve svém kole si ve fázi 1 dobírá jednu kartu plus jednu kartu za každé aktuální zranění (ztracený život). Takže pokud má plný počet životů, dobírá si 1 kartu; má-li o život méně, dobírá si 2 karty; má-li o dva životy méně, dobírá si 3 karty atd.
+bill_noface_usage###
 chuck_wengam_description###Ve svém kole se může rozhodnout ztratit 1 život a dobrat si 2 karty. Tuto schopnost může použít vícekrát za kolo, ale nemůže takto přijít o svůj poslední život.
+chuck_wengam_usage###
 doc_holyday_description###Jednou za své kolo se může rozhodnout vyřadit dvě karty ze své ruky, a tím použít efekt BANG! na hráče v dosahu své zbraně. Tato schopnost se nepočítá do limitu zahraných karet BANG! za kolo. Aby tímto způsobem zasáhl Apache Kida, musí být alespoň jedna z těchto karet jiná než kárová.
+doc_holyday_usage###
 elena_fuente_description###Může použít jakoukoli kartu ze své ruky jako Vedle.
+elena_fuente_usage###
 greg_digger_description###Kdykoli je jiná postava eliminována, obnoví si 2 životy. Stejně jako obvykle nemůže jejich počet překročit maximální množství.
+greg_digger_usage###automatické
 herb_hunter_description###Kdykoli je jiná postava eliminována, dobírá si 2 karty z knihovny. Pokud tedy sám zabije Banditu, dobírá si 5 karet.
+herb_hunter_usage###automatické
 jose_delgado_description###Ve svém kole může vyřadit jednu svou kartu s modrým okrajem z ruky a dobrat si 2 karty z knihovny. Tuto schopnost může použít dvakrát za kolo.
+jose_delgado_usage###
 molly_stark_description###Vždy, když mimo své kolo zahraje nebo dobrovolně vyřadí kartu Vedle!, Pivo nebo BANG!, dobírá si 1 kartu z knihovny. Pokud vyřadí karty BANG! během Duelu, nemůže si za ně vzít náhradu, dokud Duel neskončí. Karty, k jejichž vyřazení je donucena kartami jako Cat Balou, Rvačka nebo Kankán, se nepovažují za dobrovolně vyřazené!
+molly_stark_usage###
 pat_brennan_description###Ve svém kole se může ve fázi 1 rozhodnout dobrat obvyklé 2 karty z knihovny nebo si místo nich vzít jednu (a pouze jednu) kartu ze hry a přidat si ji do ruky. Tato karta může ležet před jakýmkoli hráčem a může mít modrý i zelený okraj.
+pat_brennan_usage###
 pixie_pete_description###Ve svém kole si ve fázi 1 dobírá 3 karty místo 2.
+pixie_pete_usage###
 sean_mallory_description###Vo svojom kole vo fáze 3, môže mať na ruke 10 kariet.
+sean_mallory_usage###
 tequila_joe_description###Kdykoli zahraje kartu Pivo, obnovuje si 2 životy místo 1. Podobnými kartami typu Salón, Tequila nebo Čutora si obnoví pouze 1 život.
-veru_custer_description###Na začátku svého kola, než si dobere ve fázi 1 karty, si vybere jednu postavu, která je stále ve hře. Do začátku svého příštího kola má stejné schopnosti jako tato postava.
+tequila_joe_usage###
+vera_custer_description###Na začátku svého kola, než si dobere ve fázi 1 karty, si vybere jednu postavu, která je stále ve hře. Do začátku svého příštího kola má stejné schopnosti jako tato postava.
+vera_custer_usage###hráč počas ťahania kariet klikne na svoj charakter, následne na hráča, ktorého charakter chce používať a nakoniec na ťahací balíček
 big_spencer_description###Nemôže hrať kartu Vedľa!
+big_spencer_usage###automatické
+flint_westwood_description###
+flint_westwood_usage###
+gary_looter_description###
+gary_looter_usage###
+gregory_deck_description###
+gregory_deck_usage###
+john_pain_description###
+john_pain_usage###
+lee_van_kliff_description###
+lee_van_kliff_usage###
+teren_kill_description###
+teren_kill_usage###
+youl_grinner_description###
+youl_grinner_usage###
+madam_yto_description###
+madam_yto_usage###
+annie_versary_description###
+annie_versary_usage###
+uncle_will_description###
+uncle_will_usage###
+johnny_kisch_description###
+johnny_kisch_usage###
+claus_the_saint_description###
+claus_the_saint_usage###
+limonade_jim_description###
+limonade_jim_usage###
+henry_block_description###
+henry_block_usage###
+evelyn_the_bang_description###
+evelyn_the_bang_usage###
+colorado_bill_description###
+colorado_bill_usage###
+mick_defender_description###
+mick_defender_usage###

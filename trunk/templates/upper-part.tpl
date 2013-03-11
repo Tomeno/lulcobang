@@ -1,5 +1,5 @@
 <div class="logo">
-	<h1><a href="{baseurl}"><span class="hdn">Bang</span></a></h1>
+	<h1><a href="{baseurl}{$language}.html"><span class="hdn">Bang</span></a></h1>
 </div>
 <div class="user_info">
 	{if $loggedUser}

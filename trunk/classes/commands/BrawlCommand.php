@@ -28,7 +28,7 @@ class BrawlCommand extends Command {
 				}
 				
 				foreach ($this->getPlayers() as $player) {
-					if ($player['id'] != $this->actualPlayer['id'] && $player['actual_lifes'] > 0) {
+					if ($player['id'] != $this->actualPlayer['id'] && $player->getIsAlive()) {
 						$card = NULL;
 						$place = 'hand';
 						if (isset($playerCardList[$player['id']]) && $playerCardList[$player['id']] != 0) {

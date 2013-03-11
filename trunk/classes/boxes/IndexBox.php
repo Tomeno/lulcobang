@@ -5,7 +5,7 @@ class IndexBox extends AbstractBox {
 	
 	protected function setup() {
 		// cards
-		$cardBaseTypeRepository = new CardBaseTypeRepository();
+		$cardBaseTypeRepository = new CardBaseTypeRepository(TRUE);
 		$validCardBaseTypes = $cardBaseTypeRepository->getByValid(1);
 
 		$validCardBaseTypesIdList = array();
@@ -13,7 +13,7 @@ class IndexBox extends AbstractBox {
 			$validCardBaseTypesIdList[] = $cardBaseType['id'];
 		}
 
-		$cardRepository = new CardRepository();
+		$cardRepository = new CardRepository(TRUE);
 		$cardRepository->setGroupBy('card_base_type');
 		$cards = $cardRepository->getAll();
 	
@@ -31,7 +31,7 @@ class IndexBox extends AbstractBox {
 		MySmarty::assign('notValidCards', $notValidCards);
 		
 		// characters
-		$characterRepository = new CharacterRepository();
+		$characterRepository = new CharacterRepository(TRUE);
 		$characters = $characterRepository->getAll();
 		
 		$validCharacters = array();

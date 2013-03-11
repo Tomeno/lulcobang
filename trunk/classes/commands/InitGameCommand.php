@@ -54,7 +54,7 @@ class InitGameCommand extends Command {
 			$roles = $roleRepository->getAll();
 			shuffle($roles);
 
-			$gameSets = unserialize($this->room['game_sets']);
+			$gameSets = unserialize($this->game['game_sets']);
 			if ($gameSets) {
 				$characters = $characterRepository->getByValidAndGameSet(1, $gameSets);
 			} else {
@@ -62,18 +62,17 @@ class InitGameCommand extends Command {
 			}
 			shuffle($characters);
 
-			// ak mame high noon
-			if (in_array(3, $gameSets)) {
-				$highNoonRepository = new HighNoonRepository();
-				$highNoonCard = $highNoonRepository->getOneById(HighNoon::CARD_HIGH_NOON);
-				
-				$highNoonRepository = new HighNoonRepository();
-				$highNoonRepository->addAdditionalWhere(
-					array('column' => 'id', 'value' => HighNoon::CARD_HIGH_NOON, 'xxx' => '!=')
-				);
-				$highNoonCards = $highNoonRepository->getAll();
+			$highNoonRepository = new HighNoonRepository();
+			$highNoonCard = $highNoonRepository->getOneByIdAndValidAndGameSet(HighNoon::getSpecialCards(), 1, $gameSets);
+
+			$highNoonRepository = new HighNoonRepository();
+			$highNoonRepository->addAdditionalWhere(
+				array('column' => 'id', 'value' => HighNoon::getSpecialCards(), 'xxx' => 'NOT IN')
+			);
+			$highNoonCards = $highNoonRepository->getByValidAndGameSet(1, $gameSets);
+			if ($highNoonCards) {
 				shuffle($highNoonCards);
-				
+
 				$highNoonCardIds = array();
 				foreach ($highNoonCards as $card) {
 					$highNoonCardIds[] = $card['id'];

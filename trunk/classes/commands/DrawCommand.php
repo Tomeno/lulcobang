@@ -65,7 +65,7 @@ class DrawCommand extends Command {
 				} elseif ($this->interTurnReason['action'] == 'duel') {
 					$this->check = self::YOU_ARE_UNDER_DUEL_ATTACK;
 				} else {
-					$barrel = $this->actualPlayer->getHasBarrelOnTheTable();
+					$barrel = $this->actualPlayer->getHasBarrelOnTheTable($this->game);
 					if ($barrel !== NULL) {
 						if ($notices['barrel_used']) {
 							$this->check = self::BARREL_ALREADY_USED;
@@ -188,7 +188,7 @@ class DrawCommand extends Command {
 					}
 				} elseif ($this->actualPlayer['phase'] == Player::PHASE_DYNAMITE) {
 					if ($this->params[0] == 'dynamite') {
-						$card = $this->actualPlayer->getHasDynamiteOnTheTable();
+						$card = $this->actualPlayer->getHasDynamiteOnTheTable($this->game);
 						if ($card) {
 							$this->addCard($card);
 							$this->check = self::OK;
@@ -200,7 +200,7 @@ class DrawCommand extends Command {
 					}
 				} elseif ($this->actualPlayer['phase'] == Player::PHASE_JAIL) {
 					if ($this->params[0] == 'jail') {
-						$card = $this->actualPlayer->getHasJailOnTheTable();
+						$card = $this->actualPlayer->getHasJailOnTheTable($this->game);
 						if ($card) {
 							$this->addCard($card);
 							$this->check = self::OK;
@@ -282,6 +282,8 @@ class DrawCommand extends Command {
 				if ($this->useCharacter && $this->actualPlayer->getIsLuckyDuke($this->game)) {
 					$count = 2;
 				}
+				
+				// TODO skontrolovat ci funguje prekliatie
 				$drawnCards = GameUtils::drawCards($this->game, $count);
 				$isSafe = FALSE;
 				$cardRepository = new CardRepository();
@@ -296,10 +298,10 @@ class DrawCommand extends Command {
 					}
 				}
 
-				$dynamite = $this->actualPlayer->getHasDynamiteOnTheTable();
+				$dynamite = $this->actualPlayer->getHasDynamiteOnTheTable($this->game);
 				if ($isSafe === TRUE) {
 					$this->drawResult = self::OK;
-					if ($this->actualPlayer->getHasJailOnTheTable()) {
+					if ($this->actualPlayer->getHasJailOnTheTable($this->game)) {
 						$phase = Player::PHASE_JAIL;
 					} else {
 						$phase = Player::PHASE_DRAW;
@@ -309,7 +311,7 @@ class DrawCommand extends Command {
 					
 					// posunieme dynamit dalsiemu hracovi
 					$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer);
-					if ($nextPositionPlayer->getHasDynamiteOnTheTable()) {
+					if ($nextPositionPlayer->getHasDynamiteOnTheTable($this->game)) {
 						// ak dalsi hrac uz ma na stole dynamit, musim sa pozriet na hraca za nim
 						$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $nextPositionPlayer);
 					}
@@ -323,7 +325,7 @@ class DrawCommand extends Command {
 					// stiahneme hracovi tri zivoty
 					$newLifes = $this->actualPlayer['actual_lifes'] - 3;
 					$this->actualPlayer['actual_lifes'] = $newLifes;
-					if ($this->actualPlayer->getHasJailOnTheTable()) {
+					if ($this->actualPlayer->getHasJailOnTheTable($this->game)) {
 						$phase = Player::PHASE_JAIL;
 					} else {
 						$phase = Player::PHASE_DRAW;
@@ -346,12 +348,12 @@ class DrawCommand extends Command {
 						$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer);
 						$this->game['turn'] = $nextPositionPlayer['id'];
 						$this->game->save();
-
+						
 						// TODO next player check if is sheriff - phase predraw,
 						// if has dynamite and/or jail - phase dynamite / jail, else phase draw
-						if ($nextPositionPlayer->getHasDynamiteOnTheTable()) {
+						if ($nextPositionPlayer->getHasDynamiteOnTheTable($this->game)) {
 							$phase = Player::PHASE_DYNAMITE;
-						} elseif ($nextPositionPlayer->getHasJailOnTheTable()) {
+						} elseif ($nextPositionPlayer->getHasJailOnTheTable($this->game)) {
 							$phase = Player::PHASE_JAIL;
 						} else {
 							$phase = Player::PHASE_DRAW;
@@ -456,7 +458,7 @@ class DrawCommand extends Command {
 
 	private function getCountCards() {
 		// default
-		if ($this->game->getIsHNTheTrain() || $this->game->getIsHNGhostTown()) {
+		if ($this->game->getIsHNTheTrain() || ($this->game->getIsHNGhostTown() && $this->actualPlayer->getIsGhost())) {
 			$counts = array(
 				'draw' => 3,
 				'pick' => 3,

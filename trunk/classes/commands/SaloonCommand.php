@@ -10,7 +10,7 @@ class SaloonCommand extends Command {
 
 	protected function run() {
 		foreach ($this->players as $player) {
-			if ($player['actual_lifes'] > 0) {
+			if ($player->getIsAlive()) {
 				$newLifes = min($player['actual_lifes'] + 1, $player['max_lifes']);
 				$player['actual_lifes'] = $newLifes;
 				$player->save();

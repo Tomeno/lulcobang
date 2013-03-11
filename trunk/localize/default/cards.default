@@ -112,3 +112,33 @@ the_reverend_description###Hráči nemôžu hrať kartu pivo.
 the_sermon_description###Hráči vo svojom ťahu nemôžu hrať kartu Bang!
 the_train_description###Každý hráč si vo svojej fáze 1 vezme jednu kartu navyše.
 thirst_description###Každý hráč si vo svojej fáze 1 vezme o jednu kartu menej.
+abandoned_mine_title###Opuštěný důl
+ambush_title###Léčka
+blood_brothers_title###Pokrevní bratři
+dead_man_title###Mrtvý muž
+hard_liquor_title###Tvrdý likér
+lasso_title###Laso
+law_of_the_west_title###Právo západu
+ranch_title###Ranč
+ricochet_title###Odražená rána
+russian_roulette_title###Ruská ruleta
+sniper_title###Odstřelovač
+peyote_title###Kaktus
+the_judge_title###Soudce
+vendetta_title###Odplata
+fistful_title###Plná ruka karet
+abandoned_mine_description###V první fázi svého tahu, si musíš lízat z odhazovacího balíčku, jestliže je to možné. Jestliže ano, potom celý svuj tah odhazuješ karty na lízací balíček lícem dolu.
+ambush_description###Vzdálenost mezi kterýmikoliv dvěma hráči je 1. Tato může být upravena kartami ve hře (Mustang, Appalosa, Silver, Skrýš).
+blood_brothers_description###Na začátku svého tahu, si můžeš ubrat život (né však poslední!) a dát jeden život jakémukoliv hráči.
+dead_man_description###Ve svém tahu, jestliže jsi byl první vyřazený hráč, přicházíš zpět do hry s 2ma životy a 2ma kartamy. Hrajěš dokud nejsi znova zabit.
+hard_liquor_description###Můžeš přeskočit fázi 1 svého tahu, a přidat si život.
+lasso_description###Karty vyložené před hráči, nemají žádný efekt a to celé kolo.
+law_of_the_west_description###Při fázi jedna svého tahu, musíš ukázat druhou kartu co lížeš. Jestliže je to možné, musí být tato karta zahrána tentýž tah.
+ranch_description###Na konci fáze 2 svého tahu, můžeš jakýkolik počet karet z ruky odhodit a potom si líznout ten samý počet karet z lízacího balíčku, to celé pouze jednou. Poté pokračuješ 3 fází svého tahu.
+ricochet_description###Když jsi na tahu, můžeš vyložit kartu BANG! před jakoukoliv vyloženou, tebou dosažitelnou, protihráčovu kartu. Každa tato karta je odhozena, jestliže její majitel nezahraje kartu VEDLE!. Můžeš opakovat dokud máš BANG!.
+russian_roulette_description###Když přijde na řadu Ruská ruleta, počínaje šerifem, zahodí každý hráč kartu VEDLE!, dokud jeden hráč nezahodí. Tento hráč ztrácí 2 životy a ruleta končí.
+sniper_description###Během svého tahu můžeš odhodit 2 karty BANG! dohromady a zamířit na hráče. To se počítá jako BANG!, ale může být zrušen pouze 2ma kartamy VEDLE!.
+peyote_description###Místo lízání karet ve fázi 1, musíš hádat zdali je karta na balíčku červená nebo černá. Poté lížeš a ukážeš ji, jestliže jsi uhádl, necháš si ji. Opakuj dokud se poprvé nespleteš v barvě karty. Poté přikroč k fázi 2 svého tahu.
+the_judge_description###Celé kolo, nemůžeš hrát kraty vyložené před sebou ani ostaními hráči.
+vendetta_description###Na konci svého tahu LOSUJEŠ. Obrátiš jednu kartu na pakl, když je karta srdcová, hraješ další tah(ale již znovu NELOSUJEŠ).
+fistful_description###Na začátku svého kola, jsi cílem tolika útoků, kolik máš v ruce karet.

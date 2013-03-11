@@ -65,6 +65,7 @@ class Player extends LinkableItem {
 	}
 	
 	public function __call($methodName, $arguments) {
+		$game = $arguments[0];
 		if (substr($methodName, 0, 6) === 'getHas') {
 			$place = '';
 			if (strpos($methodName, 'OnTheTable')) {
@@ -76,12 +77,14 @@ class Player extends LinkableItem {
 			}
 
 			if ($place) {
+				if ($game && $game->getIsHNLasso() && $place == 'table') {
+					return NULL;
+				}
 				$cardType = str_replace(array('getHas', 'OnTheTable', 'OnHand', 'OnWait'), '', $methodName);
 				$cardType = Utils::createLowercaseFromText($cardType);
 				return $this->hasCardType($cardType, $place);
 			}
 		} elseif (substr($methodName, 0, 5) === 'getIs') {
-			$game = $arguments[0];
 			if ($game && $game->getIsHNHangover()) {
 				return FALSE;
 			}
@@ -168,7 +171,10 @@ class Player extends LinkableItem {
 		return $this->getAdditionalField('wait_cards');
 	}
 	
-	public function getRange() {
+	public function getRange(Game $game = NULL) {
+		if ($game && $game->getIsHNLasso()) {
+			return 1;
+		}
 		$card = $this->getHasGun();
 		if ($card) {
 			if ($card->getIsSchofield()) {
@@ -222,6 +228,38 @@ class Player extends LinkableItem {
 			}
 		}
 		return NULL;
+	}
+	
+	public function getSelectedCharacter() {
+		$notices = $this->getNoticeList();
+		if (isset($notices['selected_character'])) {
+			$characterRepository = new CharacterRepository(TRUE);
+			return $characterRepository->getOneById(intval($notices['selected_character']));
+		}
+		return NULL;
+	}
+	
+	public function getIsGhost() {
+		$notices = $this->getNoticeList();
+		if (isset($notices['ghost']) && $notices['ghost'] == 1) {
+			return TRUE;
+		}
+		return FALSE;
+	}
+	
+	public function getIsAlive() {
+		if ($this['actual_lifes'] > 0 || $this->getIsGhost()) {
+			return TRUE;
+		}
+		return FALSE;
+	}
+	
+	public function getPlayedVendetta() {
+		$notices = $this->getNoticeList();
+		if (isset($notices['vendetta']) && $notices['vendetta'] == 1) {
+			return TRUE;
+		}
+		return FALSE;
 	}
 }
 

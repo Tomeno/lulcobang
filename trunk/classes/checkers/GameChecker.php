@@ -38,7 +38,8 @@ class GameChecker extends Checker {
 	 * @return	boolean
 	 */
 	protected function noGameExists() {
-		if ($this->command->getGame() === NULL) {
+		$game = $this->command->getGame();
+		if ($game === NULL || $game['status'] == Game::GAME_STATUS_ENDED) {
 			return TRUE;
 		} else {
 			$message = array(
@@ -55,7 +56,8 @@ class GameChecker extends Checker {
 	 * @return	boolean
 	 */
 	protected function gameExists() {
-		if ($this->command->getGame() === NULL) {
+		$game = $this->command->getGame();
+		if ($game === NULL || $game['status'] == Game::GAME_STATUS_ENDED) {
 			$message = array(
 				'localizeKey' => 'no_game_exists',
 			);

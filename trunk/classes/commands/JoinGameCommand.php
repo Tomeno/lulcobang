@@ -41,43 +41,37 @@ class JoinGameCommand extends Command {
 
 	protected function generateMessages() {
 		if ($this->check == self::OK) {
-			$this->messages[] = array(
-				'user' => User::SYSTEM,
-				'notToUser' => $this->loggedUser['id'],
-				'room' => $this->room['id'],
+			$message = array(
 				'localizeKey' => 'player_joined_game',
 				'localizeParams' => array($this->loggedUser['username']),
+				'notToUser' => $this->loggedUser['id'],
 			);
-
-			$this->messages[] = array(
-				'user' => User::SYSTEM,
-				'toUser' => $this->loggedUser['id'],
-				'room' => $this->room['id'],
+			$this->addMessage($message);
+			
+			$message = array(
 				'localizeKey' => 'you_joined_game',
 				'localizeParams' => array($this->loggedUser['username']),
+				'toUser' => $this->loggedUser['id'],
 			);
+			$this->addMessage($message);
 		} elseif ($this->check == self::ALREADY_JOINED) {
-			$this->messages[] = array(
-				'user' => User::SYSTEM,
-				'toUser' => $this->loggedUser['id'],
-				'room' => $this->room['id'],
+			$message = array(
 				'localizeKey' => 'already_joined',
+				'toUser' => $this->loggedUser['id'],
 			);
+			$this->addMessage($message);
 		} elseif ($this->check == self::GAME_STARTED) {
-			$this->messages[] = array(
-				'user' => User::SYSTEM,
-				'toUser' => $this->loggedUser['id'],
-				'room' => $this->room['id'],
+			$message = array(
 				'localizeKey' => 'cannot_join_game_already_started',
-			);
-
-		} elseif ($this->check == self::NO_GAME) {
-			$this->messages[] = array(
-				'user' => User::SYSTEM,
 				'toUser' => $this->loggedUser['id'],
-				'room' => $this->room['id'],
-				'localizeKey' => 'cannot_join_no_game_in_room',
 			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::NO_GAME) {
+			$message = array(
+				'localizeKey' => 'cannot_join_no_game_in_room',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
 		}
 	}
 

@@ -30,6 +30,7 @@ class Chat {
 			'not_to_user' => intval($messageParams['notToUser']),
 			'localize_key' => addslashes($messageParams['localizeKey']),
 			'localize_params' => serialize($messageParams['localizeParams']),
+			'game' => intval($messageParams['game']),
 		);
 		// TODO use repository
 		DB::insert(DB_PREFIX . self::$table, $params);
@@ -38,12 +39,13 @@ class Chat {
 	/**
 	 * getter for messages
 	 *
-	 * @param int $room
-	 * @param int $user
-	 * @param int $time
+	 * @param	int	$room
+	 * @param	int	$user
+	 * @param	int	$time
+	 * @param	int	$game
 	 * @return array
 	 */
-	public static function getMessages($room, $toUser = 0, $time = 0) {
+	public static function getMessages($room, $toUser = 0, $time = 0, $game = 0) {
 		$colorRepository = new ColorRepository(TRUE);
 		$colors = $colorRepository->getAll();
 
@@ -55,7 +57,11 @@ class Chat {
 		$query = 'SELECT user.*, message.*
 			FROM ' . DB_PREFIX . self::$table . ' AS message
 			LEFT JOIN ' . DB_PREFIX . 'user AS user ON message.user = user.id
-			WHERE room=' . intval($room) . ' AND tstamp > ' . intval($time) . ' AND to_user IN (' . intval($toUser) . ', 0)';
+			WHERE room=' . intval($room) . ' AND tstamp > ' . intval($time) . '
+				AND to_user IN (' . intval($toUser) . ', 0)';
+		if ($game) {
+			$query .= ' AND game=' . intval($game);
+		}
 		if ($toUser) {
 			$query .= ' AND NOT not_to_user IN (' . $toUser . ')';
 		}

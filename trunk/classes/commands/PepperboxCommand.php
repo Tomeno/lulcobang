@@ -31,7 +31,7 @@ class PepperboxCommand extends Command {
 				if ($this->attackedPlayer['actual_lifes'] > 0) {
 					$attackedUser = $this->attackedPlayer->getUser();
 					$distance = $this->game->getDistance($this->loggedUser['username'], $attackedUser['username']);
-					if ($distance <= $this->actualPlayer->getRange()) {
+					if ($distance <= $this->actualPlayer->getRange($this->game)) {
 						$this->check = self::OK;
 					} else {
 						$this->check = self::PLAYER_IS_TOO_FAR;

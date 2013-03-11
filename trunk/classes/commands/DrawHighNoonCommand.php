@@ -39,36 +39,63 @@ class DrawHighNoonCommand extends Command {
 			
 			$this->executeSpecialAction();
 			
-			// TODO ked prichadza a odchadza hangover treba preratat vzdialenosti
-			
 			// TODO ked prichadza High noon, treba nastavovat fazy inak
 			
-			// TODO prichod doktora
+			$matrix = GameUtils::countMatrix($this->game);
+			$this->game['distance_matrix'] = serialize($matrix);
+			$this->game->save();
 		}
 	}
 	
 	protected function executeSpecialAction() {
 		if ($this->game->getIsHNTheDoctor()) {
-			$min = 100;
-			foreach ($this->game->getPlayers() as $player) {
-				if ($player['actual_lifes'] > 0) {
-					if ($player['actual_lifes'] < $min) {
-						$min = $player['actual_lifes'];
-					}
+			$this->theDoctor();
+		} elseif ($this->game->getIsHNTheDaltons()) {
+			$this->theDaltons();
+		}
+	}
+	
+	protected function theDoctor() {
+		$min = 100;
+		foreach ($this->game->getPlayers() as $player) {
+			if ($player['actual_lifes'] > 0) {
+				if ($player['actual_lifes'] < $min) {
+					$min = $player['actual_lifes'];
 				}
 			}
-			
-			foreach ($this->game->getPlayers() as $player) {
-				if ($player['actual_lifes'] > 0 && $player['actual_lifes'] == $min) {
-					$player['actual_lifes'] = min($player['max_lifes'], $player['actual_lifes'] + 1);
-					$player->save();
-					
-					// TODO messages
-				}
+		}
+
+		foreach ($this->game->getPlayers() as $player) {
+			if ($player['actual_lifes'] > 0 && $player['actual_lifes'] == $min) {
+				$player['actual_lifes'] = min($player['max_lifes'], $player['actual_lifes'] + 1);
+				$player->save();
+
+				// TODO messages
 			}
 		}
 	}
 	
+	protected function theDaltons() {
+		foreach ($this->game->getPlayers() as $player) {
+			if ($player->getHasBlueOnTheTable()) {
+				$tableCards = $player->getTableCards();
+				$blueCards = array();
+				foreach ($tableCards as $tableCard) {
+					if ($tableCard->getIsBlue()) {
+						$blueCards[] = $tableCard;
+					}
+				}
+				
+				if ($blueCards) {
+					$randomCard = $blueCards[array_rand($blueCards)];
+					// ak by bol problem s tym ze by sa prepisovala hra niekde dalej, tak throw cards vracia game a playera
+					GameUtils::throwCards($this->game, $player, array($randomCard), 'table');
+				}
+			}
+		}
+	}
+
+
 	protected function generateMessages() {
 		;
 	}

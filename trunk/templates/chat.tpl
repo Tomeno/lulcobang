@@ -11,5 +11,5 @@
 </div>
 
 <script type="text/javascript">
-	chatBoxTimeInterval = setInterval('refreshChat({$room.id})', 10000);
+	chatBoxTimeInterval = setInterval('refreshChat("{$room.id}", "{$game.id}")', 10000);
 </script>

@@ -42,6 +42,7 @@
 				<div class="item">
 					<h3><a href="{$character.url}">{$character.name}</a></h3>
 					<p>{$character.localizedDescription}</p>
+					<p><strong>Použitie:</strong> {$character.localizedUsage}</p>
 				</div>
 			{/foreach}
 		</div>

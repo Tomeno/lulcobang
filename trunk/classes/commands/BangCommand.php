@@ -44,7 +44,7 @@ class BangCommand extends Command {
 				$canPlayMoreBangs = TRUE;
 			} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsWillyTheKid($this->game) && !$this->game->getIsHNTheSermon()) {
 				$canPlayMoreBangs = TRUE;
-			} elseif ($this->actualPlayer->getHasVolcanicOnTheTable() && !$this->game->getIsHNTheSermon()) {
+			} elseif ($this->actualPlayer->getHasVolcanicOnTheTable($this->game) && !$this->game->getIsHNTheSermon()) {
 				$canPlayMoreBangs = TRUE;
 			}
 			
@@ -66,7 +66,7 @@ class BangCommand extends Command {
 							if ($this->bangCard !== NULL) {
 								$attackedUser = $this->attackedPlayer->getUser();
 								$distance = $this->game->getDistance($this->loggedUser['username'], $attackedUser['username']);
-								if ($distance <= $this->actualPlayer->getRange()) {
+								if ($distance <= $this->actualPlayer->getRange($this->game)) {
 									$this->check = self::OK;
 								} else {
 									$this->check = self::PLAYER_IS_TOO_FAR;

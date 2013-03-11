@@ -5,7 +5,8 @@ class PlayerRepository extends Repository {
 	protected $table = 'player';
 	
 	public function getLivePlayersByGame($game) {
-		$query = 'SELECT * FROM ' . $this->getTable() . ' WHERE actual_lifes > 0 AND game = ' . intval($game);
+		$query = 'SELECT * FROM ' . $this->getTable() . '
+			WHERE game = ' . intval($game) . ' AND (actual_lifes > 0 OR notices LIKE \'%s:5:"ghost";i:1;%\')';
 		return DB::fetchAll($query, get_class($this));
 	}
 	
@@ -26,7 +27,8 @@ class PlayerRepository extends Repository {
 		if (!empty ($roles)) {
 			$roleWhere = ' AND role IN (' . implode(', ', $roles) . ')';
 		}
-		$query = 'SELECT count(*) AS pocet FROM ' . $this->getTable() . ' WHERE game = ' . intval($game) . ' AND actual_lifes > 0' . $roleWhere;
+		$query = 'SELECT count(*) AS pocet FROM ' . $this->getTable() . '
+			WHERE game = ' . intval($game) . ' AND (actual_lifes > 0 OR notices LIKE \'%s:5:"ghost";i:1;%\')' . $roleWhere;
 		$res = DB::fetchFirst($query);
 		return $res['pocet'];
 	}

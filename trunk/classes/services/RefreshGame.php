@@ -7,12 +7,15 @@ class RefreshGame {
 		$roomId = intval(Utils::post('room'));
 		
 		$gameRepository = new GameRepository();
-		$gameRepository->addAdditionalWhere(array('column' => 'status', 'value' => Game::GAME_STATUS_ENDED, 'xxx' => '!='));
-		if ($gameId) {
-			$game = $gameRepository->getOneById($gameId);
-		} else {
-			$game = $gameRepository->getOneByRoom($roomId);
-		}
+		// $gameRepository->addAdditionalWhere(array('column' => 'status', 'value' => Game::GAME_STATUS_ENDED, 'xxx' => '!='));
+		$gameRepository->addOrderBy(array('id' => 'DESC'));
+		$game = $gameRepository->getOneByRoom($roomId);
+		
+//		if ($gameId) {
+//			$game = $gameRepository->getOneById($gameId);
+//		} else {
+//			
+//		}
 		
 		$roomRepository = new RoomRepository();
 		$room = $roomRepository->getOneById($roomId);

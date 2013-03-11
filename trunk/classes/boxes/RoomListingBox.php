@@ -25,6 +25,7 @@ class RoomListingBox extends AbstractBox {
 		
 		foreach ($games as $game) {
 			$rooms[$game['room']]['game'] = TRUE;
+			$rooms[$game['room']]['status'] = Localize::getMessage('room_status_' . $game['status']);
 		}
 
 		MySmarty::assign('loggedUser', $loggedUser);

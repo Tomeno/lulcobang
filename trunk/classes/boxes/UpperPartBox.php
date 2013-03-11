@@ -13,6 +13,7 @@ class UpperPartBox extends AbstractBox {
 			$loginPage = PageActionMap::getPageByTypeAndLanguage('login');
 			MySmarty::assign('loginPage', $loginPage);
 		}
+		MySmarty::assign('language', Utils::get('language'));
 	}
 }
 

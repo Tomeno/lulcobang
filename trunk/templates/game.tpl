@@ -19,7 +19,7 @@
 				{/if}
 			{/if}
 			<div id="player_0{$me|position_class:$player}" class="player">
-				
+				{if $player.winner}<div class="winner"></div>{/if}
 				<div class="player_info">
 					<div class="player_name">
 						{if $player.id == $game.playerOnTurn.id && $game.playerOnTurn.id == $game.playerOnMove.id}
@@ -31,6 +31,7 @@
 						{/if}
 						<a href="{$player.url}" onclick="selectPlayer({$player.id});return false;">
 							{$player.user.username}
+							{*<span style="color: red;">&heartsuit; &hearts;</span> <span style="color: red;">&diams;</span> <span style="color: black;">&spades; &clubs;</span>*}
 						</a>
 					</div>
 					<div class="photo">
@@ -51,7 +52,7 @@
 							{if $player.roleObject.isSheriff}
 								<div class="card high_noon">
 									{if $game.playerOnTurn.id == $player.id && $me.id == $player.id}
-										<a href="#" onclick="drawHighNoon(); return false;" title="Click here to draw high noon card">
+										<a href="#" onclick="drawHighNoon(); return false;" title="{$game.topHighNoonPile.localizedTitle} Click here to draw high noon card">
 									{/if}
 									{image src=$game.topHighNoonPile.backImagePath alt='rola' width='44' height='76'}
 									{if $game.playerOnTurn.id == $player.id && $me.id == $player.id}
@@ -73,10 +74,10 @@
 								</a>
 							{/if}
 						</div>
-						{if $me.actual_lifes > 0}
+						{if $me.actual_lifes > 0 || $me.isGhost}
 							<div class="{if $player.user.id == $me.user.id}range{else}distance{/if}">
 								{if $player.user.id == $me.user.id}
-									{$player.range}
+									{$player->getRange($game)}
 								{else}
 									{if $game->getDistance($me.user.username, $player.user.username)}
 										{$game->getDistance($me.user.username, $player.user.username)}
@@ -86,8 +87,8 @@
 								{/if}
 							</div>
 						{/if}
-						<div class="char">
-							<a href="{$player.character.url}" onclick="{if $player.user.id == $me.user.id}useCharacter();{else}window.open(this.href, '_blank');{/if} return false;" title="{$player.character.name|escape} ({$player.max_lifes}): {$player.character.localizedDescription|escape}" class="popup-source">
+						<div class="char" id="character-{$player.character.id}">
+							<a href="{$player.character.url}" onclick="{if $player.user.id == $me.user.id}useCharacter('{$player.character.id}');{else}window.open(this.href, '_blank');{/if} return false;" title="{$player.character.name|escape}{if $player.selectedCharacter} ({localize key='play_as'} {$player.selectedCharacter.name|escape}){/if} ({$player.max_lifes}): {$player.character.localizedDescription|escape}" class="popup-source">
 								{image src=$player.character.imagePath alt=$player.character.name width='44' height='76'}
 							</a>
 						</div>
@@ -115,8 +116,16 @@
 							{foreach from=$player.handCards item='handCard' name='handCards'}
 								<div{if $player.user.id == $me.user.id} id="card-{$handCard.id}"{/if} class="card"{if $cardWidth} style="width: {$cardWidth}px;"{/if}>
 									{if $player.user.id == $me.user.id}
-										<a href="{$handCard.url}" onclick="selectCardToPlay('{$handCard.id}', '{$handCard.itemAlias}'); return false;" title="{$handCard.title|escape}: {$handCard.description|escape}">
+										<a class="popup-source" href="{$handCard.url}" onclick="selectCardToPlay('{$handCard.id}', '{$handCard.itemAlias}'); return false;" title="">
 											{image src=$handCard.imagePath alt=$handCard.title width='44' height='76'}
+											<span class="popup">
+												<span class="image">{image src=$handCard.imagePath alt=$handCard.title width='88' height='152'}</span>
+												<span class="text">
+													<span class="title">{$handCard.title|escape}</span>
+													<span class="description">{$handCard.description|escape}</span>
+													<span class="usage">{$handCard.description|escape}</span>
+												</span>
+											</span>
 										</a>
 									{else}
 										<a href="{$player.url}" onclick="selectPlayer({$player.id});return false;">
@@ -165,15 +174,17 @@
 						</div>
 					{/if}
 				{else}
-					<div class="role">
-						{if $player.roleObject.isSheriff or $player.user.id == $me.user.id}
-							<a href="{$player.roleObject.url}" onclick="window.open(this.href, '_blank'); return false;">
-								{image src=$player.roleObject.imagePath alt=$player.roleObject.title width='44' height='76'}
-							</a>
-						{else}
-							{image src=$player.roleObject.backImagePath alt='rola' width='44' height='76'}
-						{/if}
-					</div>
+					{if $player.roleObject}
+						<div class="role">
+							{if $player.roleObject.isSheriff or $player.user.id == $me.user.id or $game.status == 3}
+								<a href="{$player.roleObject.url}" onclick="window.open(this.href, '_blank'); return false;">
+									{image src=$player.roleObject.imagePath alt=$player.roleObject.title width='44' height='76'}
+								</a>
+							{else}
+								{image src=$player.roleObject.backImagePath alt='rola' width='44' height='76'}
+							{/if}
+						</div>
+					{/if}
 				{/if}
 			</div>
 		{/foreach}
@@ -263,3 +274,7 @@
 		{/if}
 	</script>
 </div>
+	
+	<script typ="text/javascript">
+		document.fire('dom:loaded');
+	</script>

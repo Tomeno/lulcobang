@@ -5,16 +5,16 @@ function insertEmoticon(emoticon) {
 	focusToInput();
 }
 
-function refreshChat(room) {
+function refreshChat(room, game) {
 	chatarea = document.getElementById('chatbox');
 	
 	new Ajax.Request('services/RefreshChat.php', {
 		method: 'post',
-		parameters: {room: room},
+		parameters: {room: room, game: game},
 
 		onSuccess: function(transport) {
 			newtext = transport.responseText;
-			chatarea.innerHTML = chatarea.innerHTML + newtext;
+			chatarea.innerHTML = newtext;
 			scrollArea(chatarea);
 			focusToInput();
 		},
@@ -144,3 +144,48 @@ function inArray(needle, haystack) {
 	}
 	return false;
 }
+
+/*
+function clickExplorer() {
+	if (document.all) {
+		var allPopups = document.getElementsByClassName('popup');
+		for (var i = 0; i < allPopups.length; i++) {
+			allPopups[i].style.display = 'none';
+		}
+		var popups = this.getElementsByClassName('popup');
+		for (var i = 0; i < popups.length; i++) {
+			popups[i].style.display = 'block';
+		}
+	}
+	return false;
+}
+
+function clickOther(e) {
+	if (document.layers || (document.getElementById && !document.all)) {
+		if (e.which == 2 || e.which == 3) {
+			var allPopups = document.getElementsByClassName('popup');
+			for (var i = 0; i < allPopups.length; i++) {
+				allPopups[i].style.display = 'none';
+			}
+			var popups = this.getElementsByClassName('popup');
+			for (var i = 0; i < popups.length; i++) {
+				popups[i].style.display = 'block';
+			}
+		}
+	}
+	return false;
+}
+
+document.observe('dom:loaded', function() {
+	var popupSources = document.getElementsByClassName('popup-source');
+	for (var i = 0; i < popupSources.length; i++) {
+		if (document.layers) {
+			popupSources[i].captureEvents(Event.MOUSEDOWN);
+			popupSources[i].onmousedown = clickOther;
+		} else {
+			popupSources[i].onmouseup = clickOther;
+			popupSources[i].oncontextmenu = clickExplorer;
+		}
+	}
+});
+*/

@@ -68,6 +68,11 @@ class GameUtils {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param	Game	$game
+	 * @return	array
+	 */
 	public static function countMatrix($game) {
 		$playerRepository = new PlayerRepository();
 		$players = $playerRepository->getLivePlayersByGame($game['id']);
@@ -87,13 +92,13 @@ class GameUtils {
 					
 					$distance = min($arg1, $arg2);
 					
-					if ($player2->getHasMustangOnTheTable()) {
+					if ($player2->getHasMustangOnTheTable($game)) {
 						// pre Belle Star neplatia v jej tahu modre karty u ostatnych hracov
 						if (!$player1->getIsBelleStar($game)) {
 							$distance++;
 						}
 					}
-					if ($player2->getHasHideoutOnTheTable()) {
+					if ($player2->getHasHideoutOnTheTable($game)) {
 						// pre Belle Star neplatia v jej tahu modre karty u ostatnych hracov
 						if (!$player1->getIsBelleStar($game)) {
 							$distance++;
@@ -102,10 +107,10 @@ class GameUtils {
 					if ($player2->getIsPaulRegret($game)) {
 						$distance++;
 					}
-					if ($player1->getHasAppaloosaOnTheTable()) {
+					if ($player1->getHasAppaloosaOnTheTable($game)) {
 						$distance--;
 					}
-					if ($player1->getHasSilverOnTheTable()) {
+					if ($player1->getHasSilverOnTheTable($game)) {
 						$distance--;
 					}
 					if ($player1->getIsRoseDoolan($game)) {
@@ -131,7 +136,7 @@ class GameUtils {
 			$player = self::getPlayerOnSeat($game, $seat);
 			
 			if ($player) {
-				if ($player['actual_lifes'] > 0) {
+				if ($player->getIsAlive()) {
 					$pos = $i;
 					$i++;
 				} else {

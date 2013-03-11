@@ -15,7 +15,7 @@ class GatlingCommand extends Command {
 			$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer);
 			
 			foreach ($this->players as $player) {
-				if ($player['actual_lifes'] > 0) {
+				if ($player->getIsAlive()) {
 					if ($player['id'] == $this->actualPlayer['id']) {
 						$this->actualPlayer['phase'] = Player::PHASE_WAITING;
 						if ($this->useCharacter === TRUE) {
