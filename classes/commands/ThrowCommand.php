@@ -22,6 +22,10 @@ class ThrowCommand extends Command {
 	
 	const CHARACTER_ALREADY_USED_TWICE = 10;
 	
+	const CANNOT_THROW_CARDS = 11;
+	
+	const OK_JOSE_DELGADO = 12;
+	
 	protected $attackedPlayer = NULL;
 	
 	protected $template = 'you-are-attacked.tpl';
@@ -140,7 +144,7 @@ class ThrowCommand extends Command {
 				if ($place == 'hand') {
 					if (count($this->cards) == 1) {
 						if ($this->cards[0]->getIsBlue()) {
-							$this->check = self::OK;
+							$this->check = self::OK_JOSE_DELGADO;
 						} else {
 							// karta nie je modra
 						}
@@ -152,7 +156,16 @@ class ThrowCommand extends Command {
 				}
 			}
 		} else {
-			$this->check = self::OK;
+			$handCardsCount = count($this->actualPlayer->getHandCards());
+			$place = $this->params[1];
+			if (!$place) {
+				$place = 'hand';
+			}
+			if ($this->actualPlayer['actual_lifes'] >= $handCardsCount && $place == 'hand') {
+				$this->check = self::CANNOT_THROW_CARDS;
+			} else {
+				$this->check = self::OK;
+			}
 		}
 	}
 	
@@ -162,24 +175,22 @@ class ThrowCommand extends Command {
 			if (!$place) {
 				$place = 'hand';
 			}
-			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards, $place);
-			
-			if ($this->useCharacter === TRUE && $this->actualPlayer->getIsJoseDelgado($this->game)) {
-				$drawnCards = GameUtils::drawCards($this->game, 2);
-				$handCards = unserialize($this->actualPlayer['hand_cards']);
-				$handCards = array_merge($handCards, $drawnCards);
-				$this->actualPlayer['hand_cards'] = serialize($handCards);
-
-				$notices = $this->actualPlayer->getNoticeList();
-				if (isset($notices['character_used'])) {
-					$notices['character_used'] = $notices['character_used'] + 1;
-				} else {
-					$notices['character_used'] = 1;
+			// aj Vera Custer moze hrat za Garyho Lootera
+			$garyLooters = array();
+			foreach ($this->getPlayers() as $player) {
+				// pozrieme sa na vsetkych hracov ktori este nie su mrtvi a ani nie su aktualny hrac
+				if ($player['actual_lifes'] > 0 && $this->actualPlayer['id'] != $player['id']) {
+					if ($player->getIsGaryLooter($this->game)) {
+						$garyLooters[] = $player;
+					}
 				}
-				$this->actualPlayer->setNoticeList($notices);
-				
-				// zistit ci sa tu nahodou nestane to ze hracovi ostanu karty v ruke a este mu pribudnu dalsie
-				$this->actualPlayer->save();
+			}
+			if ($place == 'hand' && $garyLooters) {
+				// vymysliet ako davat Garymu a Vere karty na striedacku - zatial spravene len pre nahodne vybraneho Garyho
+				$garyLooter = $garyLooters[array_rand($garyLooters)];
+				GameUtils::moveCards($this->game, $this->cards, $this->actualPlayer, 'hand', $garyLooter, 'hand');
+			} else {
+				GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards, $place);
 			}
 			
 			if ($place == 'table') {
@@ -189,6 +200,25 @@ class ThrowCommand extends Command {
 				$this->game['distance_matrix'] = serialize($matrix);
 				$this->game->save();
 			}
+		} elseif ($this->check == self::OK_JOSE_DELGADO) {
+			$place = 'hand';
+			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards, $place);
+			
+			$drawnCards = GameUtils::drawCards($this->game, 2);
+			$handCards = unserialize($this->actualPlayer['hand_cards']);
+			$handCards = array_merge($handCards, $drawnCards);
+			$this->actualPlayer['hand_cards'] = serialize($handCards);
+
+			$notices = $this->actualPlayer->getNoticeList();
+			if (isset($notices['character_used'])) {
+				$notices['character_used'] = $notices['character_used'] + 1;
+			} else {
+				$notices['character_used'] = 1;
+			}
+			$this->actualPlayer->setNoticeList($notices);
+
+			// zistit ci sa tu nahodou nestane to ze hracovi ostanu karty v ruke a este mu pribudnu dalsie
+			$this->actualPlayer->save();
 		} elseif ($this->check == self::OK_DOC_HOLYDAY) {
 			MySmarty::assign('card', $this->cards[0]);	// TODO mozno sem poslat nejake veci ze zautocil doc holyday svojim charakterom
 			$response = MySmarty::fetch($this->template);
@@ -241,6 +271,12 @@ class ThrowCommand extends Command {
 		} elseif ($this->check == self::CHARACTER_ALREADY_USED_TWICE) {
 			$message = array(
 				'text' => 'V tomto kole si uz pouzil svoj charakter dvakrat',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::CANNOT_THROW_CARDS) {
+			$message = array(
+				'text' => 'Nemozes bezdovodne odhadzovat karty',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);
