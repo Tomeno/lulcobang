@@ -297,17 +297,12 @@ class DrawCommand extends Command {
 						// aby sme vyrobili pole kariet ktore treba vyhodit
 					}
 				}
-
+				
 				$dynamite = $this->actualPlayer->getHasDynamiteOnTheTable($this->game);
 				if ($isSafe === TRUE) {
+					GameUtils::throwCards($this->game, NULL, $thrownCards);
+					
 					$this->drawResult = self::OK;
-					if ($this->actualPlayer->getHasJailOnTheTable($this->game)) {
-						$phase = Player::PHASE_JAIL;
-					} else {
-						$phase = Player::PHASE_DRAW;
-					}
-					$this->actualPlayer['phase'] = $phase;
-					$this->actualPlayer = $this->actualPlayer->save(TRUE);
 					
 					// posunieme dynamit dalsiemu hracovi
 					$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer);
@@ -317,20 +312,18 @@ class DrawCommand extends Command {
 					}
 					if ($nextPositionPlayer['id'] != $this->actualPlayer['id']) {
 						// v pripade dvoch hracov a dvoch dynamitov sa dynamity neposuvaju
-						GameUtils::moveCards($this->game, array($dynamite), $this->actualPlayer, 'table', $nextPositionPlayer, 'table');
+						$retVal = GameUtils::moveCards($this->game, array($dynamite), $this->actualPlayer, 'table', $nextPositionPlayer, 'table');
+						$this->actualPlayer = $retVal['playerFrom'];
 					}
+					$this->actualPlayer['phase'] = $this->getNextPhase($this->actualPlayer);
+					$this->actualPlayer = $this->actualPlayer->save(TRUE);
 				} else {
 					$this->drawResult = self::KO;
 					
 					// stiahneme hracovi tri zivoty
 					$newLifes = $this->actualPlayer['actual_lifes'] - 3;
 					$this->actualPlayer['actual_lifes'] = $newLifes;
-					if ($this->actualPlayer->getHasJailOnTheTable($this->game)) {
-						$phase = Player::PHASE_JAIL;
-					} else {
-						$phase = Player::PHASE_DRAW;
-					}
-					$this->actualPlayer['phase'] = $phase;
+					$this->actualPlayer['phase'] = $this->getNextPhase($this->actualPlayer);
 					$this->actualPlayer = $this->actualPlayer->save(TRUE);
 					
 					GameUtils::throwCards($this->game, NULL, $thrownCards);
@@ -349,16 +342,7 @@ class DrawCommand extends Command {
 						$this->game['turn'] = $nextPositionPlayer['id'];
 						$this->game->save();
 						
-						// TODO next player check if is sheriff - phase predraw,
-						// if has dynamite and/or jail - phase dynamite / jail, else phase draw
-						if ($nextPositionPlayer->getHasDynamiteOnTheTable($this->game)) {
-							$phase = Player::PHASE_DYNAMITE;
-						} elseif ($nextPositionPlayer->getHasJailOnTheTable($this->game)) {
-							$phase = Player::PHASE_JAIL;
-						} else {
-							$phase = Player::PHASE_DRAW;
-						}
-						$nextPositionPlayer['phase'] = $phase;
+						$nextPositionPlayer['phase'] = $this->getNextPhase($nextPositionPlayer);
 						$nextPositionPlayer->save();
 
 						$this->removePlayerFromGame();
@@ -439,6 +423,17 @@ class DrawCommand extends Command {
 						$handCards = unserialize($this->actualPlayer['hand_cards']);
 						$handCards[] = $card;
 						$this->actualPlayer['hand_cards'] = serialize($handCards);
+					} elseif ($this->actualPlayer->getIsYoulGrinner($this->game)) {
+						$youlHandCardsCount = count($this->actualPlayer->getHandCards());
+						foreach ($this->getPlayers() as $player) {
+							if ($player->getIsAlive() && $player['id'] != $this->actualPlayer['id']) {
+								$playersHandCardsCount = count($player->getHandCards());
+								if ($playersHandCardsCount > $youlHandCardsCount) {
+									$movedCard = $player->getCardWithId();
+									GameUtils::moveCards($this->game, array($movedCard), $player, 'hand', $this->actualPlayer, 'hand');
+								}
+							}
+						}
 					}
 				}
 				

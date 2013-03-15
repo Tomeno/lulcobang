@@ -1218,6 +1218,8 @@ abstract class Command {
 				$phase = Player::PHASE_DYNAMITE;
 			} elseif ($player->getHasJailOnTheTable($this->game)) {
 				$phase = Player::PHASE_JAIL;
+			} elseif ($player->getIsGaryLooter($this->game)) {
+				$phase = Player::PHASE_PLAY;
 			} else {
 				$phase = Player::PHASE_DRAW;
 			}
