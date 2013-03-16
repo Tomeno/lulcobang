@@ -8,6 +8,10 @@ class HighNoon extends Item {
 	protected $fistfulOfCardsImageFolder = 'images/cards/bang/extensions/a_fistful_of_cards/';
 	protected $fistfulOfCardsNoonBack = 'images/cards/bang/special/fistful_back.jpg';
 	
+	protected $wildWestShowImageFolder = 'images/cards/bang/extensions/wild_west_show/';
+	protected $wildWestShowBack = 'images/cards/bang/special/wild_west_show.jpg';
+
+
 	const CARD_HIGH_NOON = 6;
 	const CARD_FISTFUL_OF_CARDS = 28;
 	const CARD_WILD_WEST_SHOW = 38;
@@ -23,6 +27,8 @@ class HighNoon extends Item {
 			$imageFolder = $this->highNoonImageFolder;
 		} elseif ($this['game_set'] == Game::GAME_SET_A_FISTFUL_OF_CARDS) {
 			$imageFolder = $this->fistfulOfCardsImageFolder;
+		} elseif ($this['game_set'] == Game::GAME_SET_WILD_WEST_SHOW) {
+			$imageFolder = $this->wildWestShowImageFolder;
 		}
 		return $imageFolder . $this['image'];
 	}
@@ -37,6 +43,8 @@ class HighNoon extends Item {
 			return $this->highNoonBack;
 		} elseif ($this['game_set'] == Game::GAME_SET_A_FISTFUL_OF_CARDS) {
 			return $this->fistfulOfCardsNoonBack;
+		} elseif ($this['game_set'] == Game::GAME_SET_WILD_WEST_SHOW) {
+			return $this->wildWestShowBack;
 		}
 	}
 	

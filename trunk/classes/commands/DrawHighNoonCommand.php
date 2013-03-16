@@ -52,6 +52,8 @@ class DrawHighNoonCommand extends Command {
 			$this->theDoctor();
 		} elseif ($this->game->getIsHNTheDaltons()) {
 			$this->theDaltons();
+		} elseif ($this->game->getIsHNHelenaZontero()) {
+			$this->helenaZontero();
 		}
 	}
 	
@@ -93,6 +95,32 @@ class DrawHighNoonCommand extends Command {
 				}
 			}
 		}
+	}
+	
+	protected function helenaZontero() {
+		$drawnCardIds = GameUtils::drawCards($this->game, 1);
+		$cardRepository = new CardRepository(TRUE);
+		$drawnCard = $cardRepository->getOneById($drawnCardIds);
+		
+		if ($drawnCard->getIsRed($this->game)) {
+			$roles = array();
+			foreach ($this->getPlayers() as $player) {
+				if (!$player->getRoleObject()->getIsSheriff() && $player->getIsAlive()) {
+					$role = $player->getRoleObject();
+					$roles[] = $role['id'];
+				}
+			}
+			shuffle($roles);
+			foreach ($this->getPlayers() as $newPlayer) {
+				if (!$newPlayer->getRoleObject()->getIsSheriff() && $newPlayer->getIsAlive()) {
+					$role = array_pop($roles);
+					$newPlayer['role'] = $role;
+					$newPlayer->save();
+				}
+			}
+		}
+		
+		GameUtils::throwCards($this->game, NULL, array($drawnCard));
 	}
 
 

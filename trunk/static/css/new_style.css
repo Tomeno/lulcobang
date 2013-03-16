@@ -462,3 +462,24 @@ a:hover .popup {
 	position: absolute;
 	left: 110px;
 }
+
+.guess {
+	position:absolute;
+	width: 80px; 	
+}
+
+.guess.red {
+	top: 20px;
+}
+
+.guess.black {
+	top: 50px;
+}
+
+.red .hearts, .red .diams {
+	color: red;
+}
+
+.black .spades, .black .clubs {
+	color: black;
+}

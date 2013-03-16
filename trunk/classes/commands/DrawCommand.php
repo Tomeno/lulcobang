@@ -47,6 +47,8 @@ class DrawCommand extends Command {
 	const DRAW_FISTFUL = 22;
 	
 	const LOST_ONE_LIFE_AND_CONTINUE = 23;
+	
+	const PEYOTE_OK = 24;
 
 	protected $template = 'cards-choice.tpl';
 
@@ -108,83 +110,95 @@ class DrawCommand extends Command {
 			$playerOnTurn = $this->game->getPlayerOnTurn();
 			if ($playerOnTurn['id'] == $this->actualPlayer['id']) {
 				if ($this->actualPlayer['phase'] == Player::PHASE_DRAW) {
-					if ($this->useCharacter === TRUE && $this->actualPlayer->getIsJesseJones($this->game)) {
-						// TODO messages
-						$attackedPlayer = $this->params[0];
-						foreach ($this->players as $player) {
-							$user = $player->getUser();
-							if ($user['username'] == $attackedPlayer) {
-								$this->enemyPlayer = $player;
-								break;
-							}
-						}
-
-						if ($this->enemyPlayer) {
-							$handCards = $this->enemyPlayer->getHandCards();
-							$card = $handCards[array_rand($handCards)];
-							if ($card) {
-								$this->addEnemyPlayerCard($this->enemyPlayer, $card);
-								$this->place = 'hand';
-								$this->check = self::OK;
+					if ($this->game->getIsHNPeyote()) {
+						if (isset($this->params[0])) {
+							if (in_array($this->params[0], array('red', 'black'))) {
+								$this->check = self::PEYOTE_OK;
 							} else {
-								$this->check = self::NO_CARDS_ON_HAND;
+								// mozes si vybrat len cervenu alebo ciernu
 							}
 						} else {
-							$this->check = self::PLAYER_NOT_SELECTED;
+							// pri peyote musis zvolit farbu
 						}
-					} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsPedroRamirez($this->game)) {
-						// TODO skontrolovat ci su v odhadzovacom balicku nejake karty
-						// TODO messages
-						$this->check = self::OK;
-					} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsPatBrennan($this->game)) {
-						// TODO messages
-						$attackedPlayer = $this->params[0];
-						foreach ($this->players as $player) {
-							$user = $player->getUser();
-							if ($user['username'] == $attackedPlayer) {
-								$this->enemyPlayer = $player;
-								break;
-							}
-						}
-
-						if ($this->enemyPlayer) {
-							if (isset($this->params[1])) {
-								$cardName = ucfirst($this->params[1]);
-								$method = 'getHas' . $cardName . 'OnTheTable';
-								$card = $this->enemyPlayer->$method();
-								if ($card) {
-									$this->addEnemyPlayerCard($this->enemyPlayer, $card);
-									$this->place = 'table';
-									$this->check = self::OK;
-								} else {
-									$this->check = self::PLAYER_DOESNT_HAVE_CARD_ON_THE_TABLE;
-								}
-							} else {
-								$this->check = self::NO_CARD_SELECTED;
-							}
-						} else {
-							$this->check = self::PLAYER_NOT_SELECTED;
-						}
-					} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsVeraCuster($this->game)) {
-						// TODO messages
-						$attackedPlayer = $this->params[0];
-						foreach ($this->players as $player) {
-							if ($player['actual_lifes'] > 0) {
+					} else {
+						if ($this->useCharacter === TRUE && $this->actualPlayer->getIsJesseJones($this->game)) {
+							// TODO messages
+							$attackedPlayer = $this->params[0];
+							foreach ($this->players as $player) {
 								$user = $player->getUser();
 								if ($user['username'] == $attackedPlayer) {
 									$this->enemyPlayer = $player;
 									break;
 								}
 							}
-						}
 
-						if ($this->enemyPlayer) {
+							if ($this->enemyPlayer) {
+								$handCards = $this->enemyPlayer->getHandCards();
+								$card = $handCards[array_rand($handCards)];
+								if ($card) {
+									$this->addEnemyPlayerCard($this->enemyPlayer, $card);
+									$this->place = 'hand';
+									$this->check = self::OK;
+								} else {
+									$this->check = self::NO_CARDS_ON_HAND;
+								}
+							} else {
+								$this->check = self::PLAYER_NOT_SELECTED;
+							}
+						} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsPedroRamirez($this->game)) {
+							// TODO skontrolovat ci su v odhadzovacom balicku nejake karty
+							// TODO messages
 							$this->check = self::OK;
+						} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsPatBrennan($this->game)) {
+							// TODO messages
+							$attackedPlayer = $this->params[0];
+							foreach ($this->players as $player) {
+								$user = $player->getUser();
+								if ($user['username'] == $attackedPlayer) {
+									$this->enemyPlayer = $player;
+									break;
+								}
+							}
+
+							if ($this->enemyPlayer) {
+								if (isset($this->params[1])) {
+									$cardName = ucfirst($this->params[1]);
+									$method = 'getHas' . $cardName . 'OnTheTable';
+									$card = $this->enemyPlayer->$method();
+									if ($card) {
+										$this->addEnemyPlayerCard($this->enemyPlayer, $card);
+										$this->place = 'table';
+										$this->check = self::OK;
+									} else {
+										$this->check = self::PLAYER_DOESNT_HAVE_CARD_ON_THE_TABLE;
+									}
+								} else {
+									$this->check = self::NO_CARD_SELECTED;
+								}
+							} else {
+								$this->check = self::PLAYER_NOT_SELECTED;
+							}
+						} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsVeraCuster($this->game)) {
+							// TODO messages
+							$attackedPlayer = $this->params[0];
+							foreach ($this->players as $player) {
+								if ($player['actual_lifes'] > 0) {
+									$user = $player->getUser();
+									if ($user['username'] == $attackedPlayer) {
+										$this->enemyPlayer = $player;
+										break;
+									}
+								}
+							}
+
+							if ($this->enemyPlayer) {
+								$this->check = self::OK;
+							} else {
+								// todo message o tom ze vera chce pouzit charakter ale nevybrala ziadneho hraca
+							}
 						} else {
-							// todo message o tom ze vera chce pouzit charakter ale nevybrala ziadneho hraca
+							$this->check = self::OK;
 						}
-					} else {
-						$this->check = self::OK;
 					}
 				} elseif ($this->actualPlayer['phase'] == Player::PHASE_DYNAMITE) {
 					if ($this->params[0] == 'dynamite') {
@@ -227,7 +241,6 @@ class DrawCommand extends Command {
 				$this->check = self::NOT_YOUR_TURN;
 			}
 		}
-		var_dump($this->check);
 	}
 
 	protected function run() {
@@ -254,7 +267,8 @@ class DrawCommand extends Command {
 						// aby sme vyrobili pole kariet ktore treba vyhodit
 					}
 				}
-				GameUtils::throwCards($this->game, NULL, $thrownCards);
+				
+				$this->moveDrawnCards($thrownCards);
 				
 				if ($isHeart) {
 					$this->drawResult = self::OK;
@@ -283,7 +297,6 @@ class DrawCommand extends Command {
 					$count = 2;
 				}
 				
-				// TODO skontrolovat ci funguje prekliatie
 				$drawnCards = GameUtils::drawCards($this->game, $count);
 				$isSafe = FALSE;
 				$cardRepository = new CardRepository();
@@ -300,8 +313,7 @@ class DrawCommand extends Command {
 				
 				$dynamite = $this->actualPlayer->getHasDynamiteOnTheTable($this->game);
 				if ($isSafe === TRUE) {
-					GameUtils::throwCards($this->game, NULL, $thrownCards);
-					
+					$this->moveDrawnCards($thrownCards);
 					$this->drawResult = self::OK;
 					
 					// posunieme dynamit dalsiemu hracovi
@@ -320,18 +332,18 @@ class DrawCommand extends Command {
 				} else {
 					$this->drawResult = self::KO;
 					
+					// zahodime dynamit
+					$retVal = GameUtils::throwCards($this->game, $this->actualPlayer, array($dynamite), 'table');
+					$this->actualPlayer = $retVal['player'];
+					$this->game = $retVal['game'];
+					
 					// stiahneme hracovi tri zivoty
 					$newLifes = $this->actualPlayer['actual_lifes'] - 3;
 					$this->actualPlayer['actual_lifes'] = $newLifes;
 					$this->actualPlayer['phase'] = $this->getNextPhase($this->actualPlayer);
 					$this->actualPlayer = $this->actualPlayer->save(TRUE);
 					
-					GameUtils::throwCards($this->game, NULL, $thrownCards);
-					
-					// zahodime dynamit
-					$retVal = GameUtils::throwCards($this->game, $this->actualPlayer, array($dynamite), 'table');
-					$this->actualPlayer = $retVal['player'];
-					$this->game = $retVal['game'];
+					$this->moveDrawnCards($thrownCards);
 					
 					if ($newLifes <= 0) {
 						// TODO check ci nema na ruke pivo / piva a ak ano automaticky ich pouzit na zachranu
@@ -384,7 +396,7 @@ class DrawCommand extends Command {
 				} else {
 					$this->drawResult = self::KO;
 				}
-				GameUtils::throwCards($this->game, NULL, $thrownCards);
+				$this->moveDrawnCards($thrownCards);
 			} else {
 				if ($this->useCharacter === TRUE && $this->actualPlayer->getIsVeraCuster($this->game)) {
 					$notices = $this->actualPlayer->getNoticeList();
@@ -448,6 +460,25 @@ class DrawCommand extends Command {
 				$this->actualPlayer['phase'] = Player::PHASE_PLAY;
 				$this->actualPlayer->save();
 			}
+		} elseif ($this->check == self::PEYOTE_OK) {
+			$color = $this->params[0];
+			$method = 'getIs' . ucfirst($color);
+			$drawnCards = GameUtils::drawCards($this->game, 1);
+			
+			// TODO messages, ukazat kartu ktora bola potiahnuta
+			
+			$cardRepository = new CardRepository(TRUE);
+			$drawnCardId = $drawnCards[0];
+			$drawnCard = $cardRepository->getOneById($drawnCardId);
+			if ($drawnCard->$method($this->game)) {
+				$handCards = unserialize($this->actualPlayer['hand_cards']);
+				$handCards[] = $drawnCardId;
+				$this->actualPlayer['hand_cards'] = serialize($handCards);
+			} else {
+				GameUtils::throwCards($this->game, NULL, array($drawnCard));
+				$this->actualPlayer['phase'] = Player::PHASE_PLAY;
+			}
+			$this->actualPlayer->save();
 		}
 	}
 
@@ -825,6 +856,47 @@ class DrawCommand extends Command {
 
 				return $response;
 			}
+		}
+	}
+	
+	/**
+	 * moves drawn cards to throw pile or to john pains hand
+	 */
+	protected function moveDrawnCards($thrownCards) {
+		// aj Vera Custer moze hrat za Johna Paina
+		$johnPains = array();
+		foreach ($this->getPlayers() as $player) {
+			// pozrieme sa na vsetkych hracov ktori este nie su mrtvi a ani nie su aktualny hrac
+			if ($player['actual_lifes'] > 0 && $this->actualPlayer['id'] != $player['id']) {
+				if ($player->getIsJohnPain($this->game)) {
+					$johnPains[] = $player;
+				}
+			}
+		}
+		
+		// ked hraca zachrani barrel a karta ide johnovi, nastava problem s fazami, zrejme len ked je john utociaci hrac
+		
+		if ($johnPains) {
+			// vymysliet ako davat Johnovi a Vere karty na striedacku - zatial spravene len pre nahodne vybraneho Johna
+			$johnPain = $johnPains[array_rand($johnPains)];
+			$johnPainHandCards = unserialize($johnPain['hand_cards']);
+			
+			if (count($johnPainHandCards) < 6) {
+				foreach ($thrownCards as $thrownCard) {
+					$johnPainHandCards[] = $thrownCard['id'];
+				}
+				if ($this->attackingPlayer && $johnPain['id'] == $this->attackingPlayer['id']) {
+					$this->attackingPlayer['hand_cards'] = serialize($johnPainHandCards);
+					$this->attackingPlayer = $this->attackingPlayer->save(TRUE);
+				} else {
+					$johnPain['hand_cards'] = serialize($johnPainHandCards);
+					$johnPain = $johnPain->save(TRUE);
+				}
+			} else {
+				GameUtils::throwCards($this->game, NULL, $thrownCards);
+			}
+		} else {
+			GameUtils::throwCards($this->game, NULL, $thrownCards);
 		}
 	}
 }
