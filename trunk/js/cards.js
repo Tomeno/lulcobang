@@ -160,8 +160,8 @@ function selectPlayer(id, fromSelectCard) {
 
 		} else {
 			$('selected-card').value = 0;
+			$('place').value = '';
 		}
-		$('place').value = '';
 	}
 	
 	//alert(command);
@@ -198,5 +198,12 @@ function useCharacter(id) {
 
 function drawHighNoon() {
 	$('command').value = 'draw_high_noon';
+	executeCommand();
+}
+
+function useOneRoundCard(oneRoundCard) {
+	//alert(oneRoundCard);
+	$('command').value = 'use_one_round_card';
+	// asi nie kazda jednokolova karta sa bude spustat takto, mozno bude treba vymenovat ktore ano
 	executeCommand();
 }

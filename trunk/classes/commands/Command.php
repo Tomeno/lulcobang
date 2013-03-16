@@ -500,6 +500,9 @@ abstract class Command {
 		'draw_high_noon' => array(
 			'class' => 'DrawHighNoonCommand',
 		),
+		'use_one_round_card' => array(
+			'class' => 'UseOneRoundCardCommand',
+		),
 	);
 
 	private function  __construct($params, $localizedParams, $game) {

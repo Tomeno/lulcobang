@@ -114,7 +114,7 @@
 						<div class="row cards">
 							<span class="card_icon hand_cards"></span>
 							{foreach from=$player.handCards item='handCard' name='handCards'}
-								<div{if $player.user.id == $me.user.id} id="card-{$handCard.id}"{/if} class="card"{if $cardWidth} style="width: {$cardWidth}px;"{/if}>
+								<div{if $player.user.id == $me.user.id or $game->getIsHNSacagaway()} id="card-{$handCard.id}"{/if} class="card"{if $cardWidth} style="width: {$cardWidth}px;"{/if}>
 									{if $player.user.id == $me.user.id}
 										<a class="popup-source" href="{$handCard.url}" onclick="selectCardToPlay('{$handCard.id}', '{$handCard.itemAlias}'); return false;" title="">
 											{image src=$handCard.imagePath alt=$handCard.title width='44' height='76'}
@@ -126,6 +126,10 @@
 													<span class="usage">{$handCard.description|escape}</span>
 												</span>
 											</span>
+										</a>
+									{elseif $game->getIsHNSacagaway()}
+										<a href="{$handCard.url}" onclick="selectCard('{$handCard.id}', '{$player.id}', 'hand'); return false;" title="{$handCard.title|escape}: {$handCard.description|escape}" class="popup-source">
+											{image src=$handCard.imagePath alt="card" width='44' height='76'}
 										</a>
 									{else}
 										<a href="{$player.url}" onclick="selectPlayer({$player.id});return false;">
@@ -192,7 +196,7 @@
 		{if $game.status == $gameStartedStatus}
 			{if $game.draw_pile}
 				<div id="kopa" class="card">
-					{if $game->getIsHNPeyote()}
+					{if $game->getIsHNPeyote() && $me.phase == 4}
 						<div class="drawPile" style="width:150px;">
 							{image src=$game.topDrawPile.backImagePath alt="draw pile" width='44' height='76'}
 							<span class="guess red"><a href="#" onclick="drawCards('red'); return false;"><span class="hearts">&hearts;</span> <span class="diams">&diams;</span> red</a></span>
@@ -223,7 +227,7 @@
 
 			{if $game.isHighNoon}
 				{if $game.highNoonActualCard}
-					<a id="high_noon_actual_card" class="card"  href="" onclick="return false;" title="{$game.highNoonActualCard.localizedTitle|escape}: {$game.highNoonActualCard.localizedDescription|escape}">
+					<a id="high_noon_actual_card" class="card"  href="#" onclick="useOneRoundCard('{$game.highNoonActualCard.localize_key}'); return false;" title="{$game.highNoonActualCard.localizedTitle|escape}: {$game.highNoonActualCard.localizedDescription|escape}">
 						{image src=$game.highNoonActualCard.imagePath alt=$game.highNoonActualCard.title width='44' height='76'}
 					</a>
 				{/if}

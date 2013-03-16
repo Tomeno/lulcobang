@@ -43,7 +43,7 @@ class PlayerPhaseChecker extends Checker {
 				break;
 			case Player::PHASE_DRAW_HIGH_NOON:
 				$message = array(
-					'localizeKey' => 'draw_predraw_first',
+					'localizeKey' => 'draw_extension_card_first',
 				);
 				break;
 			case Player::PHASE_DYNAMITE:
@@ -89,7 +89,7 @@ class PlayerPhaseChecker extends Checker {
 	 */
 	protected function isInDrawPhase() {
 		$actualPlayer = $this->command->getActualPlayer();
-		if ($actualPlayer['phase'] === Player::PHASE_DRAW) {
+		if ($actualPlayer['phase'] == Player::PHASE_DRAW) {
 			return TRUE;
 		} else {
 			$this->getPhaseMessage('draw');
