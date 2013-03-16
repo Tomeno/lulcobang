@@ -156,7 +156,8 @@ class Card extends LinkableItem {
 
 	/**
 	 * checks if card is red
-	 *
+	 * 
+	 * @param	Game	$game
 	 * @return	boolean
 	 */
 	public function getIsRed(Game $game) {
@@ -167,7 +168,20 @@ class Card extends LinkableItem {
 		}
 	}
 
-		
+	/**
+	 * checks if card is black
+	 * 
+	 * @param	Game	$game
+	 * @return	boolean
+	 */
+	public function getIsBlack(Game $game) {
+		if ($this->getIsSpades($game) || $this->getIsClubs($game)) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
+	
 	public function getIsSpades(Game $game) {
 		if ($game->getIsHNBlessing()) {
 			return FALSE;

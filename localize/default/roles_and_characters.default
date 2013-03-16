@@ -70,23 +70,23 @@ vera_custer_description###Na začátku svého kola, než si dobere ve fázi 1 ka
 vera_custer_usage###hráč počas ťahania kariet klikne na svoj charakter, následne na hráča, ktorého charakter chce používať a nakoniec na ťahací balíček
 big_spencer_description###Nemôže hrať kartu Vedľa!
 big_spencer_usage###automatické
-flint_westwood_description###
+flint_westwood_description###Během svého tahu může vyměnit jednu kartu ze své ruky za 2 karty náhodně vybrané z ruky jiného hráče.
 flint_westwood_usage###
-gary_looter_description###
+gary_looter_description###Bere si všechny přebytečné karty odhozené ostatními hráči na konci jeho tahu.
 gary_looter_usage###
-gregory_deck_description###
+gregory_deck_description###Na začátku svého tahu si může náhodně vzít 2 postavy, které nejsou ve hře a pouze ze základní hry. Má všechny schopnosti těchto dvou postav.
 gregory_deck_usage###
-john_pain_description###
+john_pain_description###Pokaždé když nějaký hráč otočí kartu, aby zjistil efekt karty (vězení, dynamit apod.), přidá si John Pain právě otočenou kartu do své ruky. Smí tak ale provést, jen pokud má v ruce méně než 6 karet.
 john_pain_usage###
-lee_van_kliff_description###
+lee_van_kliff_description###Během svého tahu může odhodit BANG!, aby zopakoval efekt karty s hnědým okrajem, kterou právě zahrál.
 lee_van_kliff_usage###
-teren_kill_description###
+teren_kill_description###Vždy, když by měl být zabit, otoči kartu. Pokud to nejsou piky(♠), Teren zůstane na 1 životě a dobere si 1 kartu.
 teren_kill_usage###
-youl_grinner_description###
+youl_grinner_description###Než si dobere karty, tak hráči s více kartami v ruce než Youl, mu musí dát jednu kartu, kterou sami vyberou.
 youl_grinner_usage###
-madam_yto_description###
+madam_yto_description###Vzdy ked sa pouzije karta PIVO, lizne 1 kartu.
 madam_yto_usage###
-annie_versary_description###
+annie_versary_description###Može akúkoľvek kartu z ruky použiť ako BANG!
 annie_versary_usage###
 uncle_will_description###
 uncle_will_usage###
@@ -94,13 +94,13 @@ johnny_kisch_description###
 johnny_kisch_usage###
 claus_the_saint_description###
 claus_the_saint_usage###
-limonade_jim_description###
+limonade_jim_description###Vždy, když nekterý z hráčů zahraje kartu PIVO, může Jim za odhodení libovolné karty doplnit 1 život. Dodatek: Jim nemúže použít svoji schopnost na seba.
 limonade_jim_usage###
-henry_block_description###
+henry_block_description###Hráč, který si vezme nebo odhodí kartu z Henryho ruky nebo ležící před ním, je cílem efektu BANG!. Dodatek: automatické schopnosti a efekty nespúšťajú jeho schopnosť(El Gringo, Shotgun, Flint Westwood).
 henry_block_usage###
-evelyn_the_bang_description###
+evelyn_the_bang_description###Ve své fáze 1 si smí líznout o 1 kartu méne, čímž automaticky vystřelí BANG! na vzdálenost 1. Dodatek: Efekt nevyžaduje hranie žadné karty a neráta sa do počtu hraných BANG! karět.
 evelyn_the_bang_usage###
-colorado_bill_description###
+colorado_bill_description###Vždy, když se někto zahraje kartu VEDLE! proti jeho kartě BANG!, může Colorado otočit kartu z balíčku: Jsou-li to piky, je efekt VEDlE ignorovan a napadený hráč ztrácí 1 život.
 colorado_bill_usage###
-mick_defender_description###
+mick_defender_description###Pokud je Mick jedným cilem karty, může použít kartu VEDLE, aby sa jejímu účinku vyhnul.  Dodatek: hnedé karty(Panic!, Cat Balou, Duel, Ragtime), zelené(Conestage, Cancan) a modré(Bounty, Prison, Rattlesnake).
 mick_defender_usage###

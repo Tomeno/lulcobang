@@ -142,3 +142,23 @@ peyote_description###Místo lízání karet ve fázi 1, musíš hádat zdali je 
 the_judge_description###Celé kolo, nemůžeš hrát kraty vyložené před sebou ani ostaními hráči.
 vendetta_description###Na konci svého tahu LOSUJEŠ. Obrátiš jednu kartu na pakl, když je karta srdcová, hraješ další tah(ale již znovu NELOSUJEŠ).
 fistful_description###Na začátku svého kola, jsi cílem tolika útoků, kolik máš v ruce karet.
+gag_title###Zapchaté ústa
+bone_orchad_title###Cintorín
+darling_valentine_title###Miláčik Valentín
+dorothy_rage_title###Zúrivá Doroty
+helena_zontero_title###Helena Zontero
+lady_rose_of_texas_title###Lady Ruža z Texasu
+miss_susanna_title###Madam Zuzana
+sacagaway_title###Sacagaway
+showdown_title###Zúčtovanie
+wild_west_show_title###Divoký západ
+gag_description###Hráči nesmí mluvit (mohou gestikulovat, sténat, ...). Každý kdo promluví, ztrácí 1 život.
+bone_orchad_description###Na začátku svého tahu se všichni vyřazení hráči vrátí do hry s 1 životem. Role vyřazených hráčů zamíchejte a rozdejte náhodně.
+darling_valentine_description###Na začátku svého tahu odhodí každý hráč všechny karty z ruky a stejný počet karet si dobere z balíčku.
+dorothy_rage_description###Hráč na tahu může jmenovat kartu a vybrat hráče, který ji musí zahrát (pokud ji má).
+helena_zontero_description###Když přijde Helena do hry, otočte vrchní kartu z dobíracího balíčku: jsou-li to srdce(♥) nebo káry(♦), zamíchejte všechny aktivní role s vyjímkou šerifa a znovu je náhodně a tajně rozdejte. Každý hráč se podívá na svou novou roli.
+lady_rose_of_texas_description###Během svého tahu si může každý hráč vyměnit místo s hráčem po své pravici a ten tak přeskočí svůj nejbližší tah.
+miss_susanna_description###Během svého tahu musí každý hráč zahrát alespoň 3 karty. Hráč, který to neudělá, ztrácí 1 život.
+sacagaway_description###Všichni hráči hrají s odhalenými kartami v ruce (vyjma svých rolí!).
+showdown_description###Každá karta může být hrána jako by to byla karta BANG!. Každá karta BANG! MUSÍ být hrána jako by to byla karta Vedle!.
+wild_west_show_description###Cílem každého hráče se stává: “Zůstaň poslední ve hře!”.

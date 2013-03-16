@@ -31,7 +31,7 @@
 						{/if}
 						<a href="{$player.url}" onclick="selectPlayer({$player.id});return false;">
 							{$player.user.username}
-							{*<span style="color: red;">&heartsuit; &hearts;</span> <span style="color: red;">&diams;</span> <span style="color: black;">&spades; &clubs;</span>*}
+							
 						</a>
 					</div>
 					<div class="photo">
@@ -52,7 +52,7 @@
 							{if $player.roleObject.isSheriff}
 								<div class="card high_noon">
 									{if $game.playerOnTurn.id == $player.id && $me.id == $player.id}
-										<a href="#" onclick="drawHighNoon(); return false;" title="{$game.topHighNoonPile.localizedTitle} Click here to draw high noon card">
+										<a href="#" onclick="drawHighNoon(); return false;" title="{$game.topHighNoonPile.localizedTitle} - {$game.topHighNoonPile.localizedDescription} Click here to draw high noon card">
 									{/if}
 									{image src=$game.topHighNoonPile.backImagePath alt='rola' width='44' height='76'}
 									{if $game.playerOnTurn.id == $player.id && $me.id == $player.id}
@@ -192,12 +192,21 @@
 		{if $game.status == $gameStartedStatus}
 			{if $game.draw_pile}
 				<div id="kopa" class="card">
-					<a href="#" onclick="drawCards();return false">{image src=$game.topDrawPile.backImagePath alt="draw pile" width='44' height='76'}</a>
-					{if $me.user.need_help}
-						{if $me.phase == 4}
-							<div class="help">
-								{localize key='click_here_to_draw_cards'}
-							</div>
+					{if $game->getIsHNPeyote()}
+						<div class="drawPile" style="width:150px;">
+							{image src=$game.topDrawPile.backImagePath alt="draw pile" width='44' height='76'}
+							<span class="guess red"><a href="#" onclick="drawCards('red'); return false;"><span class="hearts">&hearts;</span> <span class="diams">&diams;</span> red</a></span>
+							<span class="guess black"><a href="#" onclick="drawCards('black'); return false;"><span class="spades">&spades;</span> <span class="clubs">&clubs;</span> black</a></span>
+						</div>
+						
+					{else}
+						<a href="#" onclick="drawCards();return false">{image src=$game.topDrawPile.backImagePath alt="draw pile" width='44' height='76'}</a>
+						{if $me.user.need_help}
+							{if $me.phase == 4}
+								<div class="help">
+									{localize key='click_here_to_draw_cards'}
+								</div>
+							{/if}
 						{/if}
 					{/if}
 				</div>

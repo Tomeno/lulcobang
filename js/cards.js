@@ -129,8 +129,12 @@ function selectCard(id, playerId, place) {
 	}
 }
 
-function drawCards() {
-	$('command').value = 'draw';
+function drawCards(color) {
+	var command = 'draw';
+	if (color) {
+		command += ' ' + color;
+	}
+	$('command').value = command;
 	executeCommand();
 }
 
