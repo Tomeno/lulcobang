@@ -27,7 +27,7 @@ class DrawHighNoonCommand extends Command {
 	}
 	
 	protected function run() {
-		if ($this->check == 1) {
+		if ($this->check == self::OK) {
 			$this->actualPlayer['phase'] = $this->getNextPhase($this->actualPlayer);
 			$this->actualPlayer->save();
 			

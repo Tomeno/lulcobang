@@ -24,7 +24,13 @@ class CatbalouCommand extends Command {
 		}
 
 		if ($this->enemyPlayer) {
-			if (isset($this->params[1]) && $this->params[1] != 'hand') {
+			$lastParam = end($this->params);
+			$place = 'hand';
+			if ($lastParam == 'table') {
+				$place = 'table';
+			}
+			
+			if ($place == 'table') {
 				$methods = array('hasAllCardsOnTheTableOrOnWait');
 				$enemyPlayerHasCardsChecker = new EnemyPlayerHasCardsChecker($this, $methods);
 				$enemyPlayerHasCardsChecker->setCards(array($this->params[1]));
@@ -35,14 +41,22 @@ class CatbalouCommand extends Command {
 					$this->check = self::NO_CARDS_ON_THE_TABLE;
 				}
 			} else {
-				$handCards = $this->enemyPlayer->getHandCards();
-				$card = $handCards[array_rand($handCards)];
+				$method = 'getHas' . ucfirst($this->params[1]) . 'OnHand';
+				$card = $this->enemyPlayer->$method($this->game);
 				if ($card) {
 					$this->addEnemyPlayerCard($this->enemyPlayer, $card);
 					$this->check = self::OK;
 					$this->place = 'hand';
 				} else {
-					$this->check = self::NO_CARDS_ON_HAND;
+					$handCards = $this->enemyPlayer->getHandCards();
+					$card = $handCards[array_rand($handCards)];
+					if ($card) {
+						$this->addEnemyPlayerCard($this->enemyPlayer, $card);
+						$this->check = self::OK;
+						$this->place = 'hand';
+					} else {
+						$this->check = self::NO_CARDS_ON_HAND;
+					}
 				}
 			}
 		} else {
