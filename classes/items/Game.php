@@ -114,6 +114,17 @@ class Game extends Item {
 	public function getPlayers() {
 		return $this->getAdditionalField('players');
 	}
+	
+	public function getAlivePlayers() {
+		$players = $this->getPlayers();
+		$alivePlayers = array();
+		foreach ($players as $player) {
+			if ($player->getIsAlive()) {
+				$alivePlayers[] = $player;
+			}
+		}
+		return $alivePlayers;
+	}
 
 	/**
 	 * gets the player on turn - he can draw cards, bangs the enemies etc

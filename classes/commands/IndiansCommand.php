@@ -11,10 +11,9 @@ class IndiansCommand extends Command {
 
 	protected function run() {
 		if ($this->check == self::OK) {
-			// TODO apache kid moze byt hned za utocnikom
 			// TODO moze sa stat ze hraju uz len dvaja apache kid a utocnik - asi staci ak skontrolujeme ci next pos player != od actual
-			
-			$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer);
+			$this->attackingCards = $this->cards;
+			$nextPositionPlayer = $this->getNextPositionPlayer($this->game, $this->actualPlayer);
 
 			foreach ($this->players as $player) {
 				if ($player->getIsAlive()) {

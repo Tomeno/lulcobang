@@ -16,7 +16,6 @@ class ActualPlayerHasCardsChecker extends Checker {
 		if ($this->precheckerParams && is_array($this->precheckerParams)) {
 			$actualPlayer = $this->command->getActualPlayer();
 			$params = $this->command->getParams();
-			$localizedParams = $this->command->getLocalizedParams();
 			$precheck = TRUE;
 			$game = $this->command->getGame();
 
@@ -26,17 +25,14 @@ class ActualPlayerHasCardsChecker extends Checker {
 			}
 			
 			foreach ($this->precheckerParams as $checkingMethod) {
-				$cardIndex = 0;
-				$placeIndex = 1;
 				$negation = FALSE;
 
 				if (substr($checkingMethod, 0, 7) === '!getHas') {
 					$checkingMethod = str_replace('!', '', $checkingMethod);
 					$negation = TRUE;
 				}
-
-				// TODO ked zahram catbalou alebo paniku a. i. - je to hned prvy parameter z prikazu, ktory sa ale sem nedostane, treba to domysliet tak aby sa to dostalo aj sem
-				$cardName = $params[$cardIndex];
+				
+				$cardName = $params['playCardName'];
 				$checkingMethod = str_replace('###CARD_PLACEHOLDER###', ucfirst($cardName), $checkingMethod);
 				
 				// pre calamity janet prehodime karty bang a missed ak sa pouziva charakter
@@ -48,7 +44,7 @@ class ActualPlayerHasCardsChecker extends Checker {
 					}
 				}
 
-				$placeParam = $params[1];
+				$placeParam = $params['place'];
 				if ($placeParam == 'table') {
 					$place = 'OnTheTable';
 				} elseif ($placeParam == 'wait') {
@@ -63,16 +59,31 @@ class ActualPlayerHasCardsChecker extends Checker {
 				}
 				
 				$card = $actualPlayer->$checkingMethod($game);
-				
 				if ($card) {
 					if ($negation === FALSE) {
+						if (strpos($checkingMethod, 'OnTheTable')) {
+							$usePlace = 'table';
+						} elseif (strpos($checkingMethod, 'OnHand')) {
+							$usePlace = 'hand';
+						} elseif (strpos($checkingMethod, 'OnWait')) {
+							$usePlace = 'wait';
+						}
+						
+						$card = $actualPlayer->getCardWithId($usePlace, $params['playCardId']);
 						// dame si kartu do pola kariet aby sme s nou vedeli potom dalej robit
-						$this->command->addCard($card);
-						$precheck = TRUE;
+						if ($card) {
+							$this->command->addCard($card);
+							$precheck = TRUE;
+						} else {
+							echo 'false';
+							// TODO nemas kartu s tymto ideckom
+							$precheck = FALSE;
+							break;
+						}
 					} else {
 						$message = array(
 							'localizeKey' => 'you_have_card_on_table',	// toto tu by sa malo menit podla miesta, nie stale table
-							'localizeParams' => array($localizedParams[$index]),
+							'localizeParams' => array($cardName),
 						);
 						$this->addMessage($message);
 						
@@ -83,7 +94,7 @@ class ActualPlayerHasCardsChecker extends Checker {
 					if ($negation === FALSE) {
 						$message = array(
 							'localizeKey' => 'do_not_have_card',
-							'localizeParams' => array($localizedParams[$index]),
+							'localizeParams' => array($cardName),
 						);
 						$this->addMessage($message);
 						

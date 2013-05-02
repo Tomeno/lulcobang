@@ -40,21 +40,16 @@ class ThrowCommand extends Command {
 				// znulujeme karty lebo uz tam jedna je z precheckera
 				$this->cards = array();
 				
-				// TODO tu ked pouzijem rovnaky typ kariet, nastava problem a vyhodim len jednu
-				// lebo getHas ... vrati dvakrat tu istu kartu
-				// docasne kym nebudem robit tieto veci cez idecka, mame pridanu podmienku
-				$method = 'getHas' . ucfirst($this->params[1]) . 'OnHand';
-				$firstCard = $this->actualPlayer->$method();
+				$firstCard = $this->actualPlayer->getCardWithId('hand', $this->params['playCardId']);
 				if ($firstCard) {
 					$this->addCard($firstCard);
 				}
 
-				$method = 'getHas' . ucfirst($this->params[2]) . 'OnHand';
-				$secondCard = $this->actualPlayer->$method();
+				$secondCard = $this->actualPlayer->getCardWithId('hand', $this->params['additionalCardsId']);
 				if ($secondCard) {
 					$this->addCard($secondCard);
 				}
-
+				
 				if (count($this->cards) == 2) {
 					if ($firstCard['id'] == $secondCard['id']) {
 						$message = array(
@@ -100,17 +95,12 @@ class ThrowCommand extends Command {
 			// znulujeme karty lebo uz tam jedna je z precheckera
 			$this->cards = array();
 			
-			// TODO tu ked pouzijem rovnaky typ kariet, nastava problem a vyhodim len jednu
-			// lebo getHas ... vrati dvakrat tu istu kartu
-			// docasne kym nebudem robit tieto veci cez idecka, mame pridanu podmienku
-			$method = 'getHas' . ucfirst($this->params[0]) . 'OnHand';
-			$firstCard = $this->actualPlayer->$method();
+			$firstCard = $this->actualPlayer->getCardWithId('hand', $this->params['playCardId']);
 			if ($firstCard) {
 				$this->addCard($firstCard);
 			}
 			
-			$method = 'getHas' . ucfirst($this->params[1]) . 'OnHand';
-			$secondCard = $this->actualPlayer->$method();
+			$secondCard = $this->actualPlayer->getCardWithId('hand', $this->params['additionalCardsId']);
 			if ($secondCard) {
 				$this->addCard($secondCard);
 			}
@@ -157,7 +147,7 @@ class ThrowCommand extends Command {
 			}
 		} else {
 			$handCardsCount = count($this->actualPlayer->getHandCards());
-			$place = $this->params[1];
+			$place = $this->params['place'];
 			if (!$place) {
 				$place = 'hand';
 			}
@@ -171,7 +161,7 @@ class ThrowCommand extends Command {
 	
 	protected function run() {
 		if ($this->check == self::OK) {
-			$place = $this->params[1];
+			$place = $this->params['place'];
 			if (!$place) {
 				$place = 'hand';
 			}

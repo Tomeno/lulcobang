@@ -86,6 +86,15 @@ class Card extends LinkableItem {
 	}
 
 	/**
+	 * used in commands
+	 * 
+	 * @return	string
+	 */
+	public function getCardName() {
+		return str_replace('-', '', $this->getItemAlias());
+	}
+	
+	/**
 	 * getter for localized title of the card
 	 *
 	 * @return	string
@@ -664,6 +673,12 @@ class Card extends LinkableItem {
 		return $cardBaseType['card_border_color'];
 	}
 
+	public function getCardsCountEffect() {
+		$cardBaseType = $this->getAdditionalField('cardBaseType');
+		return $cardBaseType['cards_count_effect'];
+	}
+
+
 	/**
 	 * checks if card is weapon
 	 *
@@ -677,6 +692,14 @@ class Card extends LinkableItem {
 		}
 	}
 
+	public function getIsGreenDefender() {
+		if ($this->getCardGroupType() == self::DEFENDER && $this->getCardBorderColor() == self::GREEN) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
+	}
+	
 	/**
 	 * checks if card changes distance
 	 *

@@ -16,7 +16,7 @@ class PanicCommand extends Command {
 	
 	protected function check() {
 		// TODO spravit prechecker
-		$attackedPlayer = $this->params[0];
+		$attackedPlayer = $this->params['enemyPlayerUsername'];
 		foreach ($this->players as $player) {
 			$user = $player->getUser();
 			if ($user['username'] == $attackedPlayer) {
@@ -29,10 +29,10 @@ class PanicCommand extends Command {
 			$attackedUser = $this->enemyPlayer->getUser();
 			$distance = $this->game->getDistance($this->loggedUser['username'], $attackedUser['username']);
 			if ($distance <= 1) {
-				if (isset($this->params[1]) && $this->params[1] != 'hand') {
+				if (isset($this->params['place']) && $this->params['place'] != 'hand') {
 					$methods = array('hasAllCardsOnTheTableOrOnWait');
 					$enemyPlayerHasCardsChecker = new EnemyPlayerHasCardsChecker($this, $methods);
-					$enemyPlayerHasCardsChecker->setCards(array($this->params[1]));
+					$enemyPlayerHasCardsChecker->setCards(array($this->params['enemyCardsName']));
 					if ($enemyPlayerHasCardsChecker->check()) {
 						$this->check = self::OK;
 						$this->place = $enemyPlayerHasCardsChecker->getPlace();
@@ -40,6 +40,7 @@ class PanicCommand extends Command {
 						$this->check = self::NO_CARDS_ON_THE_TABLE;
 					}
 				} else {
+					// TODO sacagaway ako v cat balou
 					$handCards = $this->enemyPlayer->getHandCards();
 					$card = $handCards[array_rand($handCards)];
 					if ($card) {

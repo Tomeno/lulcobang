@@ -21,7 +21,7 @@ class RoomDetailBox extends AbstractBox {
 				$message = addslashes(trim(Utils::post('message')));
 				if ($message != '') {
 					if (strpos($message, '.') === 0) {
-						$response = Command::setup($message, $game);
+						$response = Command::setup('command=' . substr($message, 1), $game);
 					} else {
 						$messageParams = array(
 							'text' => $message,
@@ -32,18 +32,28 @@ class RoomDetailBox extends AbstractBox {
 					}
 					Room::updateUserLastActivity($loggedUser['id'], $room['id']);
 				} elseif (Utils::post('create')) {
-					$response = Command::setup('.create', $game);
+					$response = Command::setup('command=create', $game);
 				} elseif (Utils::post('join')) {
-					$response = Command::setup('.join', $game);
+					$response = Command::setup('command=join', $game);
+				} elseif (Utils::post('add_ai_player')) {
+					$response = Command::setup('command=add_ai_player', $game);
 				} elseif (Utils::post('start')) {
-					$response = Command::setup('.init', $game);
+					$response = Command::setup('command=init', $game);
 				} elseif (Utils::post('choose_character')) {
-					$response = Command::setup('.choose_character ' . Utils::post('character'), $game);
+					$response = Command::setup('command=choose_character&selectedCharacter=' . Utils::post('character'), $game);
 				} elseif (Utils::post('choose_cards')) {
+					$commandParams = array();
+					$commandParams['command'] = 'choose_cards';
+					$commandParams['selectedCards'] = array();
 					if (Utils::post('card')) {
-						$params = ' ' . implode(' ', Utils::post('card'));
+						$commandParams['selectedCards'] = implode(',', Utils::post('card'));
 					}
-					$response = Command::setup('.choose_cards' . $params , $game);
+					$params = array();
+					foreach ($commandParams as $key => $value) {
+						$params[] = $key . '=' . $value;
+					}
+					$commandString = implode('&', $params);
+					$response = Command::setup($commandString, $game);
 				}
 				Utils::redirect(Utils::getActualUrl(), FALSE);
 				// TODO tu by sa mohol spravit redirect asi lebo respons bude v db

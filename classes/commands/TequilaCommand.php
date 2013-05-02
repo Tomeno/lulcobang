@@ -10,27 +10,29 @@ class TequilaCommand extends Command {
 	
 	const YOU_HAVE_TO_USE_ADDITIONAL_CARD = 4;
 	
-	protected $attackedPlayer = NULL;
+//	protected $attackedPlayer = NULL;
 	
 	protected function check() {
-		$attackedPlayerName = $this->params[0];
-		foreach ($this->players as $player) {
-			$user = $player->getUser();
-			if ($user['username'] == $attackedPlayerName) {
-				$this->attackedPlayer = $player;
-				break;
-			}
-		}
+//		$attackedPlayerName = $this->params[0];
+//		foreach ($this->players as $player) {
+//			$user = $player->getUser();
+//			if ($user['username'] == $attackedPlayerName) {
+//				$this->attackedPlayer = $player;
+//				break;
+//			}
+//		}
 
 		if ($this->attackedPlayer === NULL) {
 			$this->attackedPlayer = $this->actualPlayer;
 		}
 		
-		if ($this->params[1]) {
-			$additionalCardTitle = $this->params[1];
+		if (isset($this->params['additionalCardsName'])) {
+			$additionalCardTitle = $this->params['additionalCardsName'];
 			$method = 'getHas' . ucfirst($additionalCardTitle) . 'OnHand';
 			$additionalCard = $this->actualPlayer->$method();
 
+			// TODO skontrolovat ci additional card je ina ako tequila (v AI mode je mozne ze to bude ta ista karta)
+			
 			if ($additionalCard) {
 				$this->cards[] = $additionalCard;
 				if ($this->attackedPlayer['actual_lifes'] < $this->attackedPlayer['max_lifes']) {

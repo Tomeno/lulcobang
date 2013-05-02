@@ -203,6 +203,18 @@ class Player extends LinkableItem {
 		return FALSE;
 	}
 
+	public function getMissedCardOnTheTable() {
+		$missedCards = array();
+		$tableCards = $this->getTableCards();
+		foreach ($tableCards as $tableCard) {
+			if ($tableCard->getIsGreenDefender()) {
+				$missedCards[] = $tableCard;
+			}
+		}
+		return $missedCards;
+	}
+
+
 	public function getNoticeList() {
 		return $this->getAdditionalField('notice_list');
 	}
@@ -260,6 +272,37 @@ class Player extends LinkableItem {
 			return TRUE;
 		}
 		return FALSE;
+	}
+	
+	/**
+	 * checks if player is AI
+	 * 
+	 * @return	boolean
+	 */
+	public function getIsAi() {
+		if ($this['ai_strategy'] > 0) {
+			return TRUE;
+		}
+		return FALSE;
+	}
+	
+	public function play($game) {
+		StrategyInstancer::instance($this, $game)->play();
+	}
+	
+	public function findTargetsInDistance($game, $distance = 0) {
+		if ($distance == 0) {
+			return $game->getPlayers();
+		} else {
+			$matrix = unserialize($game['distance_matrix']);
+			$possibleTargets = array();
+			foreach ($game->getPlayers() as $player) {
+				if ($matrix[$this['uid']][$player['uid']] <= $distance) {
+					$possibleTargets[] = $player;
+				}
+			}
+			return $possibleTargets;
+		}
 	}
 }
 

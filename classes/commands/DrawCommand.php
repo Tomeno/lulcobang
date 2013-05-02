@@ -61,7 +61,7 @@ class DrawCommand extends Command {
 	protected function check() {
 		if ($this->actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
 			$notices = $this->actualPlayer->getNoticeList();
-			if ($this->params[0] == 'barrel') {
+			if ($this->params['playCardName'] == 'barrel') {
 				if ($this->interTurnReason['action'] == 'indians') {
 					$this->check = self::YOU_ARE_UNDER_INDIANS_ATTACK;
 				} elseif ($this->interTurnReason['action'] == 'duel') {
@@ -91,7 +91,7 @@ class DrawCommand extends Command {
 				}
 			} elseif ($this->useCharacter && $this->actualPlayer->getIsJourdonnais($this->game)) {
 				if ($this->interTurnReason['action'] !== 'indians') {
-					$this->params[0] = 'barrel';	// nastavime parameter ako keby chcel pouzit barel
+					$this->params['playCardName'] = 'barrel';	// nastavime parameter ako keby chcel pouzit barel
 					if ($notices['character_jourdonnais_used']) {
 						$this->check = self::CHARACTER_ALREADY_USED;
 					} elseif ($this->interTurnReason['action'] == 'duel') {
@@ -180,7 +180,7 @@ class DrawCommand extends Command {
 							}
 						} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsVeraCuster($this->game)) {
 							// TODO messages
-							$attackedPlayer = $this->params[0];
+							$attackedPlayer = $this->params['enemyPlayerUsername'];
 							foreach ($this->players as $player) {
 								if ($player['actual_lifes'] > 0) {
 									$user = $player->getUser();
@@ -201,7 +201,7 @@ class DrawCommand extends Command {
 						}
 					}
 				} elseif ($this->actualPlayer['phase'] == Player::PHASE_DYNAMITE) {
-					if ($this->params[0] == 'dynamite') {
+					if ($this->params['playCardName'] == 'dynamite') {
 						$card = $this->actualPlayer->getHasDynamiteOnTheTable($this->game);
 						if ($card) {
 							$this->addCard($card);
@@ -213,7 +213,7 @@ class DrawCommand extends Command {
 						$this->check = self::DRAW_DYNAMITE_FIRST;
 					}
 				} elseif ($this->actualPlayer['phase'] == Player::PHASE_JAIL) {
-					if ($this->params[0] == 'jail') {
+					if ($this->params['playCardName'] == 'jail') {
 						$card = $this->actualPlayer->getHasJailOnTheTable($this->game);
 						if ($card) {
 							$this->addCard($card);
@@ -245,7 +245,7 @@ class DrawCommand extends Command {
 
 	protected function run() {
 		if ($this->check == self::OK) {
-			if ($this->params[0] == 'jail') {
+			if ($this->params['playCardName'] == 'jail') {
 
 				// TODO tieto karty treba najprv ukazat hracom cez log a aby sa dali vyhodit, musia byt najprv v ruke aktualneho hraca a potom ich vyhodi
 
@@ -291,7 +291,7 @@ class DrawCommand extends Command {
 					$nextPositionPlayer->save();
 				}
 				
-			} elseif ($this->params[0] == 'dynamite') {
+			} elseif ($this->params['playCardName'] == 'dynamite') {
 				$count = 1;
 				if ($this->useCharacter && $this->actualPlayer->getIsLuckyDuke($this->game)) {
 					$count = 2;
@@ -361,7 +361,7 @@ class DrawCommand extends Command {
 					}
 				}
 				
-			} elseif ($this->params[0] == 'barrel') {
+			} elseif ($this->params['playCardName'] == 'barrel') {
 				$count = 1;
 				if ($this->useCharacter && $this->actualPlayer->getIsLuckyDuke($this->game)) {
 					$count = 2;
@@ -625,7 +625,7 @@ class DrawCommand extends Command {
 
 	protected function generateMessages() {
 		if ($this->check == self::OK) {
-			if ($this->params[0] == 'jail') {
+			if ($this->params['playCardName'] == 'jail') {
 				if ($this->drawResult == self::OK) {
 					$message = array(
 						'text' => 'usiel si z vazenia',
@@ -657,7 +657,7 @@ class DrawCommand extends Command {
 					);
 					$this->addMessage($message);
 				}
-			} elseif ($this->params[0] == 'dynamite') {
+			} elseif ($this->params['playCardName'] == 'dynamite') {
 				if ($this->drawResult == self::OK) {
 					$message = array(
 						'text' => 'dynamit ti nevybuchol',
@@ -689,7 +689,7 @@ class DrawCommand extends Command {
 					);
 					$this->addMessage($message);
 				}
-			} elseif ($this->params[0] == 'barrel') {
+			} elseif ($this->params['playCardName'] == 'barrel') {
 				
 				// TODO lokalizovane hlasky nech beru do uvahy aj to ze ci bol pouzity barel alebo charakter
 				// mame to v drawType
@@ -829,11 +829,11 @@ class DrawCommand extends Command {
 
 	protected function createResponse() {
 		if ($this->check == self::OK) {
-			if ($this->params[0] == 'jail') {
+			if ($this->params['playCardName'] == 'jail') {
 
-			} elseif ($this->params[0] == 'dynamite') {
+			} elseif ($this->params['playCardName'] == 'dynamite') {
 			
-			} elseif ($this->params[0] == 'barrel') {
+			} elseif ($this->params['playCardName'] == 'barrel') {
 
 			} else {
 				$possibleChoices = unserialize($this->actualPlayer['possible_choices']);

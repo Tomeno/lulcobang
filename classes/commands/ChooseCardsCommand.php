@@ -17,9 +17,11 @@ class ChooseCardsCommand extends Command {
 		$possibleCards = $possibleChoices['drawn_cards'];
 		$possiblePickCount = $possibleChoices['possible_pick_count'];
 
+		$this->params['selectedCards'] = explode(',', $this->params['selectedCards']);
+		
 		$res = TRUE;
-		if ($possiblePickCount == count($this->params)) {
-			foreach ($this->params as $param) {
+		if ($possiblePickCount == count($this->params['selectedCards'])) {
+			foreach ($this->params['selectedCards'] as $param) {
 				if (!in_array($param, $possibleCards)) {
 					$res = FALSE;
 					break;
@@ -31,7 +33,7 @@ class ChooseCardsCommand extends Command {
 			} else {
 				$this->check = self::NOT_POSSIBLE_CARD_CHOOSED;
 			}
-		} elseif ($possiblePickCount < count($this->params)) {
+		} elseif ($possiblePickCount < count($this->params['selectedCards'])) {
 			$this->check = self::TOO_MANY_CARDS;
 		} else {
 			$this->check = self::NOT_ENOUGH_CARDS;
@@ -50,7 +52,7 @@ class ChooseCardsCommand extends Command {
 			$nextPlayerPossibleCards = array();
 			
 			foreach ($possibleCards as $possibleCard) {
-				if (in_array($possibleCard, $this->params)) {
+				if (in_array($possibleCard, $this->params['selectedCards'])) {
 					$handCards[] = $possibleCard;
 				} else {
 					if ($restAction == 'back_to_deck') {
