@@ -103,6 +103,11 @@ class InitGameCommand extends Command {
 			$this->game['status'] = Game::GAME_STATUS_INITIALIZED;
 			$this->game = $this->game->save(TRUE);
 			
+			foreach ($this->game->getPlayers() as $player) {
+				if ($player->getIsAi()) {
+					$player->play($this->game);
+				}
+			}
 		}
 	}
 

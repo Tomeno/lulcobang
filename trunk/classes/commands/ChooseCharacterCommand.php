@@ -7,10 +7,10 @@ class ChooseCharacterCommand extends Command {
 	const NOT_POSSIBLE_CHARACTER_CHOSEN = 3;
 
 	protected function check() {
-		if ($this->params[0]) {
+		if ($this->params['selectedCharacter']) {
 			$possibleChoices = unserialize($this->actualPlayer['possible_choices']);
 			$possibleCharacters = $possibleChoices['possible_characters'];
-			if (in_array($this->params[0], $possibleCharacters)) {
+			if (in_array($this->params['selectedCharacter'], $possibleCharacters)) {
 				$this->check = self::OK;
 			} else {
 				$this->check = self::NOT_POSSIBLE_CHARACTER_CHOSEN;
@@ -22,7 +22,7 @@ class ChooseCharacterCommand extends Command {
 
 	protected function run() {
 		if ($this->check == self::OK) {
-			$this->actualPlayer['charakter'] = intval($this->params[0]);
+			$this->actualPlayer['charakter'] = intval($this->params['selectedCharacter']);
 			$this->actualPlayer['command_response'] = '';
 			$this->actualPlayer['possible_choices'] = '';
 			$this->actualPlayer->save();
@@ -44,7 +44,7 @@ class ChooseCharacterCommand extends Command {
 		$count = $playerRepository->getCountByGameAndCharakter($this->game['id'], 0);
 		
 		if ($count === 0) {
-			return Command::setup('.start', $this->game);
+			return Command::setup('command=start', $this->game);
 		}
 		return '';
 	}

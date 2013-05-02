@@ -23,7 +23,7 @@ class BangCommand extends Command {
 	
 	protected $bangCard = NULL;
 
-	protected $attackedPlayer = NULL;
+	//protected $attackedPlayer = NULL;
 
 	protected $template = 'you-are-attacked.tpl';
 	
@@ -50,15 +50,15 @@ class BangCommand extends Command {
 			
 			if ($canPlayMoreBangs) {
 				// TODO spravit k tomuto nejaku metodu v commande lebo sa to pouziva dost casto
-				$attackedPlayer = $this->params[0];
+				$attackedPlayer = $this->params['enemyPlayerUsername'];
 				if ($this->loggedUser['username'] != $attackedPlayer) {
-					foreach ($this->players as $player) {
-						$user = $player->getUser();
-						if ($user['username'] == $attackedPlayer) {
-							$this->attackedPlayer = $player;
-							break;
-						}
-					}
+//					foreach ($this->players as $player) {
+//						$user = $player->getUser();
+//						if ($user['username'] == $attackedPlayer) {
+//							$this->attackedPlayer = $player;
+//							break;
+//						}
+//					}
 
 					if ($this->attackedPlayer !== NULL) {
 						if ($this->attackedPlayer['actual_lifes'] > 0) {
@@ -253,7 +253,7 @@ class BangCommand extends Command {
 			$this->addMessage($message);
 		} elseif ($this->check == self::PLAYER_IS_NOT_IN_GAME) {
 			$message = array(
-				'text' => 'hrac "' . $this->params[0] . '" nehra v tejto hre',
+				'text' => 'hrac "' . $this->params['enemyPlayerUsername'] . '" nehra v tejto hre',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);

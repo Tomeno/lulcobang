@@ -18,28 +18,28 @@ class RagTimeCommand extends Command {
 	
 	protected function check() {
 		// TODO spravit prechecker
-		$attackedPlayer = $this->params[0];
-		foreach ($this->players as $player) {
-			$user = $player->getUser();
-			if ($user['username'] == $attackedPlayer) {
-				$this->enemyPlayer = $player;
-				break;
-			}
-		}
+//		$attackedPlayer = $this->params['enemyPlayerUsername'];
+//		foreach ($this->players as $player) {
+//			$user = $player->getUser();
+//			if ($user['username'] == $attackedPlayer) {
+//				$this->attackedPlayer = $player;
+//				break;
+//			}
+//		}
 
-		if ($this->enemyPlayer) {
-			if ($this->params[1]) {
-				$additionalCardTitle = $this->params[1];
+		if ($this->attackedPlayer) {
+			if (isset($this->params['additionalCardsName'])) {
+				$additionalCardTitle = $this->params['additionalCardsName'];
 				$method = 'getHas' . ucfirst($additionalCardTitle) . 'OnHand';
 				$additionalCard = $this->actualPlayer->$method();
 
 				if ($additionalCard) {
 					$this->cards[] = $additionalCard;
 
-					if (isset($this->params[2]) && $this->params[2] != 'hand') {
+					if (isset($this->params['place']) && $this->params['place'] != 'hand') {
 						$methods = array('hasAllCardsOnTheTableOrOnWait');
 						$enemyPlayerHasCardsChecker = new EnemyPlayerHasCardsChecker($this, $methods);
-						$enemyPlayerHasCardsChecker->setCards(array($this->params[2]));
+						$enemyPlayerHasCardsChecker->setCards(array($this->params['enemyCardsName']));
 						if ($enemyPlayerHasCardsChecker->check()) {
 							$this->check = self::OK;
 							$this->place = $enemyPlayerHasCardsChecker->getPlace();
@@ -47,10 +47,11 @@ class RagTimeCommand extends Command {
 							$this->check = self::NO_CARDS_ON_THE_TABLE;
 						}
 					} else {
-						$handCards = $this->enemyPlayer->getHandCards();
+						// TODO sacagaway
+						$handCards = $this->attackedPlayer->getHandCards();
 						$card = $handCards[array_rand($handCards)];
 						if ($card) {
-							$this->addEnemyPlayerCard($this->enemyPlayer, $card);
+							$this->addEnemyPlayerCard($this->attackedPlayer, $card);
 							$this->check = self::OK;
 							$this->place = 'hand';
 						} else {
@@ -71,7 +72,7 @@ class RagTimeCommand extends Command {
 	protected function run() {
 		if ($this->check == 1) {
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
-			GameUtils::moveCards($this->game, $this->enemyPlayersCards[$this->enemyPlayer['id']], $this->enemyPlayer, 'hand', $this->actualPlayer, $this->place);
+			GameUtils::moveCards($this->game, $this->enemyPlayersCards[$this->attackedPlayer['id']], $this->attackedPlayer, 'hand', $this->actualPlayer, $this->place);
 			
 			if ($this->place == 'table') {
 				// kedze je mozne ze berieme nejaku modru kartu ktora ovplyvnuje vzdialenost, preratame maticu
@@ -84,8 +85,8 @@ class RagTimeCommand extends Command {
 	}
 
 	protected function generateMessages() {
-		if ($this->enemyPlayer) {
-			$enemyUser = $this->enemyPlayer->getUser();
+		if ($this->attackedPlayer) {
+			$enemyUser = $this->attackedPlayer->getUser();
 		}
 		if ($this->check == self::OK) {
 			// TODO doplnit v hlaske aj miesto odkial bola karta zobrata
@@ -121,7 +122,7 @@ class RagTimeCommand extends Command {
 			$this->addMessage($message);
 		} elseif ($this->check == self::ADDITIONAL_CARD_NOT_IN_HAND) {
 			$message = array(
-				'text' => 'nemas na ruke "' . $this->params[1] . '"',
+				'text' => 'nemas na ruke "' . $this->params['additionalCardsName'] . '"',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);

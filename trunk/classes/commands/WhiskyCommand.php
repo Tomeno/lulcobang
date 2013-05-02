@@ -11,11 +11,13 @@ class WhiskyCommand extends Command {
 	const YOU_HAVE_TO_USE_ADDITIONAL_CARD = 4;
 	
 	protected function check() {
-		if ($this->params[1]) {
-			$additionalCardTitle = $this->params[1];
+		if (isset($this->params['additionalCardsName'])) {
+			$additionalCardTitle = $this->params['additionalCardsName'];
 			$method = 'getHas' . ucfirst($additionalCardTitle) . 'OnHand';
 			$additionalCard = $this->actualPlayer->$method();
 
+			// TODO skontrolovat ci additional card je ina ako whisky (v AI mode je mozne ze to bude ta ista karta)
+			
 			if ($additionalCard) {
 				$this->cards[] = $additionalCard;
 				if ($this->actualPlayer['actual_lifes'] < $this->actualPlayer['max_lifes']) {
@@ -64,7 +66,7 @@ class WhiskyCommand extends Command {
 			$this->addMessage($message);
 		} elseif ($this->check == self::ADDITIONAL_CARD_NOT_IN_HAND) {
 			$message = array(
-				'text' => 'nemas na ruke "' . $this->params[1] . '"',
+				'text' => 'nemas na ruke "' . $this->params['additionalCardsName'] . '"',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);

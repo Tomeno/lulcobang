@@ -19,10 +19,10 @@ class SpringfieldCommand extends Command {
 
 	protected function check() {
 		// TODO spravit k tomuto nejaku metodu v commande lebo sa to pouziva dost casto
-		$attackedPlayer = $this->params[0];
+		$attackedPlayer = $this->params['enemyPlayerUsername'];
 		if ($this->loggedUser['username'] != $attackedPlayer) {
-			if ($this->params[1]) {
-				$additionalCardTitle = $this->params[1];
+			if (isset($this->params['additionalCardsName']) && $this->params['additionalCardsName']) {
+				$additionalCardTitle = $this->params['additionalCardsName'];
 				$method = 'getHas' . ucfirst($additionalCardTitle) . 'OnHand';
 				$additionalCard = $this->actualPlayer->$method();
 
@@ -106,7 +106,7 @@ class SpringfieldCommand extends Command {
 			$this->addMessage($message);
 		} elseif ($this->check == self::PLAYER_IS_NOT_IN_GAME) {
 			$message = array(
-				'text' => 'hrac "' . $this->params[0] . '" nehra v tejto hre',
+				'text' => 'hrac "' . $this->params['enemyPlayerUsername'] . '" nehra v tejto hre',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);
@@ -118,7 +118,7 @@ class SpringfieldCommand extends Command {
 			$this->addMessage($message);
 		} elseif ($this->check == self::ADDITIONAL_CARD_NOT_IN_HAND) {
 			$message = array(
-				'text' => 'nemas na ruke "' . $this->params[1] . '"',
+				'text' => 'nemas na ruke "' . $this->params['additionalCardsName'] . '"',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);

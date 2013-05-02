@@ -262,6 +262,7 @@
 						{if $joinGameAvailable}
 							<div class="field"><input type="submit" value="{localize key='join_game'}" name="join" /></div>
 						{elseif $startGameAvailable}
+							<div class="field"><input type="submit" value="Add AI player" name="add_ai_player" /></div>
 							<div class="field"><input type="submit" value="{localize key='start_game'}" name="start" /></div>
 						{else}
 							<div class="field"><p class="wait_message">{localize key='wait_for_game'}</p></div>

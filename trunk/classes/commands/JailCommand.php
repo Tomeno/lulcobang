@@ -18,7 +18,7 @@ class JailCommand extends Command {
 	
 	protected function check() {
 		// TODO create as checker
-		$attackedPlayer = $this->params[0];
+		$attackedPlayer = $this->params['enemyPlayerUsername'];
 		if ($this->loggedUser['username'] != $attackedPlayer) {
 			foreach ($this->players as $player) {
 				$user = $player->getUser();
@@ -94,7 +94,7 @@ class JailCommand extends Command {
 			$this->addMessage($message);
 		} elseif ($this->check == self::PLAYER_IS_NOT_IN_GAME) {
 			$message = array(
-				'text' => 'hrac "' . $this->params[0] . '" nehra v tejto hre',
+				'text' => 'hrac "' . $this->params['enemyPlayerUsername'] . '" nehra v tejto hre',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);

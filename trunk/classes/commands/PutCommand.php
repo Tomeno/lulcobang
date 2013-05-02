@@ -17,10 +17,11 @@ class PutCommand extends Command {
 	const HAS_ANOTHER_WEAPON = 5;
 
 	protected function check() {
+		// TODO odstranit tie checkery ktore uz predtym niekde robim
 		if ($this->game && $this->game['status'] == Game::GAME_STATUS_STARTED) {
 			$playerOnTurn = $this->game->getPlayerOnTurn();
 			if ($playerOnTurn['id'] == $this->actualPlayer['id']) {
-				$card = ucfirst($this->params[0]);
+				$card = ucfirst($this->params['playCardName']);
 				$method = 'getHas' . $card . 'OnHand';
 				$res = $this->actualPlayer->$method();
 				if ($res) {

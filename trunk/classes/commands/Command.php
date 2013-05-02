@@ -38,6 +38,13 @@ abstract class Command {
 	protected $interTurnReason = NULL;
 
 	/**
+	 * attacked player
+	 *
+	 * @var	Player
+	 */
+	protected $attackedPlayer = NULL;
+	
+	/**
 	 * attacking player
 	 *
 	 * @var	Player
@@ -147,6 +154,11 @@ abstract class Command {
 		'join' => array(
 			'class' => 'JoinGameCommand',
 			//'precheckers' => array(),
+		),
+		'add_ai_player' => array(
+			'class' => 'AddAiPlayerCommand',
+			'precheckers' => array('GameChecker'),
+			'precheckParams' => array('GameChecker' => 'gameExists'),
 		),
 		'init' => array(
 			'class' => 'InitGameCommand'
@@ -506,7 +518,7 @@ abstract class Command {
 	);
 
 	private function  __construct($params, $localizedParams, $game) {
-		$this->params = $params;	// TODO mozno by bolo fajn tieto parametre nejako rozdelit na kagetorie ako command, card, player, place aby sa s tym dalo lepsie robit, lebo teraz nikdy neviem kde co hladat - napr. ktoru kartu vyhadzujem atd
+		$this->params = $params;
 		$this->game = $game;
 		$this->localizedParams = $localizedParams;
 
@@ -526,38 +538,66 @@ abstract class Command {
 			$room = $roomRepository->getOneByAlias($roomAlias);
 		}
 		$this->room = $room;
+		$this->players = $this->game->getAdditionalField('players');
+		
 
-		$this->loggedUser = LoggedUser::whoIsLogged();
-		if ($this->game && $this->loggedUser) {
-			$this->players = $this->game->getAdditionalField('players');
-			foreach ($this->players as $player) {
-				if ($this->loggedUser['id'] == $player['user']['id']) {
-					$this->actualPlayer = $player;
-					break;
-				}
+//		actual playera sme presunuli do setupu		
+//		$this->loggedUser = LoggedUser::whoIsLogged();
+//		if ($this->game && $this->loggedUser) {
+//			
+//			foreach ($this->players as $player) {
+//				if ($this->loggedUser['id'] == $player['user']['id']) {
+//					$this->actualPlayer = $player;
+//					break;
+//				}
+//			}
+//		}
+		
+		$attackedPlayer = $this->params['enemyPlayerUsername'];
+		foreach ($this->players as $player) {
+			$user = $player->getUser();
+			if ($user['username'] == $attackedPlayer) {
+				$this->attackedPlayer = $player;
+				break;
 			}
 		}
 	}
 
-	public final static function setup($command, $game) {
-		
-//		$matrix = GameUtils::countMatrix($game);
-//		$game['distance_matrix'] = serialize($matrix);
-//		$game = $game->save(TRUE);
-
-		$command = str_replace('.', '', $command);
-		$commandArray = explode(' ', $command);
-		$useCharacter = FALSE;
-		// check if first part of command says: use character
-		if ($commandArray[0] == 'char') {
-			$commandAlias = $commandArray[1];
-			$useCharacter = TRUE;
-			$commandArraySlice = 2;
-		} else {
-			$commandAlias = $commandArray[0];
-			$commandArraySlice = 1;
+	public final static function setup($command, $game, $actualPlayer = NULL) {
+		$loggedUser = NULL;
+		if ($actualPlayer === NULL) {
+			$loggedUser = LoggedUser::whoIsLogged();
+			if ($game && $loggedUser) {
+				$players = $game->getAdditionalField('players');
+				foreach ($players as $player) {
+					if ($loggedUser['id'] == $player['user']['id']) {
+						$actualPlayer = $player;
+						break;
+					}
+				}
+			}
 		}
 		
+		$explodedCommand = explode('&', $command);
+		$commandArray = array();
+		foreach ($explodedCommand as $commandParam) {
+			$explodedCommandParam = explode('=', $commandParam);
+			$key = $explodedCommandParam[0];
+			$value = isset($explodedCommandParam[1]) ? $explodedCommandParam[1] : '';
+			if ($key == 'place' && $value == '') {
+				$value = 'hand';
+			}
+			$commandArray[$key] = $value;
+		}
+	//	print_r($commandArray);
+
+		$commandName = $commandArray['command'];
+		$useCharacter = FALSE;
+		// check if use character is set
+		if ($commandArray[useCharacter] == 1) {
+			$useCharacter = TRUE;
+		}
+		/*
 		$commandAliasRepository = new CommandAliasRepository();
 		$command = $commandAliasRepository->getOneByLocalizedCommandName($commandAlias);
 		
@@ -566,12 +606,12 @@ abstract class Command {
 			$commandName = $command['default_command_name'];
 		} else {
 			$commandName = $commandAlias;
-		}
+		}*/
 
 		if ($useCharacter === TRUE) {
-			$loggedUser = LoggedUser::whoIsLogged();
-			$playerRepository = new PlayerRepository();
-			$actualPlayer = $playerRepository->getOneByUserAndGame($loggedUser['id'], $game['id']);
+//			$loggedUser = LoggedUser::whoIsLogged();
+//			$playerRepository = new PlayerRepository();
+//			$actualPlayer = $playerRepository->getOneByUserAndGame($loggedUser['id'], $game['id']);
 
 			if ($actualPlayer->getIsCalamityJanet($game)) {
 				// kvoli calamity janet musime vymenit bang a missed ak pouziva svoj charakter
@@ -592,24 +632,26 @@ abstract class Command {
 			}
 		}
 		
-		$localizedParams = array_slice($commandArray, $commandArraySlice);
+		// $localizedParams = array_slice($commandArray, $commandArraySlice);
 		if (array_key_exists($commandName, self::$commands)) {
 			$commandClassName = self::$commands[$commandName]['class'];
 
-			$params = array();
-			$cardAliasRepository = new CardAliasRepository();
-			foreach($localizedParams as $key => $param) {
-				$cardAlias = $cardAliasRepository->getOneByLocalizedCardName($param);
-				if ($cardAlias) {
-					$params[$key] = $cardAlias['default_card_name'];
-				} else {
-					$params[$key] = $param;
-				}
-			}
+//			$params = array();
+//			$cardAliasRepository = new CardAliasRepository();
+//			foreach($localizedParams as $key => $param) {
+//				$cardAlias = $cardAliasRepository->getOneByLocalizedCardName($param);
+//				if ($cardAlias) {
+//					$params[$key] = $cardAlias['default_card_name'];
+//				} else {
+//					$params[$key] = $param;
+//				}
+//			}
 
-			$class = new $commandClassName($params, $localizedParams, $game);
+			$class = new $commandClassName($commandArray, $commandArray, $game);
 			$class->setCommandName($commandName);
 			$class->setUseCharacter($useCharacter);
+			$class->setActualPlayer($actualPlayer);
+			$class->setLoggedUser($loggedUser);
 			$precheckers = array();
 			if (self::$commands[$commandName]['precheckers']) {
 				$precheckers = self::$commands[$commandName]['precheckers'];
@@ -636,7 +678,18 @@ abstract class Command {
 		}
 		$this->runSuzyLafayetteAction();
 		$this->write();
-		return $this->createResponse();
+		
+		$this->game = $this->game->save(TRUE);
+		
+		$playerOnTurnId = $this->game['inter_turn'] ? $this->game['inter_turn'] : $this->game['turn'];
+		
+		$playerRepository = new PlayerRepository();
+		$playerOnTurn = $playerRepository->getOneById(intval($playerOnTurnId));
+		if ($playerOnTurn !== NULL && $playerOnTurn->getIsAi()) {
+			$playerOnTurn->play($this->game);
+		} else {
+			return $this->createResponse();
+		}
 	}
 
 	protected function precheck() {
@@ -808,7 +861,11 @@ abstract class Command {
 	}
 
 	public function getEnemyPlayer() {
-		return $this->enemyPlayer;
+		if ($this->enemyPlayer) {
+			return $this->enemyPlayer;
+		} else {
+			return $this->attackedPlayer;
+		}
 	}
 
 	public function addEnemyPlayerCard(Player $player, Card $card) {
@@ -1142,7 +1199,7 @@ abstract class Command {
 	}
 	
 	protected function runSuzyLafayetteAction() {
-		if (!in_array($this->commandName, array('create', 'join', 'init', 'choose_character', 'start'))) {
+		if (!in_array($this->commandName, array('create', 'join', 'add_ai_player', 'init', 'choose_character', 'start'))) {
 			if ($this->actualPlayer && $this->actualPlayer->getIsSuzyLafayette($this->game)) {
 				if (!in_array($this->commandName, array('throw', 'draw', 'choose_cards'))) {
 					$handCards = unserialize($this->actualPlayer['hand_cards']);
@@ -1178,7 +1235,6 @@ abstract class Command {
 						break;
 					}
 				}
-
 				if ($isDiamonds) {
 					$nextPositionPlayer = $this->getNextPositionPlayer($game, $nextPositionPlayer);
 				}

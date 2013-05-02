@@ -17,15 +17,15 @@ class DerringerCommand extends Command {
 
 	protected function check() {
 		// TODO spravit k tomuto nejaku metodu v commande lebo sa to pouziva dost casto
-		$attackedPlayer = $this->params[0];
+		$attackedPlayer = $this->params['enemyPlayerUsername'];
 		if ($this->loggedUser['username'] != $attackedPlayer) {
-			foreach ($this->players as $player) {
-				$user = $player->getUser();
-				if ($user['username'] == $attackedPlayer) {
-					$this->attackedPlayer = $player;
-					break;
-				}
-			}
+//			foreach ($this->players as $player) {
+//				$user = $player->getUser();
+//				if ($user['username'] == $attackedPlayer) {
+//					$this->attackedPlayer = $player;
+//					break;
+//				}
+//			}
 
 			if ($this->attackedPlayer !== NULL) {
 				if ($this->attackedPlayer['actual_lifes'] > 0) {

@@ -12,28 +12,26 @@ class CatbalouCommand extends Command {
 	
 	const PLAYER_NOT_SELECTED = 4;
 	
+	const CANNOT_ATTACK_APACHE_KID = 5;
+	
 	protected function check() {
 		// TODO spravit prechecker
-		$attackedPlayer = $this->params[0];
-		foreach ($this->players as $player) {
-			$user = $player->getUser();
-			if ($user['username'] == $attackedPlayer) {
-				$this->enemyPlayer = $player;
-				break;
-			}
-		}
+//		$attackedPlayer = $this->params['enemyPlayerUsername'];
+//		foreach ($this->players as $player) {
+//			$user = $player->getUser();
+//			if ($user['username'] == $attackedPlayer) {
+//				$this->attackedPlayer = $player;
+//				break;
+//			}
+//		}
 
-		if ($this->enemyPlayer) {
-			$lastParam = end($this->params);
-			$place = 'hand';
-			if ($lastParam == 'table') {
-				$place = 'table';
-			}
+		if ($this->attackedPlayer) {
+			$place = $this->params['place'];
 			
 			if ($place == 'table') {
 				$methods = array('hasAllCardsOnTheTableOrOnWait');
 				$enemyPlayerHasCardsChecker = new EnemyPlayerHasCardsChecker($this, $methods);
-				$enemyPlayerHasCardsChecker->setCards(array($this->params[1]));
+				$enemyPlayerHasCardsChecker->setCards(array($this->params['enemyCardsName']));
 				if ($enemyPlayerHasCardsChecker->check()) {
 					$this->check = self::OK;
 					$this->place = $enemyPlayerHasCardsChecker->getPlace();
@@ -41,17 +39,20 @@ class CatbalouCommand extends Command {
 					$this->check = self::NO_CARDS_ON_THE_TABLE;
 				}
 			} else {
-				$method = 'getHas' . ucfirst($this->params[1]) . 'OnHand';
-				$card = $this->enemyPlayer->$method($this->game);
-				if ($card) {
-					$this->addEnemyPlayerCard($this->enemyPlayer, $card);
-					$this->check = self::OK;
-					$this->place = 'hand';
+				if ($this->params['enemyCardsName']) {
+					// TODO asi radsej cez idecko lebo ak ma viac rovnakych zobral by som nieco co nechcem
+					$method = 'getHas' . ucfirst($this->params['enemyCardsName']) . 'OnHand';
+					$card = $this->attackedPlayer->$method($this->game);
+					if ($card) {
+						$this->addEnemyPlayerCard($this->attackedPlayer, $card);
+						$this->check = self::OK;
+						$this->place = 'hand';
+					}
 				} else {
-					$handCards = $this->enemyPlayer->getHandCards();
+					$handCards = $this->attackedPlayer->getHandCards();
 					$card = $handCards[array_rand($handCards)];
 					if ($card) {
-						$this->addEnemyPlayerCard($this->enemyPlayer, $card);
+						$this->addEnemyPlayerCard($this->attackedPlayer, $card);
 						$this->check = self::OK;
 						$this->place = 'hand';
 					} else {
@@ -67,22 +68,29 @@ class CatbalouCommand extends Command {
 	protected function run() {
 		if ($this->check == self::OK) {
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
-			GameUtils::throwCards($this->game, $this->enemyPlayer, $this->enemyPlayersCards[$this->enemyPlayer['id']], $this->place);
-			
-			if ($this->place == 'table') {
-				// kedze je mozne ze rusime nejaku modru kartu ktora ovplyvnuje vzdialenost, preratame maticu
-				// ak to bude velmi pomale, budeme to robit len ak je medzi zrusenymi kartami fakt takato karta
-				$matrix = GameUtils::countMatrix($this->game);
-				$this->game['distance_matrix'] = serialize($matrix);
-				$this->game->save();
+			$canAttack = $this->checkCanAttackApacheKid();
+				
+			if ($canAttack === TRUE) {
+				GameUtils::throwCards($this->game, $this->attackedPlayer, $this->enemyPlayersCards[$this->attackedPlayer['id']], $this->place);
+
+				if ($this->place == 'table') {
+					// kedze je mozne ze rusime nejaku modru kartu ktora ovplyvnuje vzdialenost, preratame maticu
+					// ak to bude velmi pomale, budeme to robit len ak je medzi zrusenymi kartami fakt takato karta
+					$matrix = GameUtils::countMatrix($this->game);
+					$this->game['distance_matrix'] = serialize($matrix);
+					$this->game->save();
+				}
+			} else {
+				$this->check = self::CANNOT_ATTACK_APACHE_KID;
 			}
 		}
 	}
 
 	protected function generateMessages() {
-		if ($this->enemyPlayer) {
-			$enemyUser = $this->enemyPlayer->getUser();
+		if ($this->attackedPlayer) {
+			$enemyUser = $this->attackedPlayer->getUser();
 		}
+		print_r($this->check);
 		if ($this->check == self::OK) {
 			// TODO doplnit v hlaske aj miesto odkial bola karta zobrata
 			
@@ -113,6 +121,23 @@ class CatbalouCommand extends Command {
 			$message = array(
 				'text' => 'nevybral si ziadneho hraca',
 				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::CANNOT_ATTACK_APACHE_KID) {
+			$message = array(
+				'text' => $this->loggedUser['username'] . ' pouzil cat balou na odobratie karty ' . $enemyUser['username'],
+				'notToUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+
+			$message = array(
+				'text' => 'pouzil si catbalou na odobratie karty ' . $enemyUser['username'],
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+			
+			$message = array(
+				'text' => 'Utok karovymi kartami proti Apache Kidovi nema ziadny efekt',
 			);
 			$this->addMessage($message);
 		}

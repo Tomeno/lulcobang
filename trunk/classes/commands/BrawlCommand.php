@@ -13,14 +13,14 @@ class BrawlCommand extends Command {
 	protected $playersAndCards = array();
 	
 	protected function check() {
-		if ($this->params[0]) {
-			$additionalCardTitle = $this->params[0];
+		if (isset($this->params['additionalCardsName'])) {
+			$additionalCardTitle = $this->params['additionalCardsName'];
 			$method = 'getHas' . ucfirst($additionalCardTitle) . 'OnHand';
 			$additionalCard = $this->actualPlayer->$method();
 
 			if ($additionalCard) {
 				$this->cards[] = $additionalCard;
-				$playerList = explode(';', $this->params[1]);
+				$playerList = explode(';', $this->params['enemyCardsId']);
 				$playerCardList = array();
 				foreach ($playerList as $player) {
 					$playerCard = explode('-', $player);
@@ -102,7 +102,7 @@ class BrawlCommand extends Command {
 			$this->addMessage($message);
 		} elseif ($this->check == self::ADDITIONAL_CARD_NOT_IN_HAND) {
 			$message = array(
-				'text' => 'nemas na ruke "' . $this->params[1] . '"',
+				'text' => 'nemas na ruke "' . $this->params['additionalCardsName'] . '"',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);

@@ -14,20 +14,22 @@ class ConestogaCommand extends Command {
 	
 	protected function check() {
 		// TODO spravit prechecker
-		$attackedPlayer = $this->params[0];
-		foreach ($this->players as $player) {
-			$user = $player->getUser();
-			if ($user['username'] == $attackedPlayer) {
-				$this->enemyPlayer = $player;
-				break;
-			}
-		}
+//		$attackedPlayer = $this->params[0];
+//		foreach ($this->players as $player) {
+//			$user = $player->getUser();
+//			if ($user['username'] == $attackedPlayer) {
+//				$this->enemyPlayer = $player;
+//				break;
+//			}
+//		}
 
-		if ($this->enemyPlayer) {
-			if (isset($this->params[1]) && $this->params[1] != 'hand') {
+		if ($this->attackedPlayer) {
+			$place = $this->params['place'];
+			
+			if ($place == 'table') {
 				$methods = array('hasAllCardsOnTheTableOrOnWait');
 				$enemyPlayerHasCardsChecker = new EnemyPlayerHasCardsChecker($this, $methods);
-				$enemyPlayerHasCardsChecker->setCards(array($this->params[1]));
+				$enemyPlayerHasCardsChecker->setCards(array($this->params['enemyCardsName']));
 				if ($enemyPlayerHasCardsChecker->check()) {
 					$this->check = self::OK;
 					$this->place = $enemyPlayerHasCardsChecker->getPlace();
@@ -35,10 +37,10 @@ class ConestogaCommand extends Command {
 					$this->check = self::NO_CARDS_ON_THE_TABLE;
 				}
 			} else {
-				$handCards = $this->enemyPlayer->getHandCards();
+				$handCards = $this->attackedPlayer->getHandCards();
 				$card = $handCards[array_rand($handCards)];
 				if ($card) {
-					$this->addEnemyPlayerCard($this->enemyPlayer, $card);
+					$this->addEnemyPlayerCard($this->attackedPlayer, $card);
 					$this->check = self::OK;
 					$this->place = 'hand';
 				} else {
@@ -53,7 +55,7 @@ class ConestogaCommand extends Command {
 	protected function run() {
 		if ($this->check == 1) {
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards, 'table');
-			GameUtils::moveCards($this->game, $this->enemyPlayersCards[$this->enemyPlayer['id']], $this->enemyPlayer, 'hand', $this->actualPlayer, $this->place);
+			GameUtils::moveCards($this->game, $this->enemyPlayersCards[$this->attackedPlayer['id']], $this->attackedPlayer, 'hand', $this->actualPlayer, $this->place);
 			
 			if ($this->place == 'table') {
 				// kedze je mozne ze berieme nejaku modru kartu ktora ovplyvnuje vzdialenost, preratame maticu
@@ -66,8 +68,8 @@ class ConestogaCommand extends Command {
 	}
 
 	protected function generateMessages() {
-		if ($this->enemyPlayer) {
-			$enemyUser = $this->enemyPlayer->getUser();
+		if ($this->attackedPlayer) {
+			$enemyUser = $this->attackedPlayer->getUser();
 		}
 		if ($this->check == self::OK) {
 			// TODO doplnit v hlaske aj miesto odkial bola karta zobrata
