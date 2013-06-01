@@ -58,6 +58,10 @@ class ActualPlayerHasCardsChecker extends Checker {
 					$checkingMethod = 'getHas' . ucfirst($cardName) . 'OnHand';
 				}
 				
+				if ($this->command->getUseCharacter() == TRUE && $actualPlayer->getIsAnnieVersary($game)) {
+					$checkingMethod = 'getHas' . ucfirst($cardName) . 'OnHand';
+				}
+				
 				$card = $actualPlayer->$checkingMethod($game);
 				if ($card) {
 					if ($negation === FALSE) {

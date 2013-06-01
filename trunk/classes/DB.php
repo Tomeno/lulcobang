@@ -43,7 +43,7 @@ class DB {
 	 */
 	protected static function query($query) {
 		self::init();
-	//	Log::logQuery($query);
+		// Log::logQuery($query);
 		$res = mysql_query($query, self::$link);
 		if (mysql_error(self::$link)) {
 			echo $query;

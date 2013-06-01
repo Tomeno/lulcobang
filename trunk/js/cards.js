@@ -132,7 +132,7 @@ function selectCard(id, playerId, place) {
 function drawCards(color) {
 	var command = 'draw';
 	if (color) {
-		command += ' ' + color;
+		$('peyote-color').value = color;
 	}
 	$('command').value = command;
 	executeCommand();
@@ -155,12 +155,19 @@ function putCard() {
 function selectPlayer(id, fromSelectCard) {
 	var command = $('command').value;
 	if (command != 'brawl') {
-		$('selected-player').value = id;
-		if (fromSelectCard) {
-
+		
+		if (command == 'fanning' && $('selected-player').value) {
+			// pri fanningu musime vybrat dvoch hracov
+			$('additional-player').value = id;
+			executeCommand();
 		} else {
-			$('selected-card').value = 0;
-			$('place').value = '';
+			$('selected-player').value = id;
+			if (fromSelectCard) {
+
+			} else {
+				$('selected-card').value = 0;
+				$('place').value = '';
+			}
 		}
 	}
 	
@@ -168,7 +175,8 @@ function selectPlayer(id, fromSelectCard) {
 	var commandsImmediatelyExecuted = ['bang', 'springfield', 'punch', 'duel',
 		'pepperbox', 'knife', 'buffalorifle', 'derringer',
 		'panic', 'catbalou', 'conestoga', 'cancan', 'ragtime',
-		'jail', 'tequila'];
+		'jail', 'tequila',
+		'rattlesnake', 'bounty', 'aiming', 'tomahawk', 'ghost'];
 	if (inArray(command, commandsImmediatelyExecuted)) {
 		executeCommand();
 	}

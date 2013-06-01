@@ -140,382 +140,6 @@ abstract class Command {
 	 */
 	protected $useCharacter = FALSE;
 	
-	/**
-	 * map command to method and checkers
-	 *
-	 * @var array
-	 */
-	protected static $commands = array(
-		'create' => array(
-			'class' => 'CreateGameCommand',
-			'precheckers' => array('GameChecker'),
-			'precheckParams' => array('GameChecker' => 'noGameExists'),
-		),
-		'join' => array(
-			'class' => 'JoinGameCommand',
-			//'precheckers' => array(),
-		),
-		'add_ai_player' => array(
-			'class' => 'AddAiPlayerCommand',
-			'precheckers' => array('GameChecker'),
-			'precheckParams' => array('GameChecker' => 'gameExists'),
-		),
-		'init' => array(
-			'class' => 'InitGameCommand'
-		),
-		'choose_character' => array(
-			'class' => 'ChooseCharacterCommand'
-		),
-		'start' => array(
-			'class' => 'StartGameCommand'
-		),
-		'draw' => array(
-			'class' => 'DrawCommand',
-			'precheckers' => array('GameChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-			),
-		),
-		'choose_cards' => array(
-			'class' => 'ChooseCardsCommand'
-		),
-		'throw' => array(
-			'class' => 'ThrowCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHas###CARD_PLACEHOLDER######PLACE_PLACEHOLDER###'
-			),
-		),
-		'put' => array(
-			'class' => 'PutCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker', 'CardChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => array('getHas###CARD_PLACEHOLDER###OnHand', '!getHas###CARD_PLACEHOLDER###OnTheTable', '!getHas###CARD_PLACEHOLDER###OnWait'),
-				'CardChecker' => 'isPuttable',
-			),
-		),
-		'pass' => array(
-			'class' => 'PassCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-			),
-		),
-		'bang' => array(
-			'class' => 'BangCommand',
-			'precheckers' => array('GameChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'ActualPlayerHasCardsChecker' => 'getHasBangOnHand',
-			),
-		),
-		'missed' => array(
-			'class' => 'MissedCommand',
-			'precheckers' => array('GameChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'ActualPlayerHasCardsChecker' => 'getHasMissedOnHand',
-			),
-		),
-		'generalstore' => array(
-			'class' => 'GeneralStoreCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasGeneralstoreOnHand',
-			),
-		),
-		'dodge' => array(
-			'class' => 'DodgeCommand',
-			'precheckers' => array('GameChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isUnderAttack',
-				'ActualPlayerHasCardsChecker' => 'getHasDodgeOnHand',
-			),
-		),
-		'sombrero' => array(
-			'class' => 'SombreroCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isUnderAttack',
-				'ActualPlayerHasCardsChecker' => 'getHasSombreroOnTheTable',
-			),
-		),
-		'ironplate' => array(
-			'class' => 'IronPlateCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isUnderAttack',
-				'ActualPlayerHasCardsChecker' => 'getHasIronplateOnTheTable',
-			),
-		),
-		'tengallonhat' => array(
-			'class' => 'TengallonhatCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isUnderAttack',
-				'ActualPlayerHasCardsChecker' => 'getHasTengallonhatOnTheTable',
-			),
-		),
-		'diligenza' => array(
-			'class' => 'DiligenzaCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasDiligenzaOnHand',
-			),
-		),
-		'wellsfargo' => array(
-			'class' => 'WellsFargoCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasWellsfargoOnHand',
-			),
-		),
-		'ponyexpress' => array(
-			'class' => 'PonyExpressCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasPonyexpressOnTheTable',
-			),
-		),
-		'catbalou' => array(
-			'class' => 'CatbalouCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasCatbalouOnHand',
-			),
-		),
-		'panic' => array(
-			'class' => 'PanicCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasPanicOnHand',
-			),
-		),
-		'beer' => array(
-			'class' => 'BeerCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasBeerOnHand',
-			),
-		),
-		'saloon' => array(
-			'class' => 'SaloonCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasSaloonOnHand',
-			),
-		),
-		'life' => array(
-			'class' => 'LifeCommand',
-			'precheckers' => array('GameChecker'/*, 'PlayerPhaseChecker'*/),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-			//	'PlayerPhaseChecker' => 'isUnderAttack',
-			),
-		),
-		'jail' => array(
-			'class' => 'JailCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasJailOnHand',
-			),
-		),
-		'indians' => array(
-			'class' => 'IndiansCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasIndiansOnHand',
-			),
-		),
-		'gatling' => array(
-			'class' => 'GatlingCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasGatlingOnHand',
-			),
-		),
-		'pepperbox' => array(
-			'class' => 'PepperboxCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasPepperboxOnTheTable',
-			),
-		),
-		'knife' => array(
-			'class' => 'KnifeCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasKnifeOnTheTable',
-			),
-		),
-		'derringer' => array(
-			'class' => 'DerringerCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasDerringerOnTheTable',
-			),
-		),
-		'canteen' => array(
-			'class' => 'CanteenCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasCanteenOnTheTable',
-			),
-		),
-		'cancan' => array(
-			'class' => 'CancanCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasCancanOnTheTable',
-			),
-		),
-		'conestoga' => array(
-			'class' => 'ConestogaCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasConestogaOnTheTable',
-			),
-		),
-		'bible' => array(
-			'class' => 'BibleCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isUnderAttack',
-				'ActualPlayerHasCardsChecker' => 'getHasBibleOnTheTable',
-			),
-		),
-		'buffalorifle' => array(
-			'class' => 'BuffalorifleCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasBuffalorifleOnTheTable',
-			),
-		),
-		'punch' => array(
-			'class' => 'PunchCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasPunchOnHand',
-			),
-		),
-		'duel' => array(
-			'class' => 'DuelCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasDuelOnHand',
-			),
-		),
-		'howitzer' => array(
-			'class' => 'HowitzerCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasHowitzerOnTheTable',
-			),
-		),
-		'tequila' => array(
-			'class' => 'TequilaCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasTequilaOnHand',
-			),
-		),
-		'whisky' => array(
-			'class' => 'WhiskyCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasWhiskyOnHand',
-			),
-		),
-		'ragtime' => array(
-			'class' => 'RagTimeCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasRagTimeOnHand',
-			),
-		),
-		'springfield' => array(
-			'class' => 'SpringfieldCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasSpringfieldOnHand',
-			),
-		),
-		'brawl' => array(
-			'class' => 'BrawlCommand',
-			'precheckers' => array('GameChecker', 'PlayerPhaseChecker', 'ActualPlayerHasCardsChecker'),
-			'precheckParams' => array(
-				'GameChecker' => 'gameStarted',
-				'PlayerPhaseChecker' => 'isInPlayPhase',
-				'ActualPlayerHasCardsChecker' => 'getHasBrawlOnHand',
-			),
-		),
-		'draw_high_noon' => array(
-			'class' => 'DrawHighNoonCommand',
-		),
-		'use_one_round_card' => array(
-			'class' => 'UseOneRoundCardCommand',
-		),
-	);
 
 	private function  __construct($params, $localizedParams, $game) {
 		$this->params = $params;
@@ -538,27 +162,17 @@ abstract class Command {
 			$room = $roomRepository->getOneByAlias($roomAlias);
 		}
 		$this->room = $room;
-		$this->players = $this->game->getAdditionalField('players');
 		
+		if ($this->game) {
+			$this->players = $this->game->getAdditionalField('players');
 
-//		actual playera sme presunuli do setupu		
-//		$this->loggedUser = LoggedUser::whoIsLogged();
-//		if ($this->game && $this->loggedUser) {
-//			
-//			foreach ($this->players as $player) {
-//				if ($this->loggedUser['id'] == $player['user']['id']) {
-//					$this->actualPlayer = $player;
-//					break;
-//				}
-//			}
-//		}
-		
-		$attackedPlayer = $this->params['enemyPlayerUsername'];
-		foreach ($this->players as $player) {
-			$user = $player->getUser();
-			if ($user['username'] == $attackedPlayer) {
-				$this->attackedPlayer = $player;
-				break;
+			$attackedPlayer = $this->params['enemyPlayerUsername'];
+			foreach ($this->players as $player) {
+				$user = $player->getUser();
+				if ($user['username'] == $attackedPlayer) {
+					$this->attackedPlayer = $player;
+					break;
+				}
 			}
 		}
 	}
@@ -576,6 +190,8 @@ abstract class Command {
 					}
 				}
 			}
+		} else {
+			$loggedUser = $actualPlayer->getUser();
 		}
 		
 		$explodedCommand = explode('&', $command);
@@ -629,39 +245,24 @@ abstract class Command {
 				if ($actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
 					$commandName = 'missed';
 				}
+			} elseif ($actualPlayer->getIsAnnieVersary($game)) {
+				// Annie Versary moze pouzit akukolvek kartu z ruky ako Bang!
+				// uprava sa tyka aj metody v ActualPlayerHasCardsChecker
+				$commandName = 'bang';
 			}
 		}
 		
-		// $localizedParams = array_slice($commandArray, $commandArraySlice);
-		if (array_key_exists($commandName, self::$commands)) {
-			$commandClassName = self::$commands[$commandName]['class'];
-
-//			$params = array();
-//			$cardAliasRepository = new CardAliasRepository();
-//			foreach($localizedParams as $key => $param) {
-//				$cardAlias = $cardAliasRepository->getOneByLocalizedCardName($param);
-//				if ($cardAlias) {
-//					$params[$key] = $cardAlias['default_card_name'];
-//				} else {
-//					$params[$key] = $param;
-//				}
-//			}
-
+		$commandClassName = CommandSetup::getCommandClass($commandName);
+		if ($commandClassName !== '') {
 			$class = new $commandClassName($commandArray, $commandArray, $game);
 			$class->setCommandName($commandName);
 			$class->setUseCharacter($useCharacter);
 			$class->setActualPlayer($actualPlayer);
 			$class->setLoggedUser($loggedUser);
-			$precheckers = array();
-			if (self::$commands[$commandName]['precheckers']) {
-				$precheckers = self::$commands[$commandName]['precheckers'];
-			}
+			$precheckers = CommandSetup::getCommandPrecheckers($commandName);
 			$class->setPrecheckers($precheckers);
 
-			$precheckParams = array();
-			if (self::$commands[$commandName]['precheckParams']) {
-				$precheckParams = self::$commands[$commandName]['precheckParams'];
-			}
+			$precheckParams = CommandSetup::getCommandPrecheckParams($commandName);
 			$class->setPrecheckersParams($precheckParams);
 
 			return $class->execute();
@@ -679,14 +280,18 @@ abstract class Command {
 		$this->runSuzyLafayetteAction();
 		$this->write();
 		
-		$this->game = $this->game->save(TRUE);
-		
-		$playerOnTurnId = $this->game['inter_turn'] ? $this->game['inter_turn'] : $this->game['turn'];
-		
-		$playerRepository = new PlayerRepository();
-		$playerOnTurn = $playerRepository->getOneById(intval($playerOnTurnId));
-		if ($playerOnTurn !== NULL && $playerOnTurn->getIsAi()) {
-			$playerOnTurn->play($this->game);
+		if ($this->game) {
+			$this->game = $this->game->save(TRUE);
+
+			$playerOnTurnId = $this->game['inter_turn'] ? $this->game['inter_turn'] : $this->game['turn'];
+
+			$playerRepository = new PlayerRepository();
+			$playerOnTurn = $playerRepository->getOneById(intval($playerOnTurnId));
+			if ($playerOnTurn !== NULL && $playerOnTurn->getIsAi() && ($this->game['status'] == Game::GAME_STATUS_STARTED)) {
+				$playerOnTurn->play($this->game);
+			} else {
+				return $this->createResponse();
+			}
 		} else {
 			return $this->createResponse();
 		}
@@ -909,7 +514,7 @@ abstract class Command {
 			$this->attackingPlayer->setNoticeList($attackingPlayerNotices);
 			$this->attackingPlayer->save();
 		} else {
-			if (in_array($this->interTurnReason['action'], array('indians', 'gatling', 'howitzer'))) {
+			if (in_array($this->interTurnReason['action'], array('indians', 'gatling', 'howitzer', 'wild_band'))) {
 				$nextPositionPlayer = $this->getNextPositionPlayer($this->game, $this->actualPlayer);
 				// ak je hrac na nasledujucej pozicii ten ktory utocil, ukoncime inter turn
 				if ($nextPositionPlayer['id'] == $this->attackingPlayer['id']) {
@@ -936,6 +541,99 @@ abstract class Command {
 						'from' => $this->attackingPlayer['id'],
 						'to' => $nextPositionPlayer['id'],
 						'cards' => $this->interTurnReason['cards']
+					));
+					$this->game['inter_turn'] = $nextPositionPlayer['id'];
+				}
+			} elseif (in_array($this->interTurnReason['action'], array('fanning'))) {
+				if (isset($this->interTurnReason['additionalTo'])) {
+					$playerRepository = new PlayerRepository();
+					$nextPlayer = $playerRepository->getOneById($this->interTurnReason['additionalTo']);
+					$nextPlayer['phase'] = Player::PHASE_UNDER_ATTACK;
+					$nextPlayer->save();
+					
+					$this->game['inter_turn_reason'] = serialize(array(
+						'action' => $this->interTurnReason['action'],
+						'from' => $this->attackingPlayer['id'],
+						'to' => $this->interTurnReason['additionalTo'],
+						'cards' => $this->interTurnReason['cards']
+					));
+					$this->game['inter_turn'] = $this->interTurnReason['additionalTo'];
+				} else {
+					// ukoncime interturn
+					$this->game['inter_turn_reason'] = '';
+					$this->game['inter_turn'] = 0;
+
+					if ($this->attackingPlayer->getIsBelleStar($this->game) || $this->attackingPlayer->getIsSlabTheKiller($this->game)) {
+						$attackingPlayerNotices = $this->attackingPlayer->getNoticeList();
+						if (isset($attackingPlayerNotices['character_used'])) {
+							unset($attackingPlayerNotices['character_used']);
+						}
+						$this->attackingPlayer->setNoticeList($attackingPlayerNotices);
+					}
+					$this->attackingPlayer['phase'] = Player::PHASE_PLAY;
+					$this->attackingPlayer->save();
+				}
+			} elseif (in_array($this->interTurnReason['action'], array('poker'))) {
+				$nextPositionPlayer = $this->findNextPlayerWithHandCards($this->game, $this->actualPlayer, $this->attackingPlayer);
+				// ak je hrac na nasledujucej pozicii ten ktory utocil, ukoncime inter turn
+				if ($nextPositionPlayer['id'] == $this->attackingPlayer['id']) {
+					
+					$this->game['inter_turn_reason'] = '';
+					$this->game['inter_turn'] = 0;
+					
+					$cardRepository = new CardRepository();
+					$possibleCards = array();
+					$containAce = FALSE;
+					foreach ($this->interTurnReason['thrownCards']as $cardId) {
+						$possibleCard = $cardRepository->getOneById($cardId);
+						if ($possibleCard['value'] == 'A') {
+							$containAce = TRUE;
+						}
+						$possibleCards[] = $possibleCard;
+					}
+
+					if ($containAce === TRUE) {
+						// ak je vyhodene aspon jedno eso
+						$this->attackingPlayer['phase'] = Player::PHASE_PLAY;
+						
+						// odhodime vsetky karty, ktore hraci vylozili
+						$throwPile = unserialize($this->game['throw_pile']);
+						foreach ($this->interTurnReason['thrownCards']as $cardId) {
+							$throwPile[] = $cardId;
+						}
+						$this->game['throw_pile'] = serialize($throwPile);
+					} else {
+						// inak vybera 2 karty z vyhoenych
+						MySmarty::assign('possiblePickCount', 2);
+						MySmarty::assign('possibleCards', $possibleCards);
+						MySmarty::assign('possibleCardsCount', count($possibleCards));
+						MySmarty::assign('game', $this->game);
+						$response = MySmarty::fetch('cards-choice.tpl');
+
+						$playerPossibleChoices = array(
+							'drawn_cards' => $this->interTurnReason['thrownCards'],
+							'possible_pick_count' => 2,
+							'rest_action' => 'throw',
+						);
+
+						$this->attackingPlayer['phase'] = Player::PHASE_POKER_SELECT;
+						$this->attackingPlayer['possible_choices'] = serialize($playerPossibleChoices);
+						$this->attackingPlayer['command_response'] = $response;
+						
+					}
+					$this->attackingPlayer->save();
+					
+					
+				} else {
+					// inak nastavime pokracovanie interturnu
+					$nextPositionPlayer['phase'] = Player::PHASE_UNDER_ATTACK;
+					$nextPositionPlayer->save();
+
+					$this->game['inter_turn_reason'] = serialize(array(
+						'action' => $this->interTurnReason['action'],
+						'from' => $this->attackingPlayer['id'],
+						'to' => $nextPositionPlayer['id'],
+						'thrownCards' => $this->interTurnReason['thrownCards'],
 					));
 					$this->game['inter_turn'] = $nextPositionPlayer['id'];
 				}
@@ -1243,6 +941,19 @@ abstract class Command {
 		}
 	}
 	
+	protected function findNextPlayerWithHandCards($game, $actualPlayer, $attackingPlayer) {
+		$nextPositionPlayer = $this->getNextPositionPlayer($game, $actualPlayer);
+		if ($nextPositionPlayer->getHandCards()) {
+			return $nextPositionPlayer;
+		} else {
+			if ($nextPositionPlayer['id'] == $attackingPlayer['id']) {
+				return $nextPositionPlayer;
+			} else {
+				return $this->findNextPlayerWithHandCards($game, $nextPositionPlayer, $attackingPlayer);
+			}
+		}
+	}
+	
 	protected function checkCanAttackApacheKid() {
 		$canAttack = TRUE;
 		if ($this->attackedPlayer->getIsApacheKid($this->game)) {
@@ -1261,7 +972,7 @@ abstract class Command {
 		return $canAttack;
 	}
 	
-	protected function getNextPhase(Player $player) {
+	protected function getNextPhase(Player $player, $rattlesnakeDrawn = FALSE) {
 		$phase = NULL;
 		// TODO fistful of cards
 		// TODO toto asi skipneme pri vendette, lebo sherif by hned tahal dalsiu kartu z rozsirenia - sice je tam phase none tak asi netreba
@@ -1277,6 +988,8 @@ abstract class Command {
 				$phase = Player::PHASE_DYNAMITE;
 			} elseif ($player->getHasJailOnTheTable($this->game)) {
 				$phase = Player::PHASE_JAIL;
+			} elseif ($player->getHasRattlesnakeOnTheTable($this->game) && $rattlesnakeDrawn === FALSE) {
+				$phase = Player::PHASE_RATTLESNAKE;
 			} elseif ($player->getIsGaryLooter($this->game)) {
 				$phase = Player::PHASE_PLAY;
 			} else {

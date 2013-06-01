@@ -26,12 +26,14 @@ class ThrowCommand extends Command {
 	
 	const OK_JOSE_DELGADO = 12;
 	
+	const OK_POKER = 13;
+	
 	protected $attackedPlayer = NULL;
 	
 	protected $template = 'you-are-attacked.tpl';
 	
 	protected function check() {
-		if ($this->useCharacter === TRUE && $this->actualPlayer->getIsDocHolyday($this->game)) {
+		if ($this->useCharacter === TRUE && $this->actualPlayer->getIsDocHolyday($this->game) && $this->actualPlayer['phase'] == Player::PHASE_PLAY) {
 			$notices = $this->actualPlayer->getNoticeList();
 			if (isset($notices['character_used']) && $notices['character_used'] > 0) {
 				$this->check = self::CHARACTER_ALREADY_USED;
@@ -75,6 +77,7 @@ class ThrowCommand extends Command {
 									if ($distance <= $this->actualPlayer->getRange($this->game)) {
 										$this->check = self::OK_DOC_HOLYDAY;
 									} else {
+										// TODO message
 										$this->check = self::PLAYER_IS_TOO_FAR;
 									}
 								} else {
@@ -121,7 +124,7 @@ class ThrowCommand extends Command {
 			} else {
 				$this->check = self::YOU_HAVE_TO_THROW_TWO_CARDS;
 			}
-		} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsJoseDelgado($this->game)) {
+		} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsJoseDelgado($this->game) && $this->actualPlayer['phase'] == Player::PHASE_PLAY) {
 			$notices = $this->actualPlayer->getNoticeList();
 			if (isset($notices['character_used']) && $notices['character_used'] > 1) {
 				$this->check = self::CHARACTER_ALREADY_USED_TWICE;
@@ -144,6 +147,29 @@ class ThrowCommand extends Command {
 				} else {
 					// musi vyhadzovat kartu z ruky
 				}
+			}
+		} elseif ($this->actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
+			if ($this->interTurnReason['action'] == 'poker') {
+				$this->check = self::OK_POKER;
+			} elseif ($this->interTurnReason['action'] == 'wild_band') {
+				
+				// znulujeme karty lebo uz tam jedna je z precheckera
+				$this->cards = array();
+				
+				$firstCard = $this->actualPlayer->getCardWithId('hand', $this->params['playCardId']);
+				if ($firstCard) {
+					$this->addCard($firstCard);
+				}
+
+				$secondCard = $this->actualPlayer->getCardWithId('hand', $this->params['additionalCardsId']);
+				if ($secondCard) {
+					$this->addCard($secondCard);
+				}
+				
+				if (count($this->cards) == 2) {
+					$this->check = self::OK;
+				}
+				
 			}
 		} else {
 			$handCardsCount = count($this->actualPlayer->getHandCards());
@@ -190,6 +216,11 @@ class ThrowCommand extends Command {
 				$this->game['distance_matrix'] = serialize($matrix);
 				$this->game->save();
 			}
+			
+			if (in_array($this->interTurnReason['action'], array('wild_band'))) {
+				$this->runMollyStarkAction();
+				$this->changeInterturn();
+			}
 		} elseif ($this->check == self::OK_JOSE_DELGADO) {
 			$place = 'hand';
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards, $place);
@@ -210,6 +241,8 @@ class ThrowCommand extends Command {
 			// zistit ci sa tu nahodou nestane to ze hracovi ostanu karty v ruke a este mu pribudnu dalsie
 			$this->actualPlayer->save();
 		} elseif ($this->check == self::OK_DOC_HOLYDAY) {
+			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
+			
 			MySmarty::assign('card', $this->cards[0]);	// TODO mozno sem poslat nejake veci ze zautocil doc holyday svojim charakterom
 			$response = MySmarty::fetch($this->template);
 			$this->attackedPlayer['command_response'] = $response;
@@ -227,8 +260,7 @@ class ThrowCommand extends Command {
 			$this->game['inter_turn_reason'] = serialize(array('action' => 'doc_holyday', 'from' => $this->actualPlayer['id'], 'to' => $this->attackedPlayer['id']));
 			$this->game->save();
 
-			// vyhodime karty
-			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
+			
 		} elseif ($this->check == self::OK_SID_KETCHUM) {
 			$additionalLifes = 1;
 			$newLifes = min($this->actualPlayer['actual_lifes'] + $additionalLifes, $this->actualPlayer['max_lifes']);
@@ -236,6 +268,23 @@ class ThrowCommand extends Command {
 			$this->actualPlayer->save();
 
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
+		} elseif ($this->check == self::OK_POKER) {
+			
+			// odlozime karty
+			$handCards = unserialize($this->actualPlayer['hand_cards']);
+			$newHandCards = array();
+			$selectedCard = $this->cards[0];
+			foreach ($handCards as $handCard) {
+				if ($handCard != $selectedCard['id']) {
+					$newHandCards[] = $handCard;
+				}
+			}
+			$this->actualPlayer['hand_cards'] = serialize($newHandCards);
+			$this->actualPlayer->save();
+			
+			$this->interTurnReason['thrownCards'][] = $selectedCard['id'];
+			
+			$this->changeInterturn();
 		}
 	}
 

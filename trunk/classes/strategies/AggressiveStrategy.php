@@ -33,20 +33,25 @@ class AggressiveStrategy extends AbstractStrategy {
 	}
 	
 	protected function attackPlayers() {
-		$command = '';
-		$bang = $this->player->getHasBangOnHand();
-		if ($bang) {
-			$bangLimit = 1;
-			if ($this->game->getIsHNTheSermon()) {
-				$bangLimit = 0;
-			} elseif ($this->game->getIsHNShootout()) {
-				$bangLimit = 2;
-			}
-			if ($this->player['bang_used'] < $bangLimit) {
-				$target = $this->selectTarget($this->findPossibleTargets($this->player->getRange($this->game)));
-				if ($target) {
-					$user = $target->getUser();
-					$command = 'command=bang&playCardId=' . $bang['id'] . '&playCardName=' . $bang->getCardName() . '&enemyPlayerId=' . $target['id'] . '&enemyPlayerUsername=' . $user['username'];
+		// panika, catbalou a ine odoberace
+
+		$command = $this->playMassiveAttackCards();
+		
+		if (!$command) {
+			$bang = $this->player->getHasBangOnHand();
+			if ($bang) {
+				$bangLimit = 1;
+				if ($this->game->getIsHNTheSermon()) {
+					$bangLimit = 0;
+				} elseif ($this->game->getIsHNShootout()) {
+					$bangLimit = 2;
+				}
+				if ($this->player['bang_used'] < $bangLimit) {
+					$target = $this->selectTarget($this->findPossibleTargets($this->player->getRange($this->game)));
+					if ($target) {
+						$user = $target->getUser();
+						$command = 'command=bang&playCardId=' . $bang['id'] . '&playCardName=' . $bang->getCardName() . '&enemyPlayerId=' . $target['id'] . '&enemyPlayerUsername=' . $user['username'];
+					}
 				}
 			}
 		}
@@ -60,6 +65,36 @@ class AggressiveStrategy extends AbstractStrategy {
 			$target = $possibleTargets[array_rand($possibleTargets)];
 		}
 		return $target;
+	}
+	
+	protected function playMassiveAttackCards() {
+		$command = '';
+		if ($this->canPlayMassiveAttackCards()) {
+			// TODO check if can play - sheriff can't kill deputy, deputy can't kill sheriff, renegade can't kill sheriff before others
+			$howitzer = $this->player->getHasHowitzerOnTheTable();
+			if ($howitzer) {
+				$command = 'command=howitzer&playCardId=' . $howitzer['id'] . '&playCardName=' . $howitzer->getCardName();
+			}
+
+			if (!$command) {
+				$indians = $this->player->getHasIndiansOnHand();
+				if ($indians) {
+					$command = 'command=indians&playCardId=' . $indians['id'] . '&playCardName=' . $indians->getCardName();
+				}
+
+				if (!$command) {
+					$gatling = $this->player->getHasGatlingOnHand();
+					if ($gatling) {
+						$command = 'command=gatling&playCardId=' . $gatling['id'] . '&playCardName=' . $gatling->getCardName();
+					}
+				}
+			}
+		}
+		return $command;
+	}
+	
+	protected function canPlayMassiveAttackCards() {
+		return TRUE;
 	}
 }
 

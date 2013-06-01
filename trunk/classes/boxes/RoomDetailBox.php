@@ -23,12 +23,7 @@ class RoomDetailBox extends AbstractBox {
 					if (strpos($message, '.') === 0) {
 						$response = Command::setup('command=' . substr($message, 1), $game);
 					} else {
-						$messageParams = array(
-							'text' => $message,
-							'room' => $room['id'],
-							'game' => $game['id'],
-						);
-						Chat::addMessage($messageParams);
+						$response = Command::setup('command=say&text='. $message . '&room=' . $room['id'] . '&game=' . $game['id'], $game);
 					}
 					Room::updateUserLastActivity($loggedUser['id'], $room['id']);
 				} elseif (Utils::post('create')) {

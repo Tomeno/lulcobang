@@ -22,7 +22,7 @@ class ExecuteCommand {
 			$card = $cardRepository->getOneById($commandParams['additionalCardsId']);
 			$commandParams['additionalCardsName'] = str_replace('-', '', $card->getItemAlias());
 		}
-				
+
 		$commandParams['enemyPlayerId'] = intval(Utils::post('player'));
 		if ($commandParams['enemyPlayerId']) {
 			$playerRepository = new PlayerRepository();
@@ -34,6 +34,21 @@ class ExecuteCommand {
 				}
 			}
 		}
+		
+		if ($commandParams['command'] == 'fanning') {
+			$commandParams['additionalEnemyPlayerId'] = intval(Utils::post('additionalPlayer'));
+			if ($commandParams['additionalEnemyPlayerId']) {
+				$playerRepository = new PlayerRepository();
+				$player = $playerRepository->getOneById($commandParams['additionalEnemyPlayerId']);
+				if ($player) {
+					$user = $player->getUser();
+					if ($user) {
+						$commandParams['additionalEnemyPlayerUsername'] = $user['username'];
+					}
+				}
+			}
+		}
+		
 		// TODO brawl tu dava addslashes
 		if ($commandParams['command'] == 'brawl') {
 			$commandParams['enemyCardsId'] = addslashes(Utils::post('card'));
@@ -46,6 +61,14 @@ class ExecuteCommand {
 			}
 		}
 		$commandParams['place'] = addslashes(Utils::post('place'));
+		
+		if (Utils::post('peyoteColor')) {
+			$commandParams['peyoteColor'] = addslashes(Utils::post('peyoteColor'));
+		}
+
+		if (Utils::post('text')) {
+			$commandParams['text'] = addslashes(Utils::post('text'));
+		}
 		
 		$params = array();
 		foreach ($commandParams as $key => $value) {

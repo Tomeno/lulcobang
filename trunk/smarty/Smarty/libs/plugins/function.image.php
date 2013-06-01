@@ -17,7 +17,7 @@ function smarty_function_image($params, &$smarty)
 		return '<!-- image not set -->';
 	} else {
 		$baseDir = dirname(__FILE__) . '/../../../../';
-		$filename =  $baseDir . $params['src'];
+		$filename = $baseDir . $params['src'];
 		if (!file_exists($filename)) {
 			$params['src'] = 'images/default.gif';
 			$filename =  $baseDir . $params['src'];

@@ -1,8 +1,11 @@
 <?php
 
 class LifeCommand extends Command {
+	
 	protected $beerCard = NULL;
 	
+	protected $shootgunCards = array();
+		
 	const OK = 1;
 	
 	const SAVE_LAST_LIFE = 2;
@@ -23,10 +26,11 @@ class LifeCommand extends Command {
 	
 	protected function check() {
 		// TODO skontrolovat ci uz hrac nie je na 0
-		
 		$checker = new PlayerPhaseChecker($this, array('isUnderAttack'));
 		if ($checker->check()) {
-			if ($this->params[0] == 'beer') {
+			if ($this->actualPlayer['actual_lifes'] == 1 && $this->params['playCardName'] == 'beer') {
+				// TODO save last life + shootgun
+				
 				// zistime ci hrac moze pouzit zachranne pivo
 				if ($this->game->getIsHNTheReverend()) {
 					$this->check = self::REVEREND_IN_THE_GAME;
@@ -42,7 +46,22 @@ class LifeCommand extends Command {
 						if ($this->actualPlayer['actual_lifes'] == 1) {
 							$this->beerCard = $this->actualPlayer->getHasBeerOnHand();
 							if ($this->beerCard) {
-								$this->check = self::SAVE_LAST_LIFE;
+								if ($this->interTurnReason['action'] == 'bang' && $this->attackingPlayer->getHasShootgunOnTheTable()) {
+									// TODO - mozno hrac nema karty na ruke
+									if ($this->params['additionalCardsId']) {
+										$card = $this->actualPlayer->getCardWithId('hand', $this->params['additionalCardsId']);
+										if ($card) {
+											$this->shootgunCards[] = $card;
+											$this->check = self::SAVE_LAST_LIFE;
+										} else {
+											// nemas kartu s id playcardid
+										}
+									} else {
+										// TODO musis vyhodit este jednu kartu
+									}
+								} else {
+									$this->check = self::SAVE_LAST_LIFE;
+								}
 							} else {
 								$this->check = self::NO_BEER_ON_HAND;
 							}
@@ -54,8 +73,27 @@ class LifeCommand extends Command {
 					}
 				}
 			} else {
-				// mozno bude treba pridat dalsie checkery
-				$this->check = self::OK;
+				if ($this->interTurnReason['action'] == 'bang' && $this->attackingPlayer->getHasShootgunOnTheTable()) {
+					if (count($this->actualPlayer->getHandCards())) {
+						// TODO - mozno hrac nema karty na ruke
+						if ($this->params['playCardId']) {
+							$card = $this->actualPlayer->getCardWithId('hand', $this->params['playCardId']);
+							if ($card) {
+								$this->shootgunCards[] = $card;
+								$this->check = self::OK;
+							} else {
+								// nemas kartu s id playcardid
+							}
+						} else {
+							// TODO musis vyhodit este jednu kartu
+						}
+					} else {
+						$this->check = self::OK;
+					}
+				} else {
+					// mozno bude treba pridat dalsie checkery
+					$this->check = self::OK;
+				}
 			}
 		} elseif($this->actualPlayer['phase'] == Player::PHASE_HIGH_NOON) {
 			// TODO use beer to save last life?
@@ -75,10 +113,27 @@ class LifeCommand extends Command {
 		if ($this->check == self::SAVE_LAST_LIFE) {
 			GameUtils::throwCards($this->game, $this->actualPlayer, array($this->beerCard));
 			
+			$this->drawBountyCard();
+			
+			// za normalnych okolnosti -1 zivot
+			$removedLifes = 1;
+			if ($this->interTurnReason['action'] == 'aiming') {
+				// dvojita rana - 2 zivoty
+				$removedLifes += 1;
+			}
+			
+			if ($this->attackingPlayer->getHasShootgunOnTheTable() && $this->shootgunCards) {
+				GameUtils::throwCards($this->game, $this->actualPlayer, $this->shootgunCards);
+			}
+			
+			// pivo +1 zivot
+			$removedLifes -= 1;
 			if ($this->actualPlayer->getIsTequilaJoe($this->game)) {
 				// tequila joe si posledny zivot zachrani a 1 si este prida
-				$this->actualPlayer['actual_lifes'] + 1;	
+				$removedLifes -= 1;
 			}
+			$this->actualPlayer['actual_lifes'] - $removedLifes;
+			
 			$this->runMollyStarkAction();
 			$this->changeInterturn();
 		} elseif ($this->check == self::LOST_LIFE_IN_HIGH_NOON) {
@@ -107,7 +162,18 @@ class LifeCommand extends Command {
 			$this->actualPlayer['hand_cards'] = serialize($handCards);
 			$this->actualPlayer->save();
 		} elseif ($this->check == self::OK) {
-			$newLifes = $this->actualPlayer['actual_lifes'] - 1;
+			$this->drawBountyCard();
+			
+			$removedLifes = 1;
+			if ($this->interTurnReason['action'] == 'aiming') {
+				$removedLifes = 2;
+			}
+			
+			if ($this->attackingPlayer->getHasShootgunOnTheTable() && $this->shootgunCards) {
+				GameUtils::throwCards($this->game, $this->actualPlayer, $this->shootgunCards);
+			}
+			
+			$newLifes = $this->actualPlayer['actual_lifes'] - $removedLifes;
 			$notices = $this->actualPlayer->getNoticeList();
 			if (isset($notices['barrel_used'])) {
 				unset($notices['barrel_used']);
@@ -148,7 +214,18 @@ class LifeCommand extends Command {
 		}
 	}
 
+	protected function drawBountyCard() {
+		if ($this->actualPlayer->getHasBountyOnTheTable()) {
+			$drawnCards = GameUtils::drawCards($this->game, 1);
+			$handCards = unserialize($this->attackingPlayer['hand_cards']);
+			$handCards = array_merge($handCards, $drawnCards);
+			$this->attackingPlayer['hand_cards'] = serialize($handCards);
+		}
+	}
+	
 	protected function generateMessages() {
+		// todo pocet zivotov ktore si hrac zobral
+		
 		if ($this->check == self::OK) {
 			$message = array(
 				'text' => 'zobral si si jeden zivot',

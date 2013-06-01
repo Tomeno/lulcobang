@@ -247,6 +247,8 @@
 					<input type="hidden" name="command" id="command" value="" />
 					<input type="hidden" name="place" id="place" value="" />
 					<input type="hidden" name="character" id="use-character" value="" />
+					<input type="hidden" name="peyote" id="peyote-color" value="" />
+					<input type="hidden" name="additionalPlayer" id="additional-player" value="" />
 				</fieldset>
 			</form>
 		{else}

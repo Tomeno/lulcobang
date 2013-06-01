@@ -12,6 +12,8 @@ class Player extends LinkableItem {
 	const PHASE_WAITING = 7;
 	const PHASE_HIGH_NOON = 8;
 	const PHASE_DRAW_FISTFUL = 9;
+	const PHASE_RATTLESNAKE = 10;
+	const PHASE_POKER_SELECT = 11;
 	
 	public function __construct($player) {
 		parent::__construct($player);
@@ -77,9 +79,9 @@ class Player extends LinkableItem {
 			}
 
 			if ($place) {
-				if ($game && $game->getIsHNLasso() && $place == 'table') {
-					return NULL;
-				}
+//				if ($game && $game->getIsHNLasso() && $place == 'table') {
+//					return NULL;
+//				}
 				$cardType = str_replace(array('getHas', 'OnTheTable', 'OnHand', 'OnWait'), '', $methodName);
 				$cardType = Utils::createLowercaseFromText($cardType);
 				return $this->hasCardType($cardType, $place);
@@ -136,15 +138,12 @@ class Player extends LinkableItem {
 	 */
 	protected function hasCardType($cardType, $place = 'table') {
 		$methodName = 'getIs' . ucfirst($cardType);
-		if (method_exists('Card', $methodName)) {
-			foreach ($this->getAdditionalField($place . '_cards') as $card) {
-				if ($card->$methodName()) {
-					return $card;
-				}
+		foreach ($this->getAdditionalField($place . '_cards') as $card) {
+			if ($card->$methodName()) {
+				return $card;
 			}
-			return NULL;
 		}
-		return FALSE;
+		return NULL;
 	}
 
 	public function getCharacter() {
@@ -259,8 +258,16 @@ class Player extends LinkableItem {
 		return FALSE;
 	}
 	
+	public function getIsValleyGhost() {
+		if ($this->getHasGhostOnTheTable()) {
+			return TRUE;
+		}
+		return FALSE;
+	}
+
+
 	public function getIsAlive() {
-		if ($this['actual_lifes'] > 0 || $this->getIsGhost()) {
+		if ($this['actual_lifes'] > 0 || $this->getIsGhost() || $this->getIsValleyGhost()) {
 			return TRUE;
 		}
 		return FALSE;
@@ -269,6 +276,14 @@ class Player extends LinkableItem {
 	public function getPlayedVendetta() {
 		$notices = $this->getNoticeList();
 		if (isset($notices['vendetta']) && $notices['vendetta'] == 1) {
+			return TRUE;
+		}
+		return FALSE;
+	}
+	
+	public function getGiveLifeInBloodBrothers() {
+		$notices = $this->getNoticeList();
+		if (isset($notices['blood_brothers']) && $notices['blood_brothers'] == 1) {
 			return TRUE;
 		}
 		return FALSE;
@@ -291,18 +306,26 @@ class Player extends LinkableItem {
 	}
 	
 	public function findTargetsInDistance($game, $distance = 0) {
+		$actualUser = $this->getUser();
+		$possibleTargets = array();
 		if ($distance == 0) {
-			return $game->getPlayers();
-		} else {
-			$matrix = unserialize($game['distance_matrix']);
-			$possibleTargets = array();
 			foreach ($game->getPlayers() as $player) {
-				if ($matrix[$this['uid']][$player['uid']] <= $distance) {
+				$enemyUser = $player->getUser();
+				if ($player['actual_lifes'] > 0 && $actualUser['username'] != $enemyUser['username']) {
 					$possibleTargets[] = $player;
 				}
 			}
-			return $possibleTargets;
+		} else {
+			$matrix = unserialize($game['distance_matrix']);
+			
+			foreach ($game->getPlayers() as $player) {
+				$enemyUser = $player->getUser();
+				if ($player['actual_lifes'] > 0 && $matrix[$actualUser['username']][$enemyUser['username']] <= $distance && $actualUser['username'] != $enemyUser['username']) {
+					$possibleTargets[] = $player;
+				}
+			}
 		}
+		return $possibleTargets;
 	}
 }
 

@@ -44,6 +44,16 @@ class BeerCommand extends Command {
 			$this->actualPlayer->save();
 
 			GameUtils::throwCards($this->game, $this->actualPlayer, $this->cards);
+			
+			foreach ($this->game->getPlayers() as $player) {
+				if ($player->getIsMadamYto()) {
+					$drawnCards = GameUtils::drawCards($this->game, 1);
+					$handCards = unserialize($player['hand_cards']);
+					$handCards = array_merge($handCards, $drawnCards);
+					$player['hand_cards'] = serialize($handCards);
+					$player->save();
+				}
+			}
 		}
 	}
 
