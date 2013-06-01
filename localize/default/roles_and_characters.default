@@ -74,8 +74,8 @@ flint_westwood_description###Během svého tahu může vyměnit jednu kartu ze s
 flint_westwood_usage###
 gary_looter_description###Bere si všechny přebytečné karty odhozené ostatními hráči na konci jeho tahu.
 gary_looter_usage###
-gregory_deck_description###Na začátku svého tahu si může náhodně vzít 2 postavy, které nejsou ve hře a pouze ze základní hry. Má všechny schopnosti těchto dvou postav.
-gregory_deck_usage###
+greygory_deck_description###Na začátku svého tahu si může náhodně vzít 2 postavy, které nejsou ve hře a pouze ze základní hry. Má všechny schopnosti těchto dvou postav.
+greygory_deck_usage###
 john_pain_description###Pokaždé když nějaký hráč otočí kartu, aby zjistil efekt karty (vězení, dynamit apod.), přidá si John Pain právě otočenou kartu do své ruky. Smí tak ale provést, jen pokud má v ruce méně než 6 karet.
 john_pain_usage###
 lee_van_kliff_description###Během svého tahu může odhodit BANG!, aby zopakoval efekt karty s hnědým okrajem, kterou právě zahrál.

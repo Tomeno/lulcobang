@@ -49,6 +49,11 @@ class DrawCommand extends Command {
 	const LOST_ONE_LIFE_AND_CONTINUE = 23;
 	
 	const PEYOTE_OK = 24;
+	
+	const DRAW_RATTLESNAKE_FIRST = 25;
+
+	const MISSING_RATTLESNAKE_CARD = 26;
+	
 
 	protected $template = 'cards-choice.tpl';
 
@@ -111,8 +116,8 @@ class DrawCommand extends Command {
 			if ($playerOnTurn['id'] == $this->actualPlayer['id']) {
 				if ($this->actualPlayer['phase'] == Player::PHASE_DRAW) {
 					if ($this->game->getIsHNPeyote()) {
-						if (isset($this->params[0])) {
-							if (in_array($this->params[0], array('red', 'black'))) {
+						if (isset($this->params['peyoteColor'])) {
+							if (in_array($this->params['peyoteColor'], array('red', 'black'))) {
 								$this->check = self::PEYOTE_OK;
 							} else {
 								// mozes si vybrat len cervenu alebo ciernu
@@ -123,7 +128,7 @@ class DrawCommand extends Command {
 					} else {
 						if ($this->useCharacter === TRUE && $this->actualPlayer->getIsJesseJones($this->game)) {
 							// TODO messages
-							$attackedPlayer = $this->params[0];
+							$attackedPlayer = $this->params['enemyPlayerUsername'];
 							foreach ($this->players as $player) {
 								$user = $player->getUser();
 								if ($user['username'] == $attackedPlayer) {
@@ -234,6 +239,18 @@ class DrawCommand extends Command {
 					$this->check = self::DRAW_FISTFUL;
 				} elseif ($this->actualPlayer['phase'] == Player::PHASE_HIGH_NOON) {
 					$this->check = self::LOST_ONE_LIFE_AND_CONTINUE;
+				} elseif ($this->actualPlayer['phase'] == Player::PHASE_RATTLESNAKE) {
+					if ($this->params['playCardName'] == 'rattlesnake') {
+						$card = $this->actualPlayer->getHasRattlesnakeOnTheTable($this->game);
+						if ($card) {
+							$this->addCard($card);
+							$this->check = self::OK;
+						} else {
+							$this->check = self::MISSING_RATTLESNAKE_CARD;
+						}
+					} else {
+						$this->check = self::DRAW_RATTLESNAKE_FIRST;
+					}
 				} else {
 					throw new Exception('neviem co sa este moze udiat', 1328469676);
 				}
@@ -361,6 +378,58 @@ class DrawCommand extends Command {
 					}
 				}
 				
+			} elseif ($this->params['playCardName'] == 'rattlesnake') {
+				$count = 1;
+				if ($this->useCharacter && $this->actualPlayer->getIsLuckyDuke($this->game)) {
+					$count = 2;
+				}
+				
+				$drawnCards = GameUtils::drawCards($this->game, $count);
+				$isSafe = FALSE;
+				$cardRepository = new CardRepository();
+				$thrownCards = array();
+				foreach ($drawnCards as $drawnCardId) {
+					$drawnCard = $cardRepository->getOneById($drawnCardId);
+					$thrownCards[] = $drawnCard;
+					if (!$drawnCard->getIsSpades($this->game)) {
+						$isSafe = TRUE;
+						// break tu nie je lebo musime prejst cez vsetky karty
+						// aby sme vyrobili pole kariet ktore treba vyhodit
+					}
+				}
+				
+				if ($isSafe === TRUE) {
+					$this->moveDrawnCards($thrownCards);
+					$this->drawResult = self::OK;
+					
+					$this->actualPlayer['phase'] = $this->getNextPhase($this->actualPlayer, TRUE);
+					$this->actualPlayer = $this->actualPlayer->save(TRUE);
+				} else {
+					$this->drawResult = self::KO;
+					
+					// stiahneme hracovi jeden zivot
+					$newLifes = $this->actualPlayer['actual_lifes'] - 1;
+					$this->actualPlayer['actual_lifes'] = $newLifes;
+					$this->actualPlayer['phase'] = $this->getNextPhase($this->actualPlayer, TRUE);
+					$this->actualPlayer = $this->actualPlayer->save(TRUE);
+					
+					$this->moveDrawnCards($thrownCards);
+					
+					if ($newLifes <= 0) {
+						// TODO check ci nema na ruke pivo / piva a ak ano automaticky ich pouzit na zachranu
+						// aspon dokym nebude na 1 zivote
+						// nezabudnut na tequilla joe
+						
+						$nextPositionPlayer = GameUtils::getPlayerOnNextPosition($this->game, $this->actualPlayer);
+						$this->game['turn'] = $nextPositionPlayer['id'];
+						$this->game->save();
+						
+						$nextPositionPlayer['phase'] = $this->getNextPhase($nextPositionPlayer);
+						$nextPositionPlayer->save();
+
+						$this->removePlayerFromGame();
+					}
+				}
 			} elseif ($this->params['playCardName'] == 'barrel') {
 				$count = 1;
 				if ($this->useCharacter && $this->actualPlayer->getIsLuckyDuke($this->game)) {
@@ -461,7 +530,7 @@ class DrawCommand extends Command {
 				$this->actualPlayer->save();
 			}
 		} elseif ($this->check == self::PEYOTE_OK) {
-			$color = $this->params[0];
+			$color = $this->params['peyoteColor'];
 			$method = 'getIs' . ucfirst($color);
 			$drawnCards = GameUtils::drawCards($this->game, 1);
 			
@@ -719,6 +788,32 @@ class DrawCommand extends Command {
 					);
 					$this->addMessage($message);
 				}
+			} elseif ($this->params['playCardName'] == 'rattlesnake') {
+				if ($this->drawResult == self::OK) {
+					$message = array(
+						'text' => 'Strkac ta nepohryzol',
+						'toUser' => $this->loggedUser['id'],
+					);
+					$this->addMessage($message);
+					
+					$message = array(
+						'text' => $this->loggedUser['username'] . ' sa vyhol pohryzeniu strkacom',
+						'notToUser' => $this->loggedUser['id'],
+					);
+					$this->addMessage($message);
+				} else {
+					$message = array(
+						'text' => 'Strkac ta pohryzol a zobral ti 1 zivot',
+						'toUser' => $this->loggedUser['id'],
+					);
+					$this->addMessage($message);
+					
+					$message = array(
+						'text' => $this->loggedUser['username'] . ' bol pohryzeny strkacom',
+						'notToUser' => $this->loggedUser['id'],
+					);
+					$this->addMessage($message);
+				}
 			} else {
 				$message = array(
 					'notToUser' => $this->loggedUser['id'],
@@ -823,8 +918,19 @@ class DrawCommand extends Command {
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);
+		} elseif ($this->check == self::DRAW_RATTLESNAKE_FIRST) {
+			$message = array(
+				'text' => 'najprv musis potiahnut kartu strkac',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::MISSING_RATTLESNAKE_CARD) {
+			$message = array(
+				'text' => 'Nemas strkaca v topanke',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
 		}
-		
 	}
 
 	protected function createResponse() {

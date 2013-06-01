@@ -86,6 +86,36 @@ pony_express_title###Pony Express
 pony_express_desciption###Hráč, který je právě na tahu, před sebe vykládá kartu Pony Express. Za předpokladu, že má tuto kartu stále před sebou, ji může v jednom ze svých následujících kol vyřadit, a líznout si 3 karty z balíčku.
 whisky_title###Whisky
 whisky_description###Hráč, ktorý je práve na ťahu, zahrá kartu Whisky a spolu s ňou odhodí ďalšiu kartu podľa vlastného výberu. Táto karta mu pridá dva životy.
+last_beer_title###
+last_beer_description###
+escape_title###
+escape_description###
+tornado_title###
+tornado_description###
+backfire_title###
+backfire_description###
+tomahawk_title###
+tomahawk_description###
+poker_title###
+poker_description###
+aiming_title###
+aiming_description###
+fanning_title###
+fanning_description###
+saved_title###
+saved_description###
+lemat_title###
+lemat_description###
+shootgun_title###
+shootgun_description###
+bounty_title###
+bounty_description###
+rattlesnake_title###
+rattlesnake_description###
+ghost_title###
+ghost_description###
+wild_band_title###
+wild_band_description###
 blessing_title###Požehnanie
 curse_title###Prekliatie
 ghost_town_title###Mesto duchov
@@ -99,6 +129,8 @@ the_reverend_title###Reverend
 the_sermon_title###Kazateľ
 the_train_title###Príjazd vlaku
 thirst_title###Smäd
+new_identity_title###
+handcuffs_title###
 blessing_description###Všetky karty sú srdcové.
 curse_description###Všetky karty sú pikové.
 ghost_town_description###Zabité postavy sa vracajú do hry ako duchovia s troma kartami. Zahrajú svoje karty a na konci ich ťahu sú opäť odstránení z hry.
@@ -112,6 +144,8 @@ the_reverend_description###Hráči nemôžu hrať kartu pivo.
 the_sermon_description###Hráči vo svojom ťahu nemôžu hrať kartu Bang!
 the_train_description###Každý hráč si vo svojej fáze 1 vezme jednu kartu navyše.
 thirst_description###Každý hráč si vo svojej fáze 1 vezme o jednu kartu menej.
+new_identity_description###
+handcuffs_description###
 abandoned_mine_title###Opuštěný důl
 ambush_title###Léčka
 blood_brothers_title###Pokrevní bratři

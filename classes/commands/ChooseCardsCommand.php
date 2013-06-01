@@ -59,6 +59,8 @@ class ChooseCardsCommand extends Command {
 						$drawPile[] = $possibleCard;
 					} elseif ($restAction == 'general_store') {
 						$nextPlayerPossibleCards[] = $possibleCard;
+					} elseif ($restAction == 'throw') {
+						$throwPile[] = $possibleCard;
 					}
 				}
 			}

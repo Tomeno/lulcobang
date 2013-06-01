@@ -91,7 +91,7 @@ class BangCommand extends Command {
 				}
 			}
 		} elseif ($this->actualPlayer['phase'] == Player::PHASE_UNDER_ATTACK) {
-			if ($this->interTurnReason['action'] == 'indians') {
+			if (in_array($this->interTurnReason['action'], array('indians', 'wild_band'))) {
 				$this->check = self::OK;
 			} elseif ($this->interTurnReason['action'] == 'duel') {
 				if ($this->game->getIsHNTheSermon() && $this->actualPlayer['id'] == $this->attackingPlayer['id']) {
@@ -114,7 +114,7 @@ class BangCommand extends Command {
 
 	protected function run() {
 		if ($this->check == self::OK) {
-			if ($this->interTurnReason['action'] == 'indians') {
+			if (in_array($this->interTurnReason['action'], array('indians', 'wild_band'))) {
 				$this->runMollyStarkAction();
 				$this->changeInterturn();
 			} elseif ($this->interTurnReason['action'] == 'duel') {
@@ -211,6 +211,18 @@ class BangCommand extends Command {
 
 				$message = array(
 					'text' => 'zabil si svojho indiana',
+					'toUser' => $this->loggedUser['id'],
+				);
+				$this->addMessage($message);
+			} elseif ($this->interTurnReason['action'] == 'wild_band') {
+				$message = array(
+					'text' => $this->loggedUser['username'] . ' sa ubranil pred divokou bandou',
+					'notToUser' => $this->loggedUser['id'],
+				);
+				$this->addMessage($message);
+
+				$message = array(
+					'text' => 'ubranil si sa pred divokou bandou',
 					'toUser' => $this->loggedUser['id'],
 				);
 				$this->addMessage($message);

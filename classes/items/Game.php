@@ -92,7 +92,6 @@ class Game extends Item {
 			}
 			return FALSE;
 		}
-		// TODO fistful
 	}
 
 	public function getThrowPile() {
@@ -195,6 +194,16 @@ class Game extends Item {
 	
 	public function getTopHighNoonPile() {
 		return array_pop($this->getHighNoonPile());
+	}
+	
+	public function getAliveVicePlayers() {
+		$viceList = array();
+		foreach ($this->getAlivePlayers() as $player) {
+			if ($player->getRoleObject()->getIsVice()) {
+				$viceList[] = $player;
+			}
+		}
+		return $viceList;
 	}
 }
 

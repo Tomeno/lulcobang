@@ -118,13 +118,18 @@ function executeCommand() {
 	var additionalCard = $('selected-additional-card').value;
 	var card = $('selected-card').value;
 	var player = $('selected-player').value;
+	var additionalPlayer = $('additional-player').value;
 	var command = $('command').value;
 	var place = $('place').value;
 	var useCharacter = $('use-character').value;
-
+	var peyoteColor = $('peyote-color').value;
+	var text = $('message').value;
+	
 	new Ajax.Request('services/ExecuteCommand.php', {
 		method: 'post',
-		parameters: {game: game, command: command, playCard: playCard, additionalCard: additionalCard, card: card, player: player, place: place, useCharacter: useCharacter},
+		parameters: {game: game, command: command, playCard: playCard, additionalCard: additionalCard,
+			card: card, player: player, additionalPlayer: additionalPlayer, place: place,
+			useCharacter: useCharacter, peyoteColor: peyoteColor, text: text},
 
 		onSuccess: function(transport) {
 			// temporary reload page after execute command
@@ -145,47 +150,8 @@ function inArray(needle, haystack) {
 	return false;
 }
 
-/*
-function clickExplorer() {
-	if (document.all) {
-		var allPopups = document.getElementsByClassName('popup');
-		for (var i = 0; i < allPopups.length; i++) {
-			allPopups[i].style.display = 'none';
-		}
-		var popups = this.getElementsByClassName('popup');
-		for (var i = 0; i < popups.length; i++) {
-			popups[i].style.display = 'block';
-		}
-	}
-	return false;
+function say() {
+	$('command').value = 'say';
+	executeCommand();
+	$('message').value = '';
 }
-
-function clickOther(e) {
-	if (document.layers || (document.getElementById && !document.all)) {
-		if (e.which == 2 || e.which == 3) {
-			var allPopups = document.getElementsByClassName('popup');
-			for (var i = 0; i < allPopups.length; i++) {
-				allPopups[i].style.display = 'none';
-			}
-			var popups = this.getElementsByClassName('popup');
-			for (var i = 0; i < popups.length; i++) {
-				popups[i].style.display = 'block';
-			}
-		}
-	}
-	return false;
-}
-
-document.observe('dom:loaded', function() {
-	var popupSources = document.getElementsByClassName('popup-source');
-	for (var i = 0; i < popupSources.length; i++) {
-		if (document.layers) {
-			popupSources[i].captureEvents(Event.MOUSEDOWN);
-			popupSources[i].onmousedown = clickOther;
-		} else {
-			popupSources[i].onmouseup = clickOther;
-			popupSources[i].oncontextmenu = clickExplorer;
-		}
-	}
-});
-*/

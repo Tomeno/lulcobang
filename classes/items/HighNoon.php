@@ -9,7 +9,7 @@ class HighNoon extends Item {
 	protected $fistfulOfCardsNoonBack = 'images/cards/bang/special/fistful_back.jpg';
 	
 	protected $wildWestShowImageFolder = 'images/cards/bang/extensions/wild_west_show/';
-	protected $wildWestShowBack = 'images/cards/bang/special/wild_west_show.jpg';
+	protected $wildWestShowBack = 'images/cards/bang/special/wild_west_show_back.jpg';
 
 
 	const CARD_HIGH_NOON = 6;

@@ -73,9 +73,9 @@ class GameUtils {
 	 * @param	Game	$game
 	 * @return	array
 	 */
-	public static function countMatrix($game) {
-		$playerRepository = new PlayerRepository();
-		$players = $playerRepository->getLivePlayersByGame($game['id']);
+	public static function countMatrix(Game $game) {
+		$game = $game->save(TRUE);
+		$players = $game->getAlivePlayers();
 		$playersCount = count($players);
 		
 		$matrix = array();
@@ -84,13 +84,17 @@ class GameUtils {
 				if ($player1['id'] == $player2['id']) {
 					$matrix[$player1['user']['username']][$player2['user']['username']] = 0;
 				} else {
-					$arg1 = $player1['position'] - $player2['position'];
-					$arg2 = $player2['position'] - $player1['position'];
-					
-					$arg1 = $arg1 < 0 ? $arg1 + $playersCount : $arg1;
-					$arg2 = $arg2 < 0 ? $arg2 + $playersCount : $arg2;
-					
-					$distance = min($arg1, $arg2);
+					if ($game->getIsHNAmbush()) {
+						$distance = 1;
+					} else {
+						$arg1 = $player1['position'] - $player2['position'];
+						$arg2 = $player2['position'] - $player1['position'];
+
+						$arg1 = $arg1 < 0 ? $arg1 + $playersCount : $arg1;
+						$arg2 = $arg2 < 0 ? $arg2 + $playersCount : $arg2;
+
+						$distance = min($arg1, $arg2);
+					}
 					
 					if ($player2->getHasMustangOnTheTable($game)) {
 						// pre Belle Star neplatia v jej tahu modre karty u ostatnych hracov
@@ -166,23 +170,7 @@ class GameUtils {
 		);
 		DB::update(self::$table, $params, 'id = ' . intval($game['id']));
 	}
-	
-//	public static function getPlayerOnNextPosition($game, $actualPlayer = NULL) {
-//		$playerRepository = new PlayerRepository();
-//		$players = $playerRepository->getLivePlayersByGame($game['id']);
-//		$playersCount = count($players);
-//
-//		if ($actualPlayer === NULL) {
-//			$actualPlayer = $playerRepository->getOneByIdAndGame($game['turn'], $game['id']);
-//		}
-//		$next = $actualPlayer['position'] + 1;
-//		
-//		$nextPosition = $next <= $playersCount ? $next : $next - $playersCount;
-//		return $playerRepository->getOneByPositionAndGame($nextPosition, $game['id']);
-//	}
-	
-	
-	
+
 	public static function getPlayerOnNextPosition($game, $actualPlayer = NULL, $fromPass = FALSE) {
 		$playerRepository = new PlayerRepository();
 		if ($actualPlayer === NULL) {
@@ -200,7 +188,7 @@ class GameUtils {
 			if ($findingStarted === TRUE) {
 				$player = self::getPlayerOnSeat($game, $seat);
 				if ($player) {
-					if ($player['actual_lifes'] > 0 || ($fromPass === TRUE && $game->getIsHNGhostTown())) {
+					if ($player['actual_lifes'] > 0 || $player->getIsValleyGhost() || ($fromPass === TRUE && $game->getIsHNGhostTown())) {
 						$nextPlayer = $player;
 						break;
 					}

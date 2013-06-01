@@ -2,7 +2,7 @@
 	<div id="chatbox">
 		{include file='message-box.tpl' messages=$messages}
 	</div>
-	<form method="post" action="{actualurl}">
+	<form method="post" action="{actualurl}" onsubmit="say(); return false;">
 		<fieldset>
 			<input name="message" type="text" id="message" class="message" />
 			<input name="submit" type="submit" id="submitmsg" class="submit" value="{localize key='send'}" />
