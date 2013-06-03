@@ -15,6 +15,8 @@ class PutCommand extends Command {
 	const NO_GAME = 4;
 	
 	const HAS_ANOTHER_WEAPON = 5;
+	
+	const JUDGE = 6;
 
 	protected function check() {
 		// TODO odstranit tie checkery ktore uz predtym niekde robim
@@ -33,8 +35,12 @@ class PutCommand extends Command {
 					if ($res->getIsWeapon() && $this->actualPlayer->getHasGun()) {
 						$this->check = self::HAS_ANOTHER_WEAPON;
 					} else {
-						$this->putCards[] = $res;
-						$this->check = self::OK;
+						if ($this->game->getIsHNTheJudge()) {
+							$this->check = self::JUDGE;
+						} else {
+							$this->putCards[] = $res;
+							$this->check = self::OK;
+						}
 					}
 				} else {
 					$this->check = self::NO_CARDS;
@@ -75,6 +81,12 @@ class PutCommand extends Command {
 		} elseif ($this->check == self::HAS_ANOTHER_WEAPON) {
 			$message = array(
 				'text' => 'momentalne pouzivas inu zbran, nemozes vylozit dalsiu, kym ju neodhodis',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::JUDGE) {
+			$message = array(
+				'text' => 'nemozes vylozit kartu ked je v hre sudca',
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);

@@ -18,6 +18,8 @@ class UseOneRoundCardCommand extends Command {
 				
 				// TODO nesmie to byt posledny zivot
 				
+				// TODO musi vybrat hraca
+				
 				// TODO asi by to nemal byt hrac ktory ma plny pocet zivotov
 			} else {
 				// TODO uz pouzil blood brothers

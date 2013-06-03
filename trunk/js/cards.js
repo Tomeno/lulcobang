@@ -37,10 +37,74 @@ function selectCardToPlay(id, type, place) {
 		
 		if (place) {
 			$('place').value = place;
+//			alert(place);
 		} else {
 			$('place').value = '';
 		}
-	}	
+	}
+	
+	var command = $('command').value;
+	var phase = $('phase').value;
+//	alert(command);
+//	alert(phase);
+
+	if (phase != 'throw') {
+		// automaticky spustene prikazy
+		var commandsImmediatelyExecuted;
+		if (place == 'table') {
+			// aktivacia kariet ktore su uz na stole
+			commandsImmediatelyExecuted = ['howitzer', 'canteen', 'ponyexpress'];
+			if (inArray(command, commandsImmediatelyExecuted)) {
+				executeCommand();
+			} else {
+				// karty ku ktorym treba tahat kartu z balicka
+				commandsImmediatelyExecuted = ['dynamite', 'jail', 'rattlesnake', 'barrel'];
+				if (inArray(command, commandsImmediatelyExecuted)) {
+					drawCards();
+				} else {
+					if (phase == 'under_attack') {
+						commandsImmediatelyExecuted = ['tengallonhat', 'ironplate', 'sombrero', 'bible'];
+						if (inArray(command, commandsImmediatelyExecuted)) {
+							executeCommand();
+						}
+					}
+				}
+			}
+		} else {
+			if (phase == 'play') {
+				// karty z ruky, ktore sa mozu rovno hrat
+				commandsImmediatelyExecuted = ['diligenza', 'wellsfargo', 'indians', 'gatling', 'beer', 'saloon',
+					'generalstore', 'poker', 'wildband', 'tornado'];
+				if (inArray(command, commandsImmediatelyExecuted)) {
+					executeCommand();
+				} else {
+					// karty ktore treba vylozit na stol
+					commandsImmediatelyExecuted = ['volcanic', 'schofield', 'remington', 'revcarabine', 'winchester',
+						'mustang', 'appaloosa', 'hideout', 'silver', 'barrel', 'dynamite',
+						'derringer', 'howitzer', 'knife', 'buffalorifle', 'pepperbox',
+						'tengallonhat', 'ironplate', 'sombrero', 'bible',
+						'canteen', 'ponyexpress', 'conestoga'];
+					if (inArray(command, commandsImmediatelyExecuted)) {
+						putCard();
+					} else {
+						// karty ku ktorym treba prihodit druhu kartu
+						commandsImmediatelyExecuted = ['whisky', 'tequila'];
+						if (inArray(command, commandsImmediatelyExecuted) && selectedAdditionalCard.value != 0) {
+							executeCommand();
+						}
+					}
+				}
+			} else {
+				// karty ktore sa pouzivaju ako obrana pri utoku
+				if (phase == 'under_attack') {
+					commandsImmediatelyExecuted = ['bang', 'missed', 'dodge'];
+					if (inArray(command, commandsImmediatelyExecuted)) {
+						executeCommand();
+					}
+				}
+			}
+		}
+	}
 }
 
 function ejectCard(card, type) {
@@ -94,6 +158,11 @@ function selectCard(id, playerId, place) {
 		
 		var newValue = finalArray.join(';');
 		selectedCard.value = newValue;
+		
+		var alivePlayers = $('alivePlayers').value;
+		if ((alivePlayers - 1) == finalArray.length) {
+			executeCommand();
+		}
 	} else {
 		var newSelectedCard = $('card-' + id);
 		var oldSelectedCardId = selectedCard.value;
@@ -144,7 +213,12 @@ function playCard() {
 
 function throwCard() {
 	$('command').value = 'throw';
-	executeCommand();
+	var selectedPlayCard = $('selected-play-card').value;
+	if (selectedPlayCard != 0) {
+		executeCommand();
+	} else {
+		$('phase').value = 'throw';
+	}
 }
 
 function putCard() {
@@ -169,6 +243,8 @@ function selectPlayer(id, fromSelectCard) {
 				$('place').value = '';
 			}
 		}
+	} else {
+		selectCard(0, id, 'hand');
 	}
 	
 	//alert(command);

@@ -44,6 +44,8 @@ abstract class AbstractStrategy {
 			}
 		} elseif ($this->player['phase'] == Player::PHASE_UNDER_ATTACK) {
 			$command = $this->reactToAttack();
+		} elseif ($this->player['phase'] == Player::PHASE_HIGH_NOON) {
+			$command = $this->takeLifeDown();
 		} else {
 			$this->whatToDo();
 		}
@@ -225,7 +227,9 @@ abstract class AbstractStrategy {
 		$command = '';
 		$handCards = $this->player->getHandCards();
 		$handCardsCount = count($handCards);
-		if ($this->player['actual_lifes'] < $handCardsCount) {
+		
+		if (($this->player->getIsSeanMallory($this->game) && $handCardsCount > 10) ||
+			(!$this->player->getIsSeanMallory($this->game) && $this->player['actual_lifes'] < $handCardsCount)) {
 			$thrownCard = $handCards[array_rand($handCards)];
 			$command = 'command=throw&playCardId=' . $thrownCard['id'] . '&playCardName=' . $thrownCard->getCardName();
 		}
@@ -233,21 +237,35 @@ abstract class AbstractStrategy {
 	}
 	
 	protected function playBarrelMissedCardsOrTakeLifeDown() {
-		$barrel = $this->player->getHasBarrelOnTheTable();
-		$notices = $this->player->getNoticeList();
-		
-		if ((!isset($notices['barrel_used']) || $notices['barrel_used'] != 1) && $barrel) {
-			return 'command=draw&playCardName=barrel';
+		$interTurnReason = unserialize($this->game['inter_turn_reason']);
+		$belleStar = FALSE;
+		$useCard = NULL;
+		if (isset($interTurnReason['from'])) {
+			$attackingPlayerId = $interTurnReason['from'];
+			$playerRepository = new PlayerRepository();
+			$attackingPlayer = $playerRepository->getOneById($attackingPlayerId);
+			if ($attackingPlayer->getIsBelleStar($this->game)) {
+				$belleStar = TRUE;
+			}
 		}
 		
-		$greenMissedCards = $this->player->getMissedCardOnTheTable();
-		
-		$maxCardsCountEffect = -10;
-		$useCard = NULL;
-		foreach ($greenMissedCards as $greenMissedCard) {
-			$cardsCountEffect = $greenMissedCard->getCardsCountEffect();
-			if ($cardsCountEffect > $maxCardsCountEffect) {
-				$useCard = $greenMissedCard;
+		if ($belleStar === FALSE) {
+			// proti belle star nemozu hraci pouzivat karty, ktore su na stole
+			$barrel = $this->player->getHasBarrelOnTheTable();
+			$notices = $this->player->getNoticeList();
+
+			if ((!isset($notices['barrel_used']) || $notices['barrel_used'] != 1) && $barrel) {
+				return 'command=draw&playCardName=barrel';
+			}
+
+			$greenMissedCards = $this->player->getMissedCardOnTheTable();
+
+			$maxCardsCountEffect = -10;
+			foreach ($greenMissedCards as $greenMissedCard) {
+				$cardsCountEffect = $greenMissedCard->getCardsCountEffect();
+				if ($cardsCountEffect > $maxCardsCountEffect) {
+					$useCard = $greenMissedCard;
+				}
 			}
 		}
 		if ($useCard === NULL) {
@@ -307,18 +325,20 @@ abstract class AbstractStrategy {
 		}
 		
 		$interTurnReason = unserialize($this->game['inter_turn_reason']);
-		$attackingPlayerId = $interTurnReason['from'];
-		$playerRepository = new PlayerRepository();
-		$attackingPlayer = $playerRepository->getOneById($attackingPlayerId);
-		
-		if ($attackingPlayer->getHasShootgunOnTheTable()) {
-			$handCards = $this->player->getHandCards();
-			if ($handCards) {
-				$thrownCard = $handCards[array_rand($handCards)];
-				if ($beer) {
-					$command .= '&additionalCardsId=' . $thrownCard['id'] . '&additionalCardsName=' . $thrownCard->getCardName();
-				} else {
-					$command .= '&playCardId=' . $thrownCard['id'] . '&playCardName=' . $thrownCard->getCardName();
+		if (isset($interTurnReason['from'])) {
+			$attackingPlayerId = $interTurnReason['from'];
+			$playerRepository = new PlayerRepository();
+			$attackingPlayer = $playerRepository->getOneById($attackingPlayerId);
+
+			if ($attackingPlayer && $attackingPlayer->getHasShootgunOnTheTable()) {
+				$handCards = $this->player->getHandCards();
+				if ($handCards) {
+					$thrownCard = $handCards[array_rand($handCards)];
+					if ($beer) {
+						$command .= '&additionalCardsId=' . $thrownCard['id'] . '&additionalCardsName=' . $thrownCard->getCardName();
+					} else {
+						$command .= '&playCardId=' . $thrownCard['id'] . '&playCardName=' . $thrownCard->getCardName();
+					}
 				}
 			}
 		}

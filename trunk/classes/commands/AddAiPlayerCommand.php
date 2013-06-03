@@ -4,9 +4,15 @@ class AddAiPlayerCommand extends Command {
 	
 	const OK = 1;
 	
+	const TOO_MANY_PLAYERS = 2;
+	
 	protected function check() {
 		if ($this->loggedUser['id'] == $this->game['creator']) {
-			$this->check = self::OK;
+			if (count($this->players) < 8) {	// TODO rozlisit podla toho ci sa hra zakladny bang alebo je tam aj dodge city
+				$this->check = self::OK;
+			} else {
+				$this->check = self::TOO_MANY_PLAYERS;
+			}
 		}
 	}
 
@@ -48,7 +54,18 @@ class AddAiPlayerCommand extends Command {
 	}
 	
 	protected function generateMessages() {
-		
+		if ($this->check == self::OK) {
+			$message = array(
+				'text' => 'AI hrac bol pridany do hry',
+			);
+			$this->addMessage($message);
+		} elseif ($this->check == self::TOO_MANY_PLAYERS) {
+			$message = array(
+				'text' => 'Prilis vela hracov v hre',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
+		}
 	}
 	
 	protected function createResponse() {

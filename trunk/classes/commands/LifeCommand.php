@@ -174,6 +174,23 @@ class LifeCommand extends Command {
 			}
 			
 			$newLifes = $this->actualPlayer['actual_lifes'] - $removedLifes;
+			
+			// ak by mal teren kill zomriet taha kartu
+			if ($newLifes < 1 && $this->actualPlayer->getIsTerenKill()) {
+				$drawnCards = GameUtils::drawCards($this->game, 1);
+				$cardRepository = new CardRepository(TRUE);
+				$drawnCard = $cardRepository->getOneById($drawnCards[0]);
+				if (!$drawnCard->getIsSpades($this->game)) {
+					$newLifes = 1;
+					
+					// potiahne si este 1 kartu
+					$drawnCards = GameUtils::drawCards($this->game, 1);
+					$handCards = unserialize($this->actualPlayer['hand_cards']);
+					$handCards = array_merge($handCards, $drawnCards);
+					$this->actualPlayer['hand_cards'] = serialize($handCards);
+				}
+			}
+			
 			$notices = $this->actualPlayer->getNoticeList();
 			if (isset($notices['barrel_used'])) {
 				unset($notices['barrel_used']);
@@ -186,8 +203,8 @@ class LifeCommand extends Command {
 			$this->actualPlayer = $this->actualPlayer->save(TRUE);
 			if ($newLifes <= 0) {
 				$this->removePlayerFromGame();
-			} elseif ($this->useCharacter === TRUE && $newLifes > 0) {
-				// ak bol pouzity charakter a nebol to este posledny zivot
+			} else { //if ($this->useCharacter === TRUE && $newLifes > 0) { // ak bol pouzity charakter a nebol to este posledny zivot
+				// el gringo a bart cassidy si tahaju karty
 				if ($this->actualPlayer->getIsElGringo($this->game)) {
 					// el gringo
 					$attackingPlayerHandCards = $this->attackingPlayer->getHandCards();

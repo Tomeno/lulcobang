@@ -281,27 +281,44 @@ class GameUtils {
 	 * @return	array	- IDs array of drawn cards
 	 */
 	public static function drawCards(Game $game, $count) {
-		$drawPile = $game->getDrawPile();
+		if ($game->getIsHNAbandonedMine()) {
+			$drawPile = $game->getThrowPile();
+		} else {
+			$drawPile = $game->getDrawPile();
+		}
 		$drawnCards = array();
 		for ($i = 0; $i < $count; $i++) {
 			$card = array_pop($drawPile);
 			$drawnCards[] = $card['id'];
 
+			
 			if (empty($drawPile)) {
-				$drawPile = $game->getThrowPile();
-				shuffle($drawPile);
-				$game->setAdditionalField('throw_pile', array());
-				$game['throw_pile'] = serialize(array());
+				if ($game->getIsHNAbandonedMine()) {
+					$drawPile = $game->getDrawPile();
+					shuffle($drawPile);
+					$game->setAdditionalField('draw_pile', array());
+					$game['draw_pile'] = serialize(array());
+				} else {
+					$drawPile = $game->getThrowPile();
+					shuffle($drawPile);
+					$game->setAdditionalField('throw_pile', array());
+					$game['throw_pile'] = serialize(array());
+				}
 			}
 		}
 		
-		$game->setAdditionalField('draw_pile', $drawPile);
 		$newDrawPile = array();
 		foreach ($drawPile as $card) {
 			$newDrawPile[] = $card['id'];
 		}
 		
-		$game['draw_pile'] = serialize($newDrawPile);
+		if ($game->getIsHNAbandonedMine()) {
+			$game->setAdditionalField('throw_pile', $drawPile);
+			$game['throw_pile'] = serialize($newDrawPile);
+		} else {
+			$game->setAdditionalField('draw_pile', $drawPile);
+			$game['draw_pile'] = serialize($newDrawPile);
+		}
 		$game->save();
 
 		return $drawnCards;
@@ -322,7 +339,11 @@ class GameUtils {
 			$thrownCardsIds[] = $card['id'];
 		}
 
-		$throwPile = unserialize($game['throw_pile']);
+		if ($game->getIsHNAbandonedMine()) {
+			$throwPile = unserialize($game['draw_pile']);
+		} else {
+			$throwPile = unserialize($game['throw_pile']);
+		}
 		if ($player !== NULL) {
 			$playerCards = unserialize($player[$place . '_cards']);
 			$newPlayerCards = array();
@@ -338,7 +359,12 @@ class GameUtils {
 		} else {
 			$throwPile = array_merge($throwPile, $thrownCardsIds);
 		}
-		$game['throw_pile'] = serialize($throwPile);
+		
+		if ($game->getIsHNAbandonedMine()) {
+			$game['draw_pile'] = serialize($throwPile);
+		} else {
+			$game['throw_pile'] = serialize($throwPile);
+		}
 		
 		$game = $game->save(TRUE);
 		return array('game' => $game, 'player' => $player);

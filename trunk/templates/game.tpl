@@ -45,9 +45,11 @@
 								</div>
 							{/if}
 						{/if}
+						{*
 						{if $game.playerOnTurn.id == $player.id && $me.id == $player.id}
 							<a href="#" onclick="putCard(); return false;" title="Click here to put selected card"><span class="card"></span></a>
 						{/if}
+						*}
 						{if $game.isHighNoon}
 							{if $player.roleObject.isSheriff}
 								<div class="card high_noon">
@@ -196,7 +198,7 @@
 		{if $game.status == $gameStartedStatus}
 			{if $game.draw_pile}
 				<div id="kopa" class="card">
-					{if $game->getIsHNPeyote() && $me.phase == 4}
+					{if $game->getIsHNPeyote() && $me.textPhase == 'draw'}
 						<div class="drawPile" style="width:150px;">
 							{image src=$game.topDrawPile.backImagePath alt="draw pile" width='44' height='76'}
 							<span class="guess red"><a href="#" onclick="drawCards('red'); return false;"><span class="hearts">&hearts;</span> <span class="diams">&diams;</span> red</a></span>
@@ -206,7 +208,7 @@
 					{else}
 						<a href="#" onclick="drawCards();return false">{image src=$game.topDrawPile.backImagePath alt="draw pile" width='44' height='76'}</a>
 						{if $me.user.need_help}
-							{if $me.phase == 4}
+							{if $me.textPhase == 'draw'}
 								<div class="help">
 									{localize key='click_here_to_draw_cards'}
 								</div>
@@ -216,15 +218,16 @@
 				</div>
 
 			{/if}
-			<a id="odpad" class="card" href="#" onclick="playCard(); return false;" title="Click here to play selected card">
+			<a id="odpad" class="card" href="#" onclick="throwCard(); return false;" title="Click here to play selected card">
 				{if $game.topThrowPile}
 					{image src=$game.topThrowPile.imagePath alt=$game.topThrowPile.title width='44' height='76'}
 				{else}
 					<span class="card play"></span>
 				{/if}	
 			</a>
+			{*
 			<a href="#" onclick="throwCard(); return false;" title="Click here to throw selected card"><span class="card throw"><img src="static/images/odpad.jpg" alt="" /></span></a>
-
+			*}
 			{if $game.isHighNoon}
 				{if $game.highNoonActualCard}
 					<a id="high_noon_actual_card" class="card"  href="#" onclick="useOneRoundCard('{$game.highNoonActualCard.localize_key}'); return false;" title="{$game.highNoonActualCard.localizedTitle|escape}: {$game.highNoonActualCard.localizedDescription|escape}">
@@ -249,6 +252,8 @@
 					<input type="hidden" name="character" id="use-character" value="" />
 					<input type="hidden" name="peyote" id="peyote-color" value="" />
 					<input type="hidden" name="additionalPlayer" id="additional-player" value="" />
+					<input type="hidden" name="phase" id="phase" value="{$me.textPhase}" />
+					<input type="hidden" name="alivePlayers" id="alivePlayers" value="{$game.alivePlayersCount}" />
 				</fieldset>
 			</form>
 		{else}
