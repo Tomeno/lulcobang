@@ -57,12 +57,11 @@ class DerringerCommand extends Command {
 			$handCards = array_merge($handCards, $drawnCards);
 			$this->actualPlayer['hand_cards'] = serialize($handCards);
 			$this->actualPlayer['phase'] = Player::PHASE_WAITING;
-			if ($this->useCharacter === TRUE) {
-				if ($this->actualPlayer->getIsBelleStar($this->game)) {
-					$notices = $this->actualPlayer->getNoticeList();
-					$notices['character_used'] = 1;
-					$this->actualPlayer->setNoticeList($notices);
-				}
+			
+			if ($this->actualPlayer->getIsBelleStar($this->game)) {
+				$notices = $this->actualPlayer->getNoticeList();
+				$notices['character_used'] = 1;
+				$this->actualPlayer->setNoticeList($notices);
 			}
 			$this->actualPlayer->save();
 

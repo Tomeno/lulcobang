@@ -20,7 +20,7 @@ class PassCommand extends Command {
 					$handCardsCount = count($this->actualPlayer->getHandCards());
 					if ($this->actualPlayer['actual_lifes'] >= $handCardsCount) {
 						$this->check = self::OK;
-					} elseif ($this->useCharacter == TRUE && $handCardsCount <= 10 && $this->actualPlayer->getIsSeanMallory($this->game)) {
+					} elseif ($handCardsCount <= 10 && $this->actualPlayer->getIsSeanMallory($this->game)) {
 						$this->check = self::OK;
 					} else {
 						$this->check = self::TOO_MANY_CARDS;
@@ -43,7 +43,7 @@ class PassCommand extends Command {
 				// TODO mozno by toto mohla byt metoda
 				$count = 1;
 				// neviem ci lucky duke pri vendete taha dve karty
-				if ($this->useCharacter && $this->actualPlayer->getIsLuckyDuke($this->game)) {
+				if ($this->actualPlayer->getIsLuckyDuke($this->game)) {
 					$count = 2;
 				}
 				

@@ -156,7 +156,7 @@ class DrawCommand extends Command {
 							$this->check = self::OK;
 						} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsPatBrennan($this->game)) {
 							// TODO messages
-							$attackedPlayer = $this->params[0];
+							$attackedPlayer = $this->params['enemyPlayerUsername'];
 							foreach ($this->players as $player) {
 								$user = $player->getUser();
 								if ($user['username'] == $attackedPlayer) {
@@ -200,6 +200,26 @@ class DrawCommand extends Command {
 								$this->check = self::OK;
 							} else {
 								// todo message o tom ze vera chce pouzit charakter ale nevybrala ziadneho hraca
+							}
+						} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsEvelynTheBang($this->game)) {
+							$attackedPlayer = $this->params['enemyPlayerUsername'];
+							foreach ($this->players as $player) {
+								$user = $player->getUser();
+								if ($user['username'] == $attackedPlayer) {
+									$this->enemyPlayer = $player;
+									break;
+								}
+							}
+
+							if ($this->enemyPlayer) {
+								$distance = $this->game->getDistance($this->loggedUser['username'], $attackedPlayer);
+								if ($distance <= 1) {
+									$this->check = self::OK;
+								} else {
+									$this->check = self::NO_CARDS_ON_HAND;
+								}
+							} else {
+								$this->check = self::PLAYER_NOT_SELECTED;
 							}
 						} else {
 							$this->check = self::OK;
@@ -267,7 +287,7 @@ class DrawCommand extends Command {
 				// TODO tieto karty treba najprv ukazat hracom cez log a aby sa dali vyhodit, musia byt najprv v ruke aktualneho hraca a potom ich vyhodi
 
 				$count = 1;
-				if ($this->useCharacter && $this->actualPlayer->getIsLuckyDuke($this->game)) {
+				if ($this->actualPlayer->getIsLuckyDuke($this->game)) {
 					$count = 2;
 				}
 				
@@ -310,7 +330,7 @@ class DrawCommand extends Command {
 				
 			} elseif ($this->params['playCardName'] == 'dynamite') {
 				$count = 1;
-				if ($this->useCharacter && $this->actualPlayer->getIsLuckyDuke($this->game)) {
+				if ($this->actualPlayer->getIsLuckyDuke($this->game)) {
 					$count = 2;
 				}
 				
@@ -380,7 +400,7 @@ class DrawCommand extends Command {
 				
 			} elseif ($this->params['playCardName'] == 'rattlesnake') {
 				$count = 1;
-				if ($this->useCharacter && $this->actualPlayer->getIsLuckyDuke($this->game)) {
+				if ($this->actualPlayer->getIsLuckyDuke($this->game)) {
 					$count = 2;
 				}
 				
@@ -432,10 +452,10 @@ class DrawCommand extends Command {
 				}
 			} elseif ($this->params['playCardName'] == 'barrel') {
 				$count = 1;
-				if ($this->useCharacter && $this->actualPlayer->getIsLuckyDuke($this->game)) {
+				if ($this->actualPlayer->getIsLuckyDuke($this->game)) {
 					$count = 2;
 				}
-				$drawnCards = GameUtils::drawCards($this->game, $count);	// TODO pocet zavisi aj od charakteru
+				$drawnCards = GameUtils::drawCards($this->game, $count);
 				$isHeart = FALSE;
 				$cardRepository = new CardRepository();
 				$thrownCards = array();
@@ -481,7 +501,18 @@ class DrawCommand extends Command {
 				}
 				$counts = $this->getCountCards();
 				
-				if ($this->useCharacter === TRUE) {
+				if ($this->actualPlayer->getIsYoulGrinner($this->game)) {
+					$youlHandCardsCount = count($this->actualPlayer->getHandCards());
+					foreach ($this->getPlayers() as $player) {
+						if ($player->getIsAlive() && $player['id'] != $this->actualPlayer['id']) {
+							$playersHandCardsCount = count($player->getHandCards());
+							if ($playersHandCardsCount > $youlHandCardsCount) {
+								$movedCard = $player->getCardWithId();
+								GameUtils::moveCards($this->game, array($movedCard), $player, 'hand', $this->actualPlayer, 'hand');
+							}
+						}
+					}
+				} elseif ($this->useCharacter === TRUE) {
 					if ($this->actualPlayer->getIsJesseJones($this->game)) {
 						$retVal = GameUtils::moveCards($this->game, $this->enemyPlayersCards[$this->enemyPlayer['id']], $this->enemyPlayer, 'hand', $this->actualPlayer, $this->place);
 						$this->actualPlayer = $retVal['playerTo'];
@@ -504,17 +535,18 @@ class DrawCommand extends Command {
 						$handCards = unserialize($this->actualPlayer['hand_cards']);
 						$handCards[] = $card;
 						$this->actualPlayer['hand_cards'] = serialize($handCards);
-					} elseif ($this->actualPlayer->getIsYoulGrinner($this->game)) {
-						$youlHandCardsCount = count($this->actualPlayer->getHandCards());
-						foreach ($this->getPlayers() as $player) {
-							if ($player->getIsAlive() && $player['id'] != $this->actualPlayer['id']) {
-								$playersHandCardsCount = count($player->getHandCards());
-								if ($playersHandCardsCount > $youlHandCardsCount) {
-									$movedCard = $player->getCardWithId();
-									GameUtils::moveCards($this->game, array($movedCard), $player, 'hand', $this->actualPlayer, 'hand');
-								}
-							}
-						}
+					} elseif ($this->actualPlayer->getIsEvelynTheBang($this->game)) {
+						MySmarty::assign('card', NULL);	// TODO select random bang card or evelyn character card
+						$response = MySmarty::fetch('you-are-attacked.tpl');
+						$this->enemyPlayer['phase'] = Player::PHASE_UNDER_ATTACK;
+						$this->enemyPlayer['command_response'] = $response;
+						$this->enemyPlayer->save();
+						
+						$this->actualPlayer['phase'] = Player::PHASE_WAITING;
+						
+						$this->game['inter_turn'] = $this->enemyPlayer['id'];
+						$this->game['inter_turn_reason'] = serialize(array('action' => 'bang', 'from' => $this->actualPlayer['id'], 'to' => $this->enemyPlayer['id']));
+						$this->game->save();
 					}
 				}
 				
@@ -526,7 +558,9 @@ class DrawCommand extends Command {
 					'rest_action' => $counts['rest_action'],
 				);
 				$this->actualPlayer['possible_choices'] = serialize($possibleChoices);
-				$this->actualPlayer['phase'] = Player::PHASE_PLAY;
+				if ($this->useCharacter === FALSE || !$this->actualPlayer->getIsEvelynTheBang($this->game)) {
+					$this->actualPlayer['phase'] = Player::PHASE_PLAY;
+				}
 				$this->actualPlayer->save();
 			}
 		} elseif ($this->check == self::PEYOTE_OK) {
@@ -573,82 +607,83 @@ class DrawCommand extends Command {
 			);
 		}
 
-		// TODO ak mame extension a je tu vlak alebo zizen tak su pocty ine
-		if ($this->useCharacter === TRUE) {
-			$character = $this->actualPlayer;
-			if ($character->getIsKitCarlson($this->game)) {
+		$character = $this->actualPlayer;
+		if ($character->getIsKitCarlson($this->game)) {
+			$counts = array(
+				'draw' => 3,
+				'pick' => 2,
+				'rest_action' => 'back_to_deck',
+			);
+			if ($this->game->getIsHNTheTrain()) {
+				$counts['pick'] = 3;
+				$counts['rest_action'] = '';
+			} elseif ($this->game->getIsHNThirst()) {
 				$counts = array(
 					'draw' => 3,
-					'pick' => 2,
+					'pick' => 1,
 					'rest_action' => 'back_to_deck',
 				);
-				if ($this->game->getIsHNTheTrain()) {
-					$counts['pick'] = 3;
-					$counts['rest_action'] = '';
-				} elseif ($this->game->getIsHNThirst()) {
-					$counts = array(
-						'draw' => 3,
-						'pick' => 1,
-						'rest_action' => 'back_to_deck',
-					);
-				}
-			} elseif ($character->getIsPixiePete($this->game)) {
+			}
+		} elseif ($character->getIsPixiePete($this->game)) {
+			$counts = array(
+				'draw' => 3,
+				'pick' => 3,
+				'rest_action' => '',
+			);
+			if ($this->game->getIsHNTheTrain()) {
+				$counts['draw'] = $counts['draw'] + 1;
+				$counts['pick'] = $counts['pick'] + 1;
+			} elseif ($this->game->getIsHNThirst()) {
+				$counts['draw'] = $counts['draw'] - 1;
+				$counts['pick'] = $counts['pick'] - 1;
+			}
+		} elseif ($character->getIsBillNoface($this->game)) {
+			$drawAndPick = 1 + ($this->actualPlayer['max_lifes'] - $this->actualPlayer['actual_lifes']);
+			$counts = array(
+				'draw' => $drawAndPick,
+				'pick' => $drawAndPick,
+				'rest_action' => '',
+			);
+			if ($this->game->getIsHNTheTrain()) {
+				$counts['draw'] = $counts['draw'] + 1;
+				$counts['pick'] = $counts['pick'] + 1;
+			} elseif ($this->game->getIsHNThirst()) {
+				$counts['draw'] = $counts['draw'] - 1;
+				$counts['pick'] = $counts['pick'] - 1;
+			}
+		} elseif ($character->getIsBlackJack($this->game)) {
+			if ($this->game->getIsHNThirst()) {
 				$counts = array(
-					'draw' => 3,
-					'pick' => 3,
-					'rest_action' => '',
+					'draw' => 1,
+					'pick' => 1,
 				);
-				if ($this->game->getIsHNTheTrain()) {
-					$counts['draw'] = $counts['draw'] + 1;
-					$counts['pick'] = $counts['pick'] + 1;
-				} elseif ($this->game->getIsHNThirst()) {
-					$counts['draw'] = $counts['draw'] - 1;
-					$counts['pick'] = $counts['pick'] - 1;
+			} else {
+				$cards = $this->game->getDrawPile();
+				for ($i = 0; $i < 2; $i++) {
+					$card = array_pop($cards);
 				}
-			} elseif ($character->getIsBillNoface($this->game)) {
-				$drawAndPick = 1 + ($this->actualPlayer['max_lifes'] - $this->actualPlayer['actual_lifes']);
-				$counts = array(
-					'draw' => $drawAndPick,
-					'pick' => $drawAndPick,
-					'rest_action' => '',
-				);
-				if ($this->game->getIsHNTheTrain()) {
-					$counts['draw'] = $counts['draw'] + 1;
-					$counts['pick'] = $counts['pick'] + 1;
-				} elseif ($this->game->getIsHNThirst()) {
-					$counts['draw'] = $counts['draw'] - 1;
-					$counts['pick'] = $counts['pick'] - 1;
+				// TODO show card
+				$draw = 2;
+				$pick = 2;
+				if ($card->getIsRed($this->game)) {
+					$draw = 3;
+					$pick = 3;
 				}
-			} elseif ($character->getIsBlackJack($this->game)) {
-				if ($this->game->getIsHNThirst()) {
-					$counts = array(
-						'draw' => 1,
-						'pick' => 1,
-					);
-				} else {
-					$cards = $this->game->getDrawPile();
-					for ($i = 0; $i < 2; $i++) {
-						$card = array_pop($cards);
-					}
-					// TODO show card
-					$draw = 2;
-					$pick = 2;
-					if ($card->getIsRed($this->game)) {
-						$draw = 3;
-						$pick = 3;
-					}
 
-					$counts = array(
-						'draw' => $draw,
-						'pick' => $pick,
-						'rest_action' => 'show_second',
-					);
-					if ($this->game->getIsHNTheTrain()) {
-						$counts['draw'] = $counts['draw'] + 1;
-						$counts['pick'] = $counts['pick'] + 1;
-					}
+				$counts = array(
+					'draw' => $draw,
+					'pick' => $pick,
+					'rest_action' => 'show_second',
+				);
+				if ($this->game->getIsHNTheTrain()) {
+					$counts['draw'] = $counts['draw'] + 1;
+					$counts['pick'] = $counts['pick'] + 1;
 				}
-			} elseif ($character->getIsJesseJones($this->game)) {
+			}
+		}
+		
+		if ($this->useCharacter === TRUE) {
+			 if ($character->getIsJesseJones($this->game)) {
 				$counts = array(
 					'draw' => 1,
 					'pick' => 1,
@@ -686,6 +721,19 @@ class DrawCommand extends Command {
 				} elseif ($this->game->getIsHNThirst()) {
 					$counts['draw'] = 0;	// nie zeby to defaultne nemal takto ale aby sa na to nezabudlo :)
 					$counts['pick'] = 0;
+				}
+			} elseif ($character->getIsEvelynTheBang($this->game)) {
+				$counts = array(
+					'draw' => 1,
+					'pick' => 1,
+					'rest_action' => '',
+				);
+				if ($this->game->getIsHNTheTrain()) {
+					$counts['draw'] = $counts['draw'] + 1;
+					$counts['pick'] = $counts['pick'] + 1;
+				} elseif ($this->game->getIsHNThirst()) {
+					$counts['draw'] = $counts['draw'] - 1;
+					$counts['pick'] = $counts['pick'] - 1;
 				}
 			}
 		}

@@ -42,7 +42,7 @@ class BangCommand extends Command {
 			}
 			if ($this->actualPlayer['bang_used'] < $bangLimit) {
 				$canPlayMoreBangs = TRUE;
-			} elseif ($this->useCharacter === TRUE && $this->actualPlayer->getIsWillyTheKid($this->game) && !$this->game->getIsHNTheSermon()) {
+			} elseif ($this->actualPlayer->getIsWillyTheKid($this->game) && !$this->game->getIsHNTheSermon()) {
 				$canPlayMoreBangs = TRUE;
 			} elseif ($this->actualPlayer->getHasVolcanicOnTheTable($this->game) && !$this->game->getIsHNTheSermon()) {
 				$canPlayMoreBangs = TRUE;
@@ -158,12 +158,10 @@ class BangCommand extends Command {
 
 					$this->actualPlayer['phase'] = Player::PHASE_WAITING;
 				
-					if ($this->useCharacter === TRUE) {
-						if ($this->actualPlayer->getIsBelleStar($this->game) || $this->actualPlayer->getIsSlabTheKiller($this->game)) {
-							$notices = $this->actualPlayer->getNoticeList();
-							$notices['character_used'] = 1;
-							$this->actualPlayer->setNoticeList($notices);
-						}
+					if ($this->actualPlayer->getIsBelleStar($this->game) || $this->actualPlayer->getIsSlabTheKiller($this->game)) {
+						$notices = $this->actualPlayer->getNoticeList();
+						$notices['character_used'] = 1;
+						$this->actualPlayer->setNoticeList($notices);
 					}
 					
 					$this->game['inter_turn'] = $this->attackedPlayer['id'];

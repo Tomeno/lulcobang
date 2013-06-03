@@ -53,12 +53,10 @@ class KnifeCommand extends Command {
 			$this->attackedPlayer->save();
 
 			$this->actualPlayer['phase'] = Player::PHASE_WAITING;
-			if ($this->useCharacter === TRUE) {
-				if ($this->actualPlayer->getIsBelleStar($this->game)) {
-					$notices = $this->actualPlayer->getNoticeList();
-					$notices['character_used'] = 1;
-					$this->actualPlayer->setNoticeList($notices);
-				}
+			if ($this->actualPlayer->getIsBelleStar($this->game)) {
+				$notices = $this->actualPlayer->getNoticeList();
+				$notices['character_used'] = 1;
+				$this->actualPlayer->setNoticeList($notices);
 			}
 			$this->actualPlayer->save();
 

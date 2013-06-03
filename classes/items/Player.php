@@ -117,6 +117,22 @@ class Player extends LinkableItem {
 		throw new Exception('Method ' . $methodName . ' doesn\'t exist');
 	}
 	
+	public function getTextPhase() {
+		switch ($this['phase']) {
+			case self::PHASE_HIGH_NOON: return 'high_noon';
+			case self::PHASE_DRAW_HIGH_NOON: return 'draw_high_noon';
+			case self::PHASE_DYNAMITE: return 'draw_dynamite';
+			case self::PHASE_JAIL: return 'draw_jail';
+			case self::PHASE_RATTLESNAKE: return 'draw_rattlesnake';
+			case self::PHASE_DRAW: return 'draw';
+			case self::PHASE_PLAY: return 'play';
+			case self::PHASE_UNDER_ATTACK: return 'under_attack';
+			case self::PHASE_WAITING: return 'waiting';
+			case self::PHASE_POKER_SELECT: return 'poker_select';
+			default: return 'none';
+		}
+	}
+	
 	protected function getPageType() {
 		return 'user';
 	}

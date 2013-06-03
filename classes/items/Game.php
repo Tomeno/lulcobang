@@ -124,6 +124,10 @@ class Game extends Item {
 		}
 		return $alivePlayers;
 	}
+	
+	public function getAlivePlayersCount() {
+		return count($this->getAlivePlayers());
+	}
 
 	/**
 	 * gets the player on turn - he can draw cards, bangs the enemies etc
