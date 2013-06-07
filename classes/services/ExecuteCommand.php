@@ -52,6 +52,8 @@ class ExecuteCommand {
 		// TODO brawl tu dava addslashes
 		if ($commandParams['command'] == 'brawl') {
 			$commandParams['enemyCardsId'] = addslashes(Utils::post('card'));
+		} elseif ($commandParams['command'] == 'choose_cards') {
+			$commandParams['selectedCards'] = addslashes(Utils::post('card'));
 		} else {
 			$commandParams['enemyCardsId'] = intval(Utils::post('card'));
 			if ($commandParams['enemyCardsId']) {

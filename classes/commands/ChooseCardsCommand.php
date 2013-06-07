@@ -17,7 +17,7 @@ class ChooseCardsCommand extends Command {
 		$possibleCards = $possibleChoices['drawn_cards'];
 		$possiblePickCount = $possibleChoices['possible_pick_count'];
 
-		$this->params['selectedCards'] = explode(',', $this->params['selectedCards']);
+		$this->params['selectedCards'] = explode(';', $this->params['selectedCards']);
 		
 		$res = TRUE;
 		if ($possiblePickCount == count($this->params['selectedCards'])) {
