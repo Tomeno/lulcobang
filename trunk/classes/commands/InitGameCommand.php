@@ -76,6 +76,9 @@ class InitGameCommand extends Command {
 				$highNoonCardIds = array();
 				foreach ($highNoonCards as $card) {
 					$highNoonCardIds[] = $card['id'];
+					if (count($highNoonCardIds) == 14) {
+						break;
+					}
 				}
 				if ($highNoonCard) {
 					$highNoonCardIds[] = $highNoonCard['id'];

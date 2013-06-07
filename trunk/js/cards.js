@@ -45,25 +45,72 @@ function selectCardToPlay(id, type, place) {
 	
 	var command = $('command').value;
 	var phase = $('phase').value;
+	var characterName = $('character-name').value;
 //	alert(command);
 //	alert(phase);
 
-	if (phase != 'throw') {
-		// automaticky spustene prikazy
-		var commandsImmediatelyExecuted;
-		if (place == 'table') {
-			// aktivacia kariet ktore su uz na stole
-			commandsImmediatelyExecuted = ['howitzer', 'canteen', 'ponyexpress'];
-			if (inArray(command, commandsImmediatelyExecuted)) {
-				executeCommand();
-			} else {
-				// karty ku ktorym treba tahat kartu z balicka
-				commandsImmediatelyExecuted = ['dynamite', 'jail', 'rattlesnake', 'barrel'];
+	if (characterName) {
+		if (characterName == 'uncle-will') {
+			executeCommand();
+		} else {
+			if (characterName == 'calamity-janet' && phase == 'under_attack') {
+				commandsImmediatelyExecuted = ['bang', 'missed'];
 				if (inArray(command, commandsImmediatelyExecuted)) {
-					drawCards();
+					executeCommand();
+				}
+			}
+		}
+	} else {
+		if (phase != 'throw') {
+			// automaticky spustene prikazy
+			var commandsImmediatelyExecuted;
+			if (place == 'table') {
+				// aktivacia kariet ktore su uz na stole
+				commandsImmediatelyExecuted = ['howitzer', 'canteen', 'ponyexpress'];
+				if (inArray(command, commandsImmediatelyExecuted)) {
+					executeCommand();
 				} else {
+					// karty ku ktorym treba tahat kartu z balicka
+					commandsImmediatelyExecuted = ['dynamite', 'jail', 'rattlesnake', 'barrel'];
+					if (inArray(command, commandsImmediatelyExecuted)) {
+						drawCards();
+					} else {
+						if (phase == 'under_attack') {
+							commandsImmediatelyExecuted = ['tengallonhat', 'ironplate', 'sombrero', 'bible'];
+							if (inArray(command, commandsImmediatelyExecuted)) {
+								executeCommand();
+							}
+						}
+					}
+				}
+			} else {
+				if (phase == 'play') {
+					// karty z ruky, ktore sa mozu rovno hrat
+					commandsImmediatelyExecuted = ['diligenza', 'wellsfargo', 'indians', 'gatling', 'beer', 'saloon',
+						'generalstore', 'poker', 'wildband', 'tornado'];
+					if (inArray(command, commandsImmediatelyExecuted)) {
+						executeCommand();
+					} else {
+						// karty ktore treba vylozit na stol
+						commandsImmediatelyExecuted = ['volcanic', 'schofield', 'remington', 'revcarabine', 'winchester', 'shootgun',
+							'mustang', 'appaloosa', 'hideout', 'silver', 'barrel', 'dynamite',
+							'derringer', 'howitzer', 'knife', 'buffalorifle', 'pepperbox',
+							'tengallonhat', 'ironplate', 'sombrero', 'bible',
+							'canteen', 'ponyexpress', 'conestoga', 'cancan'];
+						if (inArray(command, commandsImmediatelyExecuted)) {
+							putCard();
+						} else {
+							// karty ku ktorym treba prihodit druhu kartu
+							commandsImmediatelyExecuted = ['whisky', 'tequila'];
+							if (inArray(command, commandsImmediatelyExecuted) && selectedAdditionalCard.value != 0) {
+								executeCommand();
+							}
+						}
+					}
+				} else {
+					// karty ktore sa pouzivaju ako obrana pri utoku
 					if (phase == 'under_attack') {
-						commandsImmediatelyExecuted = ['tengallonhat', 'ironplate', 'sombrero', 'bible'];
+						commandsImmediatelyExecuted = ['bang', 'missed', 'dodge'];
 						if (inArray(command, commandsImmediatelyExecuted)) {
 							executeCommand();
 						}
@@ -71,38 +118,7 @@ function selectCardToPlay(id, type, place) {
 				}
 			}
 		} else {
-			if (phase == 'play') {
-				// karty z ruky, ktore sa mozu rovno hrat
-				commandsImmediatelyExecuted = ['diligenza', 'wellsfargo', 'indians', 'gatling', 'beer', 'saloon',
-					'generalstore', 'poker', 'wildband', 'tornado'];
-				if (inArray(command, commandsImmediatelyExecuted)) {
-					executeCommand();
-				} else {
-					// karty ktore treba vylozit na stol
-					commandsImmediatelyExecuted = ['volcanic', 'schofield', 'remington', 'revcarabine', 'winchester',
-						'mustang', 'appaloosa', 'hideout', 'silver', 'barrel', 'dynamite',
-						'derringer', 'howitzer', 'knife', 'buffalorifle', 'pepperbox',
-						'tengallonhat', 'ironplate', 'sombrero', 'bible',
-						'canteen', 'ponyexpress', 'conestoga'];
-					if (inArray(command, commandsImmediatelyExecuted)) {
-						putCard();
-					} else {
-						// karty ku ktorym treba prihodit druhu kartu
-						commandsImmediatelyExecuted = ['whisky', 'tequila'];
-						if (inArray(command, commandsImmediatelyExecuted) && selectedAdditionalCard.value != 0) {
-							executeCommand();
-						}
-					}
-				}
-			} else {
-				// karty ktore sa pouzivaju ako obrana pri utoku
-				if (phase == 'under_attack') {
-					commandsImmediatelyExecuted = ['bang', 'missed', 'dodge'];
-					if (inArray(command, commandsImmediatelyExecuted)) {
-						executeCommand();
-					}
-				}
-			}
+			throwCard();
 		}
 	}
 }
@@ -255,6 +271,13 @@ function selectPlayer(id, fromSelectCard) {
 		'rattlesnake', 'bounty', 'aiming', 'tomahawk', 'ghost'];
 	if (inArray(command, commandsImmediatelyExecuted)) {
 		executeCommand();
+	} else {
+		var characterName = $('character-name').value;
+		if (characterName == 'calamity-janet' && command == 'missed') {
+			executeCommand();
+		} else if (characterName == 'jesse-jones') {
+			drawCards();
+		}
 	}
 }
 
@@ -268,15 +291,25 @@ function lostLife() {
 	executeCommand();
 }
 
-function useCharacter(id) {
+function useCharacter(id, name) {
+//	alert(name);
 	var useCharacter = $('use-character');
+	var characterName = $('character-name');
 	var characterCard = $('character-' + id);
 	if (useCharacter.value == 1) {
 		useCharacter.value = 0;
+		characterName.value = '';
 		rejectCard(characterCard, 'character');
 	} else {
 		useCharacter.value = 1;
+		characterName.value = name;
 		ejectCard(characterCard, 'character');
+
+		// automaticke spustenie akcie podla charakteru
+		var charactersImmediatelyExecutedDraw = ['jourdonnais', 'pedro-ramirez'];
+		if (inArray(name, charactersImmediatelyExecutedDraw)) {
+			drawCards();
+		}
 	}
 }
 
@@ -290,4 +323,34 @@ function useOneRoundCard(oneRoundCard) {
 	$('command').value = 'use_one_round_card';
 	// asi nie kazda jednokolova karta sa bude spustat takto, mozno bude treba vymenovat ktore ano
 	executeCommand();
+}
+
+function chooseCard(cardId) {
+	var possibleCount = $('possibleCount').value;
+	var selectedCards = $('selected-card');
+	var actualValue = selectedCards.value;
+	var cardList = [];
+	
+	if (actualValue) {
+		cardList = actualValue.split(';');
+		cardList[cardList.length] = cardId;
+	} else {
+		cardList[0] = cardId;
+	}
+
+	var newValue = cardList.join(';');
+	selectedCards.value = newValue;
+	
+	var card = $('choice-card-' + cardId);
+	if (card) {
+		ejectCard(card, 'choice');
+	}
+	
+	if (possibleCount == cardList.length) {
+		$('command').value = 'choose_cards';
+		
+		executeCommand();
+	} else {
+	//	alert(newValue);
+	}
 }

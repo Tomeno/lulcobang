@@ -54,6 +54,9 @@ class DrawCommand extends Command {
 
 	const MISSING_RATTLESNAKE_CARD = 26;
 	
+	const NO_CARDS_ON_HAND = 27;
+	
+	const PLAYER_TOO_FAR = 28;
 
 	protected $template = 'cards-choice.tpl';
 
@@ -216,7 +219,7 @@ class DrawCommand extends Command {
 								if ($distance <= 1) {
 									$this->check = self::OK;
 								} else {
-									$this->check = self::NO_CARDS_ON_HAND;
+									$this->check = self::PLAYER_TOO_FAR;
 								}
 							} else {
 								$this->check = self::PLAYER_NOT_SELECTED;
@@ -542,7 +545,7 @@ class DrawCommand extends Command {
 						$this->enemyPlayer['command_response'] = $response;
 						$this->enemyPlayer->save();
 						
-						$this->actualPlayer['phase'] = Player::PHASE_WAITING;
+						
 						
 						$this->game['inter_turn'] = $this->enemyPlayer['id'];
 						$this->game['inter_turn_reason'] = serialize(array('action' => 'bang', 'from' => $this->actualPlayer['id'], 'to' => $this->enemyPlayer['id']));
@@ -552,15 +555,29 @@ class DrawCommand extends Command {
 				
 				$drawnCards = GameUtils::drawCards($this->game, $counts['draw']);
 
-				$possibleChoices = array(
-					'drawn_cards' => $drawnCards,
-					'possible_pick_count' => $counts['pick'],
-					'rest_action' => $counts['rest_action'],
-				);
-				$this->actualPlayer['possible_choices'] = serialize($possibleChoices);
-				if ($this->useCharacter === FALSE || !$this->actualPlayer->getIsEvelynTheBang($this->game)) {
+				// len hrac ktory musi vratit kartu nazad bude vyberat karty
+				if ($counts['rest_action'] == 'back_to_deck') {
+					$possibleChoices = array(
+						'drawn_cards' => $drawnCards,
+						'possible_pick_count' => $counts['pick'],
+						'rest_action' => $counts['rest_action'],
+					);
+					$this->actualPlayer['possible_choices'] = serialize($possibleChoices);
+				} else {
+					// ostatnym sa rovno pridaju do ruky
+					$handCards = unserialize($this->actualPlayer['hand_cards']);
+					foreach ($drawnCards as $drawnCard) {
+						$handCards[] = $drawnCard;
+					}
+					$this->actualPlayer['hand_cards'] = serialize($handCards);
+				}
+				
+				if ($this->useCharacter === TRUE && $this->actualPlayer->getIsEvelynTheBang($this->game)) {
+					$this->actualPlayer['phase'] = Player::PHASE_WAITING;
+				} else {
 					$this->actualPlayer['phase'] = Player::PHASE_PLAY;
 				}
+				
 				$this->actualPlayer->save();
 			}
 		} elseif ($this->check == self::PEYOTE_OK) {
@@ -978,6 +995,12 @@ class DrawCommand extends Command {
 				'toUser' => $this->loggedUser['id'],
 			);
 			$this->addMessage($message);
+		} elseif ($this->check == self::PLAYER_TOO_FAR) {
+			$message = array(
+				'text' => 'Nedostrelis, hrac je prilis daleko',
+				'toUser' => $this->loggedUser['id'],
+			);
+			$this->addMessage($message);
 		}
 	}
 
@@ -990,25 +1013,27 @@ class DrawCommand extends Command {
 			} elseif ($this->params['playCardName'] == 'barrel') {
 
 			} else {
-				$possibleChoices = unserialize($this->actualPlayer['possible_choices']);
-				$cardRepository = new CardRepository();
+				if ($this->actualPlayer['possible_choices']) {
+					$possibleChoices = unserialize($this->actualPlayer['possible_choices']);
+					$cardRepository = new CardRepository();
 
-				$possibleCards = array();
+					$possibleCards = array();
 
-				foreach ($possibleChoices['drawn_cards'] as $cardId) {
-					$possibleCards[] = $cardRepository->getOneById($cardId);
+					foreach ($possibleChoices['drawn_cards'] as $cardId) {
+						$possibleCards[] = $cardRepository->getOneById($cardId);
+					}
+
+					MySmarty::assign('possiblePickCount', $possibleChoices['possible_pick_count']);
+					MySmarty::assign('possibleCards', $possibleCards);
+					MySmarty::assign('possibleCardsCount', count($possibleCards));
+					MySmarty::assign('game', $this->game);
+					$response = MySmarty::fetch($this->template);
+
+					$this->actualPlayer['command_response'] = $response;
+					$this->actualPlayer->save();
+
+					return $response;
 				}
-
-				MySmarty::assign('possiblePickCount', $possibleChoices['possible_pick_count']);
-				MySmarty::assign('possibleCards', $possibleCards);
-				MySmarty::assign('possibleCardsCount', count($possibleCards));
-				MySmarty::assign('game', $this->game);
-				$response = MySmarty::fetch($this->template);
-
-				$this->actualPlayer['command_response'] = $response;
-				$this->actualPlayer->save();
-
-				return $response;
 			}
 		}
 	}

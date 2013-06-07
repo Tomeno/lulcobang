@@ -56,9 +56,9 @@ class ActualPlayerHasCardsChecker extends Checker {
 
 				if ($this->command->getUseCharacter() == TRUE && $actualPlayer->getIsElenaFuente($game)) {
 					$checkingMethod = 'getHas' . ucfirst($cardName) . 'OnHand';
-				}
-				
-				if ($this->command->getUseCharacter() == TRUE && $actualPlayer->getIsAnnieVersary($game)) {
+				} elseif ($this->command->getUseCharacter() == TRUE && $actualPlayer->getIsAnnieVersary($game)) {
+					$checkingMethod = 'getHas' . ucfirst($cardName) . 'OnHand';
+				} elseif ($this->command->getUseCharacter() == TRUE && $actualPlayer->getIsUncleWill($game)) {
 					$checkingMethod = 'getHas' . ucfirst($cardName) . 'OnHand';
 				}
 				

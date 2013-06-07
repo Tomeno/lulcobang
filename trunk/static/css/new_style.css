@@ -112,6 +112,9 @@ body
 	float:left;
 }
 
+.card.choice {
+	width: 155px;
+}
 
 .lifes, .distance, .range
 {

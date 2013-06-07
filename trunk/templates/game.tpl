@@ -90,7 +90,7 @@
 							</div>
 						{/if}
 						<div class="char" id="character-{$player.character.id}">
-							<a href="{$player.character.url}" onclick="{if $player.user.id == $me.user.id}useCharacter('{$player.character.id}');{else}window.open(this.href, '_blank');{/if} return false;" title="{$player.character.name|escape}{if $player.selectedCharacter} ({localize key='play_as'} {$player.selectedCharacter.name|escape}){/if} ({$player.max_lifes}): {$player.character.localizedDescription|escape}" class="popup-source">
+							<a href="{$player.character.url}" onclick="{if $player.user.id == $me.user.id}useCharacter('{$player.character.id}', '{$player.character.alias}');{else}window.open(this.href, '_blank');{/if} return false;" title="{$player.character.name|escape}{if $player.selectedCharacter} ({localize key='play_as'} {$player.selectedCharacter.name|escape}){/if} ({$player.max_lifes}): {$player.character.localizedDescription|escape}" class="popup-source">
 								{image src=$player.character.imagePath alt=$player.character.name width='44' height='76'}
 							</a>
 						</div>
@@ -142,8 +142,8 @@
 							{/foreach}
 						</div>
 					{/if}
-					{if $player.tableCards}
-						{assign var='cardsCount' value=$player.tableCards|@count}
+					{if $player.tableCards || $player.waitCards}
+						{assign var='cardsCount' value=$player.tableAndWaitCardsCount}
 						{if $cardsCount > 6}
 							{assign var='cardWidth' value=$baseWidth/$cardsCount}
 						{else}
@@ -158,17 +158,6 @@
 									</a>
 								</div>
 							{/foreach}
-						</div>
-					{/if}
-					{if $player.waitCards}
-						{assign var='cardsCount' value=$player.waitCards|@count}
-						{if $cardsCount > 6}
-							{assign var='cardWidth' value=$baseWidth/$cardsCount}
-						{else}
-							{assign var='cardWidth' value=0}
-						{/if}
-						<div class="row cards">
-							<span class="card_icon wait_cards"></span>
 							{foreach from=$player.waitCards item='waitCard' name='waitCards'}
 								<div id="card-{$waitCard.id}" class="card" {if $cardWidth} style="width: {$cardWidth}px;"{/if}>
 									<a href="{$waitCard.url}" onclick="{if $player.id == $me.id}selectCardToPlay('{$waitCard.id}', '{$waitCard.itemAlias}', 'wait');{else}selectCard('{$waitCard.id}', '{$player.id}', 'wait');{/if} return false;" title="{$waitCard.title|escape}: {$waitCard.description|escape}" class="popup-source">
@@ -249,7 +238,8 @@
 					<input type="hidden" name="player" id="selected-player" value="" />
 					<input type="hidden" name="command" id="command" value="" />
 					<input type="hidden" name="place" id="place" value="" />
-					<input type="hidden" name="character" id="use-character" value="" />
+					<input type="hidden" name="use-character" id="use-character" value="" />
+					<input type="hidden" name="character" id="character-name" value="" />
 					<input type="hidden" name="peyote" id="peyote-color" value="" />
 					<input type="hidden" name="additionalPlayer" id="additional-player" value="" />
 					<input type="hidden" name="phase" id="phase" value="{$me.textPhase}" />

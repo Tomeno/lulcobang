@@ -249,6 +249,10 @@ abstract class Command {
 				// Annie Versary moze pouzit akukolvek kartu z ruky ako Bang!
 				// uprava sa tyka aj metody v ActualPlayerHasCardsChecker
 				$commandName = 'bang';
+			} elseif ($actualPlayer->getIsUncleWill($game)) {
+				// Uncle Will moze pouzit akukolvek kartu z ruky ako General store!
+				// uprava sa tyka aj metody v ActualPlayerHasCardsChecker
+				$commandName = 'generalstore';
 			}
 		}
 		
