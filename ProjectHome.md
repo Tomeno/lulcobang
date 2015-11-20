@@ -1,0 +1,1 @@
+php verzia kartovej hry bang s chatom
